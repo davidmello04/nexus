@@ -1,0 +1,47 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+build/
+.next/
+out/
+
+# env
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Prisma
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal
+
+# uploads
+uploads/
+apps/api/uploads/
+
+# coverage
+coverage/
+
+# cache
+.cache/
+.turbo/
