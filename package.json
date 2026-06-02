@@ -12,9 +12,12 @@
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
     "build:web": "npm run build --workspace apps/web",
     "build:api": "npm run build --workspace apps/api",
+    "build": "npm run build:web && npm run build:api",
     "lint:web": "npm run lint --workspace apps/web",
     "lint:api": "npm run lint --workspace apps/api",
+    "lint": "npm run lint:web && npm run lint:api",
     "prisma:validate": "npm run prisma:validate --workspace apps/api",
+    "prisma:generate": "npm run prisma:generate --workspace apps/api",
     "prisma:migrate": "npm run prisma:migrate --workspace apps/api --",
     "prisma:studio": "npm run prisma:studio --workspace apps/api"
   },
