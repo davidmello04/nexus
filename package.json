@@ -15,7 +15,7 @@
     "lint:web": "npm run lint --workspace apps/web",
     "lint:api": "npm run lint --workspace apps/api",
     "prisma:validate": "npm run prisma:validate --workspace apps/api",
-    "prisma:migrate": "npm run prisma:migrate --workspace apps/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace apps/api --",
     "prisma:studio": "npm run prisma:studio --workspace apps/api"
   },
   "devDependencies": {
