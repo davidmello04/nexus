@@ -45,3 +45,11 @@ coverage/
 # cache
 .cache/
 .turbo/
+
+# app builds
+apps/api/dist/
+apps/web/dist/
+
+# env per app
+apps/api/.env
+apps/web/.env
