@@ -7,6 +7,7 @@ import { CustomersModule } from './customers/customers.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { ProductVariantsModule } from './product-variants/product-variants.module';
+import { CustomerProductPricesModule } from './customer-product-prices/customer-product-prices.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProductVariantsModule } from './product-variants/product-variants.modul
     CategoriesModule,
     ProductsModule,
     ProductVariantsModule,
+    CustomerProductPricesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
