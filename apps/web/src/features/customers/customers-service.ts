@@ -9,13 +9,30 @@ export async function getCustomers() {
 }
 
 export async function createCustomer(data: CustomerFormData) {
-  const response = await api.post<Customer>('/customers', {
+  const response = await api.post<Customer>('/customers', normalizeCustomerData(data))
+
+  return response.data
+}
+
+export async function updateCustomer(id: string, data: CustomerFormData) {
+  const response = await api.patch<Customer>(
+    `/customers/${id}`,
+    normalizeCustomerData(data),
+  )
+
+  return response.data
+}
+
+export async function deleteCustomer(id: string) {
+  await api.delete(`/customers/${id}`)
+}
+
+function normalizeCustomerData(data: CustomerFormData) {
+  return {
     ...data,
     email: data.email || undefined,
     phone: data.phone || undefined,
     document: data.document || undefined,
     notes: data.notes || undefined,
-  })
-
-  return response.data
+  }
 }

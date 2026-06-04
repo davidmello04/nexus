@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { customerSchema, type CustomerFormData } from './customer-schema'
@@ -5,24 +6,38 @@ import { customerSchema, type CustomerFormData } from './customer-schema'
 type CustomerFormProps = {
   onSubmit: SubmitHandler<CustomerFormData>
   isSubmitting?: boolean
+  initialData?: CustomerFormData
+  submitButtonText?: string
 }
 
-export function CustomerForm({ onSubmit, isSubmitting }: CustomerFormProps) {
+const emptyCustomerFormValues: CustomerFormData = {
+  name: '',
+  phone: '',
+  email: '',
+  document: '',
+  isOutsourced: false,
+  notes: '',
+}
+
+export function CustomerForm({
+  onSubmit,
+  isSubmitting,
+  initialData,
+  submitButtonText = 'Salvar cliente',
+}: CustomerFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
-    defaultValues: {
-      name: '',
-      phone: '',
-      email: '',
-      document: '',
-      isOutsourced: false,
-      notes: '',
-    },
+    defaultValues: initialData ?? emptyCustomerFormValues,
   })
+
+  useEffect(() => {
+    reset(initialData ?? emptyCustomerFormValues)
+  }, [initialData, reset])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -100,7 +115,7 @@ export function CustomerForm({ onSubmit, isSubmitting }: CustomerFormProps) {
           disabled={isSubmitting}
           className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'Salvando...' : 'Salvar cliente'}
+          {isSubmitting ? 'Salvando...' : submitButtonText}
         </button>
       </div>
     </form>
