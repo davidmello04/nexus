@@ -2,14 +2,22 @@ import { z } from 'zod'
 
 export const customerSchema = z.object({
   name: z.string().min(1, 'Informe o nome do cliente'),
+
   phone: z.string().optional(),
+
   email: z
     .string()
-    .email('Informe um e-mail válido')
     .optional()
-    .or(z.literal('')),
+    .refine((value) => {
+      if (!value) return true
+
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    }, 'Informe um e-mail válido'),
+
   document: z.string().optional(),
-  isOutsourced: z.boolean().default(false),
+
+  isOutsourced: z.boolean(),
+
   notes: z.string().optional(),
 })
 

@@ -1,12 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import {
-  customerSchema,
-  type CustomerFormData,
-} from './customer-schema'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import { customerSchema, type CustomerFormData } from './customer-schema'
 
 type CustomerFormProps = {
-  onSubmit: (data: CustomerFormData) => void
+  onSubmit: SubmitHandler<CustomerFormData>
   isSubmitting?: boolean
 }
 
