@@ -1,7 +1,13 @@
-import { useQuery } from '@tanstack/react-query'
-import { getCustomers } from './customers-service'
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { CustomerForm } from './CustomerForm'
+import type { CustomerFormData } from './customer-schema'
+import { createCustomer, getCustomers } from './customers-service'
 
 export function CustomersPage() {
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const queryClient = useQueryClient()
+
   const {
     data: customers = [],
     isLoading,
@@ -10,6 +16,18 @@ export function CustomersPage() {
     queryKey: ['customers'],
     queryFn: getCustomers,
   })
+
+  const createCustomerMutation = useMutation({
+    mutationFn: createCustomer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+      setIsFormOpen(false)
+    },
+  })
+
+  function handleCreateCustomer(data: CustomerFormData) {
+    createCustomerMutation.mutate(data)
+  }
 
   return (
     <div>
@@ -23,11 +41,34 @@ export function CustomersPage() {
 
         <button
           type="button"
+          onClick={() => setIsFormOpen((state) => !state)}
           className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
-          Novo cliente
+          {isFormOpen ? 'Fechar' : 'Novo cliente'}
         </button>
       </div>
+
+      {isFormOpen && (
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="mb-5">
+            <h2 className="text-lg font-semibold">Novo cliente</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Preencha os dados para cadastrar um novo cliente.
+            </p>
+          </div>
+
+          {createCustomerMutation.isError && (
+            <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              Não foi possível salvar o cliente.
+            </div>
+          )}
+
+          <CustomerForm
+            onSubmit={handleCreateCustomer}
+            isSubmitting={createCustomerMutation.isPending}
+          />
+        </div>
+      )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
         {isLoading && (
