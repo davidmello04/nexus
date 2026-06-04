@@ -8,6 +8,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { ProductVariantsModule } from './product-variants/product-variants.module';
 import { CustomerProductPricesModule } from './customer-product-prices/customer-product-prices.module';
+import { PricingModule } from './pricing/pricing.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CustomerProductPricesModule } from './customer-product-prices/customer-
     ProductsModule,
     ProductVariantsModule,
     CustomerProductPricesModule,
+    PricingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
