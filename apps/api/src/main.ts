@@ -1,6 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { static as serveStatic } from 'express';
+import { join } from 'path';
 import 'dotenv/config';
 import { AppModule } from './app.module';
 
@@ -8,6 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
+  app.use('/uploads', serveStatic(join(process.cwd(), 'uploads')));
 
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
