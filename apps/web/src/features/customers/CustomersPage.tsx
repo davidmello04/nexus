@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { CustomerForm } from './CustomerForm'
 import type { CustomerFormData } from './customer-schema'
 import {
@@ -14,6 +16,9 @@ import type { Customer } from './types'
 export function CustomersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
+    null,
+  )
   const queryClient = useQueryClient()
 
   const {
@@ -31,6 +36,7 @@ export function CustomersPage() {
       queryClient.invalidateQueries({ queryKey: ['customers'] })
       setIsFormOpen(false)
       setSelectedCustomer(null)
+      setCustomerToDelete(null)
     },
   })
 
@@ -83,15 +89,21 @@ export function CustomersPage() {
   }
 
   function handleDeleteCustomer(customer: Customer) {
-    const shouldDelete = window.confirm(
-      `Deseja excluir o cliente "${customer.name}"?`,
-    )
+    deleteCustomerMutation.reset()
+    setCustomerToDelete(customer)
+  }
 
-    if (!shouldDelete) {
+  function handleCancelDeleteCustomer() {
+    deleteCustomerMutation.reset()
+    setCustomerToDelete(null)
+  }
+
+  function handleConfirmDeleteCustomer() {
+    if (!customerToDelete) {
       return
     }
 
-    deleteCustomerMutation.mutate(customer.id)
+    deleteCustomerMutation.mutate(customerToDelete.id)
   }
 
   return (
@@ -158,12 +170,6 @@ export function CustomersPage() {
       )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
-        {deleteCustomerMutation.isError && (
-          <div className="border-b border-red-100 bg-red-50 p-4 text-sm text-red-700">
-            Não foi possível excluir o cliente.
-          </div>
-        )}
-
         {isLoading && (
           <div className="p-6 text-sm text-slate-500">
             Carregando clientes...
@@ -267,6 +273,30 @@ export function CustomersPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={Boolean(customerToDelete)}
+        title="Excluir cliente"
+        description={
+          customerToDelete
+            ? `Tem certeza que deseja excluir o cliente "${customerToDelete?.name}"?\nEssa ação não pode ser desfeita.`
+            : ''
+        }
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        variant="danger"
+        isLoading={deleteCustomerMutation.isPending}
+        errorMessage={
+          deleteCustomerMutation.isError
+            ? getApiErrorMessage(
+                deleteCustomerMutation.error,
+                'Não foi possível excluir este cliente.',
+              )
+            : undefined
+        }
+        onConfirm={handleConfirmDeleteCustomer}
+        onCancel={handleCancelDeleteCustomer}
+      />
     </div>
   )
 }
