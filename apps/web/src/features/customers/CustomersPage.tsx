@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { Modal } from '@/components/Modal'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { CustomerForm } from './CustomerForm'
 import type { CustomerFormData } from './customer-schema'
@@ -14,7 +15,7 @@ import {
 import type { Customer } from './types'
 
 export function CustomersPage() {
-  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null,
@@ -34,7 +35,7 @@ export function CustomersPage() {
     mutationFn: createCustomer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] })
-      setIsFormOpen(false)
+      setIsCustomerModalOpen(false)
       setSelectedCustomer(null)
       setCustomerToDelete(null)
     },
@@ -45,7 +46,7 @@ export function CustomersPage() {
       updateCustomer(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] })
-      setIsFormOpen(false)
+      setIsCustomerModalOpen(false)
       setSelectedCustomer(null)
     },
   })
@@ -54,8 +55,9 @@ export function CustomersPage() {
     mutationFn: deleteCustomer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] })
-      setIsFormOpen(false)
+      setIsCustomerModalOpen(false)
       setSelectedCustomer(null)
+      setCustomerToDelete(null)
     },
   })
 
@@ -79,13 +81,24 @@ export function CustomersPage() {
   }
 
   function handleNewCustomerClick() {
+    createCustomerMutation.reset()
+    updateCustomerMutation.reset()
     setSelectedCustomer(null)
-    setIsFormOpen((state) => !state)
+    setIsCustomerModalOpen(true)
   }
 
   function handleEditCustomer(customer: Customer) {
+    createCustomerMutation.reset()
+    updateCustomerMutation.reset()
     setSelectedCustomer(customer)
-    setIsFormOpen(true)
+    setIsCustomerModalOpen(true)
+  }
+
+  function handleCloseCustomerModal() {
+    createCustomerMutation.reset()
+    updateCustomerMutation.reset()
+    setSelectedCustomer(null)
+    setIsCustomerModalOpen(false)
   }
 
   function handleDeleteCustomer(customer: Customer) {
@@ -121,53 +134,9 @@ export function CustomersPage() {
           onClick={handleNewCustomerClick}
           className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
-          {isFormOpen && !isEditing ? 'Fechar' : 'Novo cliente'}
+          Novo cliente
         </button>
       </div>
-
-      {isFormOpen && (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="mb-5 flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold">
-                {isEditing ? 'Editar cliente' : 'Novo cliente'}
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                {isEditing
-                  ? 'Atualize os dados do cliente selecionado.'
-                  : 'Preencha os dados para cadastrar um novo cliente.'}
-              </p>
-            </div>
-
-            {isEditing && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedCustomer(null)
-                  setIsFormOpen(false)
-                }}
-                className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-              >
-                Cancelar
-              </button>
-            )}
-          </div>
-
-          {(createCustomerMutation.isError ||
-            updateCustomerMutation.isError) && (
-            <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              Não foi possível salvar o cliente.
-            </div>
-          )}
-
-          <CustomerForm
-            onSubmit={handleSubmitCustomer}
-            isSubmitting={isSubmitting}
-            initialData={selectedCustomerInitialData}
-            submitButtonText={isEditing ? 'Atualizar cliente' : 'Salvar cliente'}
-          />
-        </div>
-      )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
         {isLoading && (
@@ -274,12 +243,36 @@ export function CustomersPage() {
         )}
       </div>
 
+      <Modal
+        open={isCustomerModalOpen}
+        title={isEditing ? 'Editar cliente' : 'Novo cliente'}
+        description={
+          isEditing
+            ? 'Atualize os dados do cliente selecionado.'
+            : 'Preencha os dados para cadastrar um novo cliente.'
+        }
+        onClose={handleCloseCustomerModal}
+      >
+        {(createCustomerMutation.isError || updateCustomerMutation.isError) && (
+          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            Não foi possível salvar o cliente.
+          </div>
+        )}
+
+        <CustomerForm
+          onSubmit={handleSubmitCustomer}
+          isSubmitting={isSubmitting}
+          initialData={selectedCustomerInitialData}
+          submitButtonText={isEditing ? 'Atualizar cliente' : 'Salvar cliente'}
+        />
+      </Modal>
+
       <ConfirmDialog
         open={Boolean(customerToDelete)}
         title="Excluir cliente"
         description={
           customerToDelete
-            ? `Tem certeza que deseja excluir o cliente "${customerToDelete?.name}"?\nEssa ação não pode ser desfeita.`
+            ? `Tem certeza que deseja excluir o cliente "${customerToDelete.name}"?\nEssa ação não pode ser desfeita.`
             : ''
         }
         confirmLabel="Excluir"
