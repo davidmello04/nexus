@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { DollarSign, Image as ImageIcon, Layers } from 'lucide-react'
 import { ProductForm } from './ProductForm'
 import { ProductImageUpload } from './ProductImageUpload'
 import { ProductVariantsPanel } from './ProductVariantsPanel'
@@ -200,9 +201,14 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                              title="Gerenciar imagem"
+                              aria-label={`Gerenciar imagem de ${product.name}`}
+                              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
                             >
-                              Imagem
+                              <ImageIcon
+                                className="h-4 w-4"
+                                aria-hidden="true"
+                              />
                             </button>
 
                             <button
@@ -214,9 +220,11 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                              title="Gerenciar variações"
+                              aria-label={`Gerenciar variações de ${product.name}`}
+                              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
                             >
-                              Variações
+                              <Layers className="h-4 w-4" aria-hidden="true" />
                             </button>
 
                             <button
@@ -228,9 +236,14 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                              title="Gerenciar preços"
+                              aria-label={`Gerenciar preços de ${product.name}`}
+                              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
                             >
-                              Preços
+                              <DollarSign
+                                className="h-4 w-4"
+                                aria-hidden="true"
+                              />
                             </button>
                           </div>
                         </td>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Pencil, Trash2 } from 'lucide-react'
 import { CustomerForm } from './CustomerForm'
 import type { CustomerFormData } from './customer-schema'
 import {
@@ -240,18 +241,22 @@ export function CustomersPage() {
                         <button
                           type="button"
                           onClick={() => handleEditCustomer(customer)}
-                          className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                          title="Editar cliente"
+                          aria-label={`Editar cliente ${customer.name}`}
+                          className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
                         >
-                          Editar
+                          <Pencil className="h-4 w-4" aria-hidden="true" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleDeleteCustomer(customer)}
                           disabled={deleteCustomerMutation.isPending}
-                          className="cursor-pointer rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          title="Excluir cliente"
+                          aria-label={`Excluir cliente ${customer.name}`}
+                          className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-red-200 text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          Excluir
+                          <Trash2 className="h-4 w-4" aria-hidden="true" />
                         </button>
                       </div>
                     </td>
