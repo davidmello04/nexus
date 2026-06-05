@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ProductForm } from './ProductForm'
 import { ProductImageUpload } from './ProductImageUpload'
 import { ProductVariantsPanel } from './ProductVariantsPanel'
+import { CustomerProductPricesPanel } from './CustomerProductPricesPanel'
 import type { ProductFormData } from './product-schema'
 import { createProduct, getProducts } from './products-service'
 import type { Product, ProductImage } from './types'
@@ -17,6 +18,7 @@ export function ProductsPage() {
   const [variantsProductId, setVariantsProductId] = useState<string | null>(
     null,
   )
+  const [pricesProductId, setPricesProductId] = useState<string | null>(null)
   const queryClient = useQueryClient()
   const {
     data: products = [],
@@ -216,6 +218,20 @@ export function ProductsPage() {
                             >
                               Variacoes
                             </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPricesProductId((currentProductId) =>
+                                  currentProductId === product.id
+                                    ? null
+                                    : product.id,
+                                )
+                              }
+                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                            >
+                              Precos
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -235,6 +251,16 @@ export function ProductsPage() {
                         <tr className="border-b border-slate-100">
                           <td colSpan={7} className="px-4 py-4">
                             <ProductVariantsPanel productId={product.id} />
+                          </td>
+                        </tr>
+                      )}
+
+                      {pricesProductId === product.id && (
+                        <tr className="border-b border-slate-100">
+                          <td colSpan={7} className="px-4 py-4">
+                            <CustomerProductPricesPanel
+                              productId={product.id}
+                            />
                           </td>
                         </tr>
                       )}

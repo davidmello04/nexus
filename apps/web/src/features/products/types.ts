@@ -43,3 +43,20 @@ export type Product = {
   createdAt: string
   updatedAt: string
 }
+
+export type CustomerProductPrice = {
+  id: string
+  customerId: string
+  customer?: {
+    id: string
+    name: string
+  } | null
+  productId: string
+  product?: Product | null
+  variantId?: string | null
+  variant?: ProductVariant | null
+  price: string | number
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
