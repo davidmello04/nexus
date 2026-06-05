@@ -75,20 +75,20 @@ export function CustomerProductPriceForm({
           )}
           {isCustomersError && (
             <p className="mt-1 text-xs text-red-600">
-              Nao foi possivel carregar os clientes.
+              Não foi possível carregar os clientes.
             </p>
           )}
         </div>
 
         <div>
           <label className="text-sm font-medium text-slate-700">
-            Variacao
+            Variação
           </label>
           <select
             {...register('variantId')}
             className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
           >
-            <option value="">Sem variacao</option>
+            <option value="">Sem variação</option>
             {variants.map((variant) => (
               <option key={variant.id} value={variant.id}>
                 {formatVariantLabel(variant)}
@@ -98,7 +98,7 @@ export function CustomerProductPriceForm({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700">Preco</label>
+          <label className="text-sm font-medium text-slate-700">Preço</label>
           <input
             type="number"
             step="0.01"
@@ -116,15 +116,15 @@ export function CustomerProductPriceForm({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input type="checkbox" {...register('active')} className="h-4 w-4" />
-          Preco ativo
+          Preço ativo
         </label>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'Salvando...' : 'Salvar preco'}
+          {isSubmitting ? 'Salvando...' : 'Salvar preço'}
         </button>
       </div>
     </form>
@@ -136,5 +136,5 @@ function formatVariantLabel(variant: ProductVariant) {
     .filter(Boolean)
     .join(' / ')
 
-  return parts || `Variacao ${variant.id.slice(0, 8)}`
+  return parts || `Variação ${variant.id.slice(0, 8)}`
 }

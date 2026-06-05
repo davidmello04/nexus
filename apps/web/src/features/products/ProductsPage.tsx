@@ -51,14 +51,14 @@ export function ProductsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Produtos</h1>
           <p className="mt-2 text-sm text-slate-500">
-            Produtos, imagens, variacoes e precos.
+            Produtos, imagens, variações e preços.
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsFormOpen((state) => !state)}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
           {isFormOpen ? 'Fechar' : 'Novo produto'}
         </button>
@@ -75,7 +75,7 @@ export function ProductsPage() {
 
           {createProductMutation.isError && (
             <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              Nao foi possivel salvar o produto.
+              Não foi possível salvar o produto.
             </div>
           )}
 
@@ -95,7 +95,7 @@ export function ProductsPage() {
 
         {isError && (
           <div className="p-6 text-sm text-red-600">
-            Nao foi possivel carregar os produtos.
+            Não foi possível carregar os produtos.
           </div>
         )}
 
@@ -112,13 +112,13 @@ export function ProductsPage() {
                 <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
                   <th className="px-4 py-3 font-medium">Produto</th>
                   <th className="px-4 py-3 font-medium">Categoria</th>
-                  <th className="px-4 py-3 font-medium">Preco base</th>
+                  <th className="px-4 py-3 font-medium">Preço base</th>
                   <th className="px-4 py-3 font-medium">Terceirizado</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 text-right font-medium">
-                    Variacoes
+                    Variações
                   </th>
-                  <th className="px-4 py-3 text-right font-medium">Acoes</th>
+                  <th className="px-4 py-3 text-right font-medium">Ações</th>
                 </tr>
               </thead>
 
@@ -200,7 +200,7 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                              className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                             >
                               Imagem
                             </button>
@@ -214,9 +214,9 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                              className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                             >
-                              Variacoes
+                              Variações
                             </button>
 
                             <button
@@ -228,9 +228,9 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                              className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                             >
-                              Precos
+                              Preços
                             </button>
                           </div>
                         </td>

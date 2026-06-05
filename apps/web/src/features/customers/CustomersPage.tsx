@@ -106,7 +106,7 @@ export function CustomersPage() {
         <button
           type="button"
           onClick={handleNewCustomerClick}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
           {isFormOpen && !isEditing ? 'Fechar' : 'Novo cliente'}
         </button>
@@ -133,7 +133,7 @@ export function CustomersPage() {
                   setSelectedCustomer(null)
                   setIsFormOpen(false)
                 }}
-                className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 Cancelar
               </button>
@@ -143,7 +143,7 @@ export function CustomersPage() {
           {(createCustomerMutation.isError ||
             updateCustomerMutation.isError) && (
             <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              Nao foi possivel salvar o cliente.
+              Não foi possível salvar o cliente.
             </div>
           )}
 
@@ -159,7 +159,7 @@ export function CustomersPage() {
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
         {deleteCustomerMutation.isError && (
           <div className="border-b border-red-100 bg-red-50 p-4 text-sm text-red-700">
-            Nao foi possivel excluir o cliente.
+            Não foi possível excluir o cliente.
           </div>
         )}
 
@@ -171,7 +171,7 @@ export function CustomersPage() {
 
         {isError && (
           <div className="p-6 text-sm text-red-600">
-            Nao foi possivel carregar os clientes.
+            Não foi possível carregar os clientes.
           </div>
         )}
 
@@ -192,7 +192,7 @@ export function CustomersPage() {
                   <th className="px-4 py-3 font-medium">Documento</th>
                   <th className="px-4 py-3 font-medium">Tipo</th>
                   <th className="px-4 py-3 font-medium">Cadastro</th>
-                  <th className="px-4 py-3 text-right font-medium">Acoes</th>
+                  <th className="px-4 py-3 text-right font-medium">Ações</th>
                 </tr>
               </thead>
 
@@ -240,7 +240,7 @@ export function CustomersPage() {
                         <button
                           type="button"
                           onClick={() => handleEditCustomer(customer)}
-                          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                          className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                         >
                           Editar
                         </button>
@@ -249,7 +249,7 @@ export function CustomersPage() {
                           type="button"
                           onClick={() => handleDeleteCustomer(customer)}
                           disabled={deleteCustomerMutation.isPending}
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="cursor-pointer rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           Excluir
                         </button>

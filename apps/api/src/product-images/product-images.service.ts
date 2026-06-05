@@ -75,7 +75,7 @@ export class ProductImagesService {
     });
 
     if (!image) {
-      throw new NotFoundException('Imagem nao encontrada.');
+      throw new NotFoundException('Imagem não encontrada.');
     }
 
     const deletedImage = await this.prisma.productImage.delete({
@@ -94,7 +94,7 @@ export class ProductImagesService {
     });
 
     if (!product) {
-      throw new NotFoundException('Produto nao encontrado.');
+      throw new NotFoundException('Produto não encontrado.');
     }
   }
 

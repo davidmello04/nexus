@@ -52,22 +52,22 @@ export function CustomerProductPricesPanel({
     <div className="space-y-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
       <div>
         <h3 className="text-sm font-semibold text-slate-900">
-          Precos especificos
+          Preços específicos
         </h3>
         <p className="mt-1 text-xs text-slate-500">
-          Configure precos por cliente para o produto ou para uma variacao.
+          Configure preços por cliente para o produto ou para uma variação.
         </p>
       </div>
 
       {createPriceMutation.isError && (
         <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-          Nao foi possivel salvar o preco especifico.
+          Não foi possível salvar o preço específico.
         </div>
       )}
 
       {isVariantsError && (
         <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-          Nao foi possivel carregar as variacoes.
+          Não foi possível carregar as variações.
         </div>
       )}
 
@@ -81,19 +81,19 @@ export function CustomerProductPricesPanel({
       <div className="rounded-xl border border-slate-200 bg-white">
         {isLoadingPrices && (
           <div className="p-4 text-sm text-slate-500">
-            Carregando precos especificos...
+            Carregando preços específicos...
           </div>
         )}
 
         {isPricesError && (
           <div className="p-4 text-sm text-red-600">
-            Nao foi possivel carregar os precos especificos.
+            Não foi possível carregar os preços específicos.
           </div>
         )}
 
         {!isLoadingPrices && !isPricesError && productPrices.length === 0 && (
           <div className="p-4 text-sm text-slate-500">
-            Nenhum preco especifico cadastrado para este produto.
+            Nenhum preço específico cadastrado para este produto.
           </div>
         )}
 
@@ -103,8 +103,8 @@ export function CustomerProductPricesPanel({
               <thead>
                 <tr className="border-b border-slate-200 bg-white text-slate-500">
                   <th className="px-3 py-2 font-medium">Cliente</th>
-                  <th className="px-3 py-2 font-medium">Variacao</th>
-                  <th className="px-3 py-2 font-medium">Preco</th>
+                  <th className="px-3 py-2 font-medium">Variação</th>
+                  <th className="px-3 py-2 font-medium">Preço</th>
                   <th className="px-3 py-2 font-medium">Status</th>
                 </tr>
               </thead>
@@ -121,7 +121,7 @@ export function CustomerProductPricesPanel({
                     <td className="px-3 py-2 text-slate-700">
                       {price.variant
                         ? formatVariantLabel(price.variant)
-                        : 'Sem variacao'}
+                        : 'Sem variação'}
                     </td>
                     <td className="px-3 py-2 font-medium text-slate-900">
                       {formatCurrency(price.price)}
@@ -154,7 +154,7 @@ function formatVariantLabel(variant: ProductVariant) {
     .filter(Boolean)
     .join(' / ')
 
-  return parts || `Variacao ${variant.id.slice(0, 8)}`
+  return parts || `Variação ${variant.id.slice(0, 8)}`
 }
 
 function formatCurrency(value: CustomerProductPrice['price']) {

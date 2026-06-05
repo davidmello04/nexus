@@ -74,7 +74,7 @@ export function ProductImageUpload({
           value={alt}
           onChange={(event) => setAlt(event.target.value)}
           className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
-          placeholder="Descricao da imagem"
+          placeholder="Descrição da imagem"
         />
       </div>
 
@@ -92,7 +92,7 @@ export function ProductImageUpload({
         <button
           type="submit"
           disabled={uploadMutation.isPending}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploadMutation.isPending ? 'Enviando...' : 'Enviar imagem'}
         </button>
@@ -100,7 +100,7 @@ export function ProductImageUpload({
 
       {uploadMutation.isError && (
         <div className="text-sm text-red-600 md:col-span-3">
-          Nao foi possivel enviar a imagem.
+          Não foi possível enviar a imagem.
         </div>
       )}
     </form>

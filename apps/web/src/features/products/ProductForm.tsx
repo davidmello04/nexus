@@ -54,19 +54,19 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
 
       <div>
         <label className="text-sm font-medium text-slate-700">
-          Descricao
+          Descrição
         </label>
         <textarea
           {...register('description')}
           className="mt-1 min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-          placeholder="Descricao do produto"
+          placeholder="Descrição do produto"
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="text-sm font-medium text-slate-700">
-            Preco base
+            Preço base
           </label>
           <input
             type="number"
@@ -85,7 +85,7 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
 
         <div>
           <label className="text-sm font-medium text-slate-700">
-            Preco terceirizado
+            Preço terceirizado
           </label>
           <input
             type="number"
@@ -119,7 +119,7 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
         </select>
         {isCategoriesError && (
           <p className="mt-1 text-xs text-red-600">
-            Nao foi possivel carregar as categorias.
+            Não foi possível carregar as categorias.
           </p>
         )}
       </div>
@@ -133,7 +133,7 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? 'Salvando...' : 'Salvar produto'}
         </button>

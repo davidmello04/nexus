@@ -11,7 +11,7 @@ export class PricingService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado.');
+      throw new NotFoundException('Cliente não encontrado.');
     }
 
     const product = await this.prisma.product.findUnique({
@@ -19,7 +19,7 @@ export class PricingService {
     });
 
     if (!product) {
-      throw new NotFoundException('Produto nao encontrado.');
+      throw new NotFoundException('Produto não encontrado.');
     }
 
     const variant = variantId
@@ -29,11 +29,11 @@ export class PricingService {
       : null;
 
     if (variantId && !variant) {
-      throw new NotFoundException('Variacao nao encontrada.');
+      throw new NotFoundException('Variação não encontrada.');
     }
 
     if (variant && variant.productId !== productId) {
-      throw new NotFoundException('Variacao nao pertence ao produto.');
+      throw new NotFoundException('Variação não pertence ao produto.');
     }
 
     if (variantId) {

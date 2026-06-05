@@ -45,7 +45,7 @@ export class ProductsService {
     });
 
     if (!product) {
-      throw new NotFoundException('Produto nao encontrado.');
+      throw new NotFoundException('Produto não encontrado.');
     }
 
     return product;
@@ -85,7 +85,7 @@ export class ProductsService {
     });
 
     if (!category) {
-      throw new NotFoundException('Categoria nao encontrada.');
+      throw new NotFoundException('Categoria não encontrada.');
     }
   }
 }

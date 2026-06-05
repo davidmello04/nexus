@@ -55,7 +55,7 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException('Pedido nao encontrado.');
+      throw new NotFoundException('Pedido não encontrado.');
     }
 
     return order;
@@ -134,7 +134,7 @@ export class OrdersService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado.');
+      throw new NotFoundException('Cliente não encontrado.');
     }
   }
 
@@ -183,7 +183,7 @@ export class OrdersService {
 
   private ensureDiscountIsValid(subtotal: number, discount: number) {
     if (discount > subtotal) {
-      throw new BadRequestException('Desconto nao pode ser maior que subtotal.');
+      throw new BadRequestException('Desconto não pode ser maior que subtotal.');
     }
   }
 

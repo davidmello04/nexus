@@ -84,7 +84,7 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
         )}
         {isCustomersError && (
           <p className="mt-1 text-xs text-red-600">
-            Nao foi possivel carregar os clientes.
+            Não foi possível carregar os clientes.
           </p>
         )}
       </div>
@@ -102,7 +102,7 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
                 notes: '',
               })
             }
-            className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+            className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
           >
             Adicionar item
           </button>
@@ -153,14 +153,14 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
 
                 <div>
                   <label className="text-sm font-medium text-slate-700">
-                    Variacao
+                    Variação
                   </label>
                   <select
                     {...register(`items.${index}.productVariantId`)}
                     disabled={variants.length === 0}
                     className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950 disabled:cursor-not-allowed disabled:bg-slate-100"
                   >
-                    <option value="">Sem variacao</option>
+                    <option value="">Sem variação</option>
                     {variants.map((variant) => (
                       <option key={variant.id} value={variant.id}>
                         {formatVariantLabel(variant)}
@@ -192,7 +192,7 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
                     type="button"
                     onClick={() => remove(index)}
                     disabled={fields.length === 1}
-                    className="w-full rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full cursor-pointer rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Remover
                   </button>
@@ -201,7 +201,7 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
 
               <div>
                 <label className="text-sm font-medium text-slate-700">
-                  Observacoes do item
+                  Observações do item
                 </label>
                 <input
                   {...register(`items.${index}.notes`)}
@@ -215,7 +215,7 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
 
         {isProductsError && (
           <p className="text-xs text-red-600">
-            Nao foi possivel carregar os produtos.
+            Não foi possível carregar os produtos.
           </p>
         )}
       </div>
@@ -240,12 +240,12 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
 
         <div>
           <label className="text-sm font-medium text-slate-700">
-            Observacoes do pedido
+            Observações do pedido
           </label>
           <input
             {...register('notes')}
             className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-            placeholder="Informacoes gerais"
+            placeholder="Informações gerais"
           />
         </div>
       </div>
@@ -254,7 +254,7 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? 'Salvando...' : 'Salvar pedido'}
         </button>
@@ -268,5 +268,5 @@ function formatVariantLabel(variant: ProductVariant) {
     .filter(Boolean)
     .join(' / ')
 
-  return parts || `Variacao ${variant.id.slice(0, 8)}`
+  return parts || `Variação ${variant.id.slice(0, 8)}`
 }

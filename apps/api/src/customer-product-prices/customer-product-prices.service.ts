@@ -45,7 +45,7 @@ export class CustomerProductPricesService {
       });
 
     if (!customerProductPrice) {
-      throw new NotFoundException('Preco especifico nao encontrado.');
+      throw new NotFoundException('Preço específico não encontrado.');
     }
 
     return customerProductPrice;
@@ -111,7 +111,7 @@ export class CustomerProductPricesService {
       });
 
       if (!customer) {
-        throw new NotFoundException('Cliente nao encontrado.');
+        throw new NotFoundException('Cliente não encontrado.');
       }
     }
 
@@ -122,7 +122,7 @@ export class CustomerProductPricesService {
       });
 
       if (!product) {
-        throw new NotFoundException('Produto nao encontrado.');
+        throw new NotFoundException('Produto não encontrado.');
       }
     }
 
@@ -136,11 +136,11 @@ export class CustomerProductPricesService {
       });
 
       if (!variant) {
-        throw new NotFoundException('Variacao nao encontrada.');
+        throw new NotFoundException('Variação não encontrada.');
       }
 
       if (productId && variant.productId !== productId) {
-        throw new NotFoundException('Variacao nao pertence ao produto.');
+        throw new NotFoundException('Variação não pertence ao produto.');
       }
     }
   }
@@ -173,7 +173,7 @@ export class CustomerProductPricesService {
 
     if (existingPrice) {
       throw new ConflictException(
-        'Ja existe preco para este cliente, produto e variacao.',
+        'Já existe preço para este cliente, produto e variação.',
       );
     }
   }

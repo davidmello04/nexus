@@ -40,16 +40,16 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
     <div className="space-y-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
       <div>
         <h3 className="text-sm font-semibold text-slate-900">
-          Variacoes do produto
+          Variações do produto
         </h3>
         <p className="mt-1 text-xs text-slate-500">
-          Cadastre combinacoes de tamanho, cor, tipo, material e precos.
+          Cadastre combinações de tamanho, cor, tipo, material e preços.
         </p>
       </div>
 
       {createVariantMutation.isError && (
         <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-          Nao foi possivel salvar a variacao.
+          Não foi possível salvar a variação.
         </div>
       )}
 
@@ -62,19 +62,19 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
       <div className="rounded-xl border border-slate-200 bg-white">
         {isLoading && (
           <div className="p-4 text-sm text-slate-500">
-            Carregando variacoes...
+            Carregando variações...
           </div>
         )}
 
         {isError && (
           <div className="p-4 text-sm text-red-600">
-            Nao foi possivel carregar as variacoes.
+            Não foi possível carregar as variações.
           </div>
         )}
 
         {!isLoading && !isError && productVariants.length === 0 && (
           <div className="p-4 text-sm text-slate-500">
-            Nenhuma variacao cadastrada para este produto.
+            Nenhuma variação cadastrada para este produto.
           </div>
         )}
 
@@ -87,7 +87,7 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
                   <th className="px-3 py-2 font-medium">Cor</th>
                   <th className="px-3 py-2 font-medium">Tipo</th>
                   <th className="px-3 py-2 font-medium">Material</th>
-                  <th className="px-3 py-2 font-medium">Preco base</th>
+                  <th className="px-3 py-2 font-medium">Preço base</th>
                   <th className="px-3 py-2 font-medium">Terceirizado</th>
                   <th className="px-3 py-2 font-medium">Status</th>
                 </tr>

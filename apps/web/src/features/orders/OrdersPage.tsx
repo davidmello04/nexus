@@ -40,7 +40,7 @@ export function OrdersPage() {
         <button
           type="button"
           onClick={() => setIsFormOpen((state) => !state)}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
           {isFormOpen ? 'Fechar' : 'Novo pedido'}
         </button>
@@ -51,14 +51,14 @@ export function OrdersPage() {
           <div className="mb-5">
             <h2 className="text-lg font-semibold">Novo pedido</h2>
             <p className="mt-1 text-sm text-slate-500">
-              Selecione cliente e itens. Os precos serao calculados pelo
+              Selecione cliente e itens. Os preços serão calculados pelo
               backend.
             </p>
           </div>
 
           {createOrderMutation.isError && (
             <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              Nao foi possivel salvar o pedido.
+              Não foi possível salvar o pedido.
             </div>
           )}
 
@@ -78,7 +78,7 @@ export function OrdersPage() {
 
         {isError && (
           <div className="p-6 text-sm text-red-600">
-            Nao foi possivel carregar os pedidos.
+            Não foi possível carregar os pedidos.
           </div>
         )}
 
@@ -93,7 +93,7 @@ export function OrdersPage() {
             <table className="w-full border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
-                  <th className="px-4 py-3 font-medium">Codigo</th>
+                  <th className="px-4 py-3 font-medium">Código</th>
                   <th className="px-4 py-3 font-medium">Cliente</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Subtotal</th>

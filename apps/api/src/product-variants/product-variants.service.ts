@@ -35,7 +35,7 @@ export class ProductVariantsService {
     });
 
     if (!productVariant) {
-      throw new NotFoundException('Variacao nao encontrada.');
+      throw new NotFoundException('Variação não encontrada.');
     }
 
     return productVariant;
@@ -70,7 +70,7 @@ export class ProductVariantsService {
     });
 
     if (!product) {
-      throw new NotFoundException('Produto nao encontrado.');
+      throw new NotFoundException('Produto não encontrado.');
     }
   }
 }

@@ -72,7 +72,7 @@ export function ProductVariantForm({
           <input
             {...register('material')}
             className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
-            placeholder="Algodao"
+            placeholder="Algodão"
           />
         </div>
       </div>
@@ -80,7 +80,7 @@ export function ProductVariantForm({
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="text-sm font-medium text-slate-700">
-            Preco base
+            Preço base
           </label>
           <input
             type="number"
@@ -99,7 +99,7 @@ export function ProductVariantForm({
 
         <div>
           <label className="text-sm font-medium text-slate-700">
-            Preco terceirizado
+            Preço terceirizado
           </label>
           <input
             type="number"
@@ -120,15 +120,15 @@ export function ProductVariantForm({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input type="checkbox" {...register('active')} className="h-4 w-4" />
-          Variacao ativa
+          Variação ativa
         </label>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'Salvando...' : 'Salvar variacao'}
+          {isSubmitting ? 'Salvando...' : 'Salvar variação'}
         </button>
       </div>
     </form>
