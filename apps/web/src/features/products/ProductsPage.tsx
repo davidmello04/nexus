@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ProductForm } from './ProductForm'
 import { ProductImageUpload } from './ProductImageUpload'
+import { ProductVariantsPanel } from './ProductVariantsPanel'
 import type { ProductFormData } from './product-schema'
 import { createProduct, getProducts } from './products-service'
 import type { Product, ProductImage } from './types'
@@ -13,6 +14,9 @@ const apiAssetBaseUrl = (
 export function ProductsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [uploadProductId, setUploadProductId] = useState<string | null>(null)
+  const [variantsProductId, setVariantsProductId] = useState<string | null>(
+    null,
+  )
   const queryClient = useQueryClient()
   const {
     data: products = [],
@@ -184,19 +188,35 @@ export function ProductsPage() {
                         </td>
 
                         <td className="px-4 py-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setUploadProductId((currentProductId) =>
-                                currentProductId === product.id
-                                  ? null
-                                  : product.id,
-                              )
-                            }
-                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
-                          >
-                            Imagem
-                          </button>
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setUploadProductId((currentProductId) =>
+                                  currentProductId === product.id
+                                    ? null
+                                    : product.id,
+                                )
+                              }
+                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                            >
+                              Imagem
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setVariantsProductId((currentProductId) =>
+                                  currentProductId === product.id
+                                    ? null
+                                    : product.id,
+                                )
+                              }
+                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                            >
+                              Variacoes
+                            </button>
+                          </div>
                         </td>
                       </tr>
 
@@ -207,6 +227,14 @@ export function ProductsPage() {
                               productId={product.id}
                               onSuccess={handleUploadSuccess}
                             />
+                          </td>
+                        </tr>
+                      )}
+
+                      {variantsProductId === product.id && (
+                        <tr className="border-b border-slate-100">
+                          <td colSpan={7} className="px-4 py-4">
+                            <ProductVariantsPanel productId={product.id} />
                           </td>
                         </tr>
                       )}
