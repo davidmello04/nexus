@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ProductForm } from './ProductForm'
+import { ProductImageUpload } from './ProductImageUpload'
 import type { ProductFormData } from './product-schema'
 import { createProduct, getProducts } from './products-service'
 import type { Product, ProductImage } from './types'
@@ -11,6 +12,7 @@ const apiAssetBaseUrl = (
 
 export function ProductsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [uploadProductId, setUploadProductId] = useState<string | null>(null)
   const queryClient = useQueryClient()
   const {
     data: products = [],
@@ -30,6 +32,11 @@ export function ProductsPage() {
 
   function handleCreateProduct(data: ProductFormData) {
     createProductMutation.mutate(data)
+  }
+
+  function handleUploadSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['products'] })
+    setUploadProductId(null)
   }
 
   return (
@@ -105,6 +112,7 @@ export function ProductsPage() {
                   <th className="px-4 py-3 text-right font-medium">
                     Variacoes
                   </th>
+                  <th className="px-4 py-3 text-right font-medium">Acoes</th>
                 </tr>
               </thead>
 
@@ -113,70 +121,96 @@ export function ProductsPage() {
                   const mainImage = getMainImage(product)
 
                   return (
-                    <tr
-                      key={product.id}
-                      className="border-b border-slate-100 last:border-0"
-                    >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                            {mainImage ? (
-                              <img
-                                src={getImageUrl(mainImage.url)}
-                                alt={mainImage.alt || product.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-xs font-medium text-slate-400">
-                                Sem foto
-                              </div>
-                            )}
-                          </div>
+                    <Fragment key={product.id}>
+                      <tr className="border-b border-slate-100 last:border-0">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                              {mainImage ? (
+                                <img
+                                  src={getImageUrl(mainImage.url)}
+                                  alt={mainImage.alt || product.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-xs font-medium text-slate-400">
+                                  Sem foto
+                                </div>
+                              )}
+                            </div>
 
-                          <div className="min-w-0">
-                            <p className="font-medium text-slate-900">
-                              {product.name}
-                            </p>
-                            {product.description && (
-                              <p className="mt-1 max-w-xs truncate text-xs text-slate-500">
-                                {product.description}
+                            <div className="min-w-0">
+                              <p className="font-medium text-slate-900">
+                                {product.name}
                               </p>
-                            )}
+                              {product.description && (
+                                <p className="mt-1 max-w-xs truncate text-xs text-slate-500">
+                                  {product.description}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td className="px-4 py-3 text-slate-600">
-                        {product.category?.name || '-'}
-                      </td>
+                        <td className="px-4 py-3 text-slate-600">
+                          {product.category?.name || '-'}
+                        </td>
 
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        {formatCurrency(product.basePrice)}
-                      </td>
+                        <td className="px-4 py-3 font-medium text-slate-900">
+                          {formatCurrency(product.basePrice)}
+                        </td>
 
-                      <td className="px-4 py-3 text-slate-600">
-                        {hasPrice(product.outsourcedPrice)
-                          ? formatCurrency(product.outsourcedPrice)
-                          : '-'}
-                      </td>
+                        <td className="px-4 py-3 text-slate-600">
+                          {hasPrice(product.outsourcedPrice)
+                            ? formatCurrency(product.outsourcedPrice)
+                            : '-'}
+                        </td>
 
-                      <td className="px-4 py-3">
-                        <span
-                          className={[
-                            'inline-flex rounded-full px-2.5 py-1 text-xs font-medium',
-                            product.active
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-200 text-slate-700',
-                          ].join(' ')}
-                        >
-                          {product.active ? 'Ativo' : 'Inativo'}
-                        </span>
-                      </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={[
+                              'inline-flex rounded-full px-2.5 py-1 text-xs font-medium',
+                              product.active
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-slate-200 text-slate-700',
+                            ].join(' ')}
+                          >
+                            {product.active ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </td>
 
-                      <td className="px-4 py-3 text-right text-slate-600">
-                        {product.variants?.length ?? 0}
-                      </td>
-                    </tr>
+                        <td className="px-4 py-3 text-right text-slate-600">
+                          {product.variants?.length ?? 0}
+                        </td>
+
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setUploadProductId((currentProductId) =>
+                                currentProductId === product.id
+                                  ? null
+                                  : product.id,
+                              )
+                            }
+                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                          >
+                            Imagem
+                          </button>
+                        </td>
+                      </tr>
+
+                      {uploadProductId === product.id && (
+                        <tr className="border-b border-slate-100">
+                          <td colSpan={7} className="px-4 py-4">
+                            <ProductImageUpload
+                              productId={product.id}
+                              onSuccess={handleUploadSuccess}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   )
                 })}
               </tbody>
