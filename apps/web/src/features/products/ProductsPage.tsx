@@ -1,5 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { getProducts } from './products-service'
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ProductForm } from './ProductForm'
+import type { ProductFormData } from './product-schema'
+import { createProduct, getProducts } from './products-service'
 import type { Product, ProductImage } from './types'
 
 const apiAssetBaseUrl = (
@@ -7,6 +10,8 @@ const apiAssetBaseUrl = (
 ).replace(/\/api\/?$/, '')
 
 export function ProductsPage() {
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const queryClient = useQueryClient()
   const {
     data: products = [],
     isLoading,
@@ -15,15 +20,58 @@ export function ProductsPage() {
     queryKey: ['products'],
     queryFn: getProducts,
   })
+  const createProductMutation = useMutation({
+    mutationFn: createProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      setIsFormOpen(false)
+    },
+  })
+
+  function handleCreateProduct(data: ProductFormData) {
+    createProductMutation.mutate(data)
+  }
 
   return (
     <div>
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Produtos</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Produtos, imagens, variacoes e precos.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Produtos</h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Produtos, imagens, variacoes e precos.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsFormOpen((state) => !state)}
+          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+        >
+          {isFormOpen ? 'Fechar' : 'Novo produto'}
+        </button>
       </div>
+
+      {isFormOpen && (
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="mb-5">
+            <h2 className="text-lg font-semibold">Novo produto</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Preencha os dados para cadastrar um novo produto.
+            </p>
+          </div>
+
+          {createProductMutation.isError && (
+            <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              Nao foi possivel salvar o produto.
+            </div>
+          )}
+
+          <ProductForm
+            onSubmit={handleCreateProduct}
+            isSubmitting={createProductMutation.isPending}
+          />
+        </div>
+      )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
         {isLoading && (
