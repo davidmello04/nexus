@@ -167,20 +167,24 @@ export function CustomersPage() {
                   <th className="px-4 py-3 font-medium">E-mail</th>
                   <th className="px-4 py-3 font-medium">Documento</th>
                   <th className="px-4 py-3 font-medium">Tipo</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Cadastro</th>
                   <th className="px-4 py-3 text-right font-medium">Ações</th>
                 </tr>
               </thead>
 
               <tbody>
-                {customers.map((customer) => (
-                  <tr
-                    key={customer.id}
-                    className="border-b border-slate-100 last:border-0"
-                  >
-                    <td className="px-4 py-3 font-medium text-slate-900">
-                      {customer.name}
-                    </td>
+                {customers.map((customer) => {
+                  const isCustomerActive = customer.active ?? true
+
+                  return (
+                    <tr
+                      key={customer.id}
+                      className="border-b border-slate-100 last:border-0"
+                    >
+                      <td className="px-4 py-3 font-medium text-slate-900">
+                        {customer.name}
+                      </td>
 
                     <td className="px-4 py-3 text-slate-600">
                       {customer.phone || '-'}
@@ -204,6 +208,19 @@ export function CustomersPage() {
                         ].join(' ')}
                       >
                         {customer.isOutsourced ? 'Terceirizado' : 'Normal'}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <span
+                        className={[
+                          'inline-flex rounded-full px-2.5 py-1 text-xs font-medium',
+                          isCustomerActive
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-slate-200 text-slate-700',
+                        ].join(' ')}
+                      >
+                        {isCustomerActive ? 'Ativo' : 'Inativo'}
                       </span>
                     </td>
 
@@ -235,8 +252,9 @@ export function CustomersPage() {
                         </button>
                       </div>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -295,12 +313,29 @@ export function CustomersPage() {
 }
 
 function mapCustomerToFormData(customer: Customer): CustomerFormData {
+  const mainAddress =
+    customer.addresses?.find((address) => address.type === 'MAIN') ??
+    customer.addresses?.[0]
+
   return {
     name: customer.name,
     phone: customer.phone ?? '',
     email: customer.email ?? '',
     document: customer.document ?? '',
     isOutsourced: customer.isOutsourced,
+    active: customer.active ?? true,
+    source: customer.source ?? '',
+    sourceOther: customer.sourceOther ?? '',
     notes: customer.notes ?? '',
+    address: {
+      zipCode: mainAddress?.zipCode ?? '',
+      street: mainAddress?.street ?? '',
+      number: mainAddress?.number ?? '',
+      neighborhood: mainAddress?.neighborhood ?? '',
+      city: mainAddress?.city ?? '',
+      state: mainAddress?.state ?? '',
+      complement: mainAddress?.complement ?? '',
+      reference: mainAddress?.reference ?? '',
+    },
   }
 }

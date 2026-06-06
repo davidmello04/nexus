@@ -15,6 +15,12 @@ enum OrderStatus {
   CANCELED
 }
 
+enum AddressType {
+  MAIN
+  DELIVERY
+  BILLING
+}
+
 model Customer {
   id           String  @id @default(cuid())
   name         String
@@ -22,15 +28,41 @@ model Customer {
   email        String?
   document     String?
   isOutsourced Boolean @default(false)
+  active       Boolean @default(true)
+  source       String?
+  sourceOther  String?
   notes        String? @db.Text
 
   orders       Order[]
   customPrices CustomerProductPrice[]
+  addresses    Address[]
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   @@map("customers")
+}
+
+model Address {
+  id           String      @id @default(cuid())
+  customerId   String
+  customer     Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  type         AddressType @default(MAIN)
+  zipCode      String?
+  street       String?
+  number       String?
+  neighborhood String?
+  city         String?
+  state        String?
+  complement   String?
+  reference    String?
+  isDefault    Boolean     @default(false)
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("addresses")
 }
 
 model Category {
