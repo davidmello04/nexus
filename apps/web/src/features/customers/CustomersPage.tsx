@@ -165,10 +165,9 @@ export function CustomersPage() {
                   <th className="px-4 py-3 font-medium">Nome</th>
                   <th className="px-4 py-3 font-medium">Telefone</th>
                   <th className="px-4 py-3 font-medium">E-mail</th>
-                  <th className="px-4 py-3 font-medium">Documento</th>
+                  <th className="px-4 py-3 font-medium">Cidade/UF</th>
                   <th className="px-4 py-3 font-medium">Tipo</th>
                   <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Cadastro</th>
                   <th className="px-4 py-3 text-right font-medium">Ações</th>
                 </tr>
               </thead>
@@ -195,7 +194,7 @@ export function CustomersPage() {
                     </td>
 
                     <td className="px-4 py-3 text-slate-600">
-                      {customer.document || '-'}
+                      {formatCustomerLocation(customer)}
                     </td>
 
                     <td className="px-4 py-3">
@@ -222,10 +221,6 @@ export function CustomersPage() {
                       >
                         {isCustomerActive ? 'Ativo' : 'Inativo'}
                       </span>
-                    </td>
-
-                    <td className="px-4 py-3 text-slate-600">
-                      {new Date(customer.createdAt).toLocaleDateString('pt-BR')}
                     </td>
 
                     <td className="px-4 py-3">
@@ -313,9 +308,7 @@ export function CustomersPage() {
 }
 
 function mapCustomerToFormData(customer: Customer): CustomerFormData {
-  const mainAddress =
-    customer.addresses?.find((address) => address.type === 'MAIN') ??
-    customer.addresses?.[0]
+  const mainAddress = getPrimaryAddress(customer)
 
   return {
     name: customer.name,
@@ -338,4 +331,31 @@ function mapCustomerToFormData(customer: Customer): CustomerFormData {
       reference: mainAddress?.reference ?? '',
     },
   }
+}
+
+function getPrimaryAddress(customer: Customer) {
+  return (
+    customer.addresses?.find((address) => address.isDefault) ??
+    customer.addresses?.[0]
+  )
+}
+
+function formatCustomerLocation(customer: Customer) {
+  const address = getPrimaryAddress(customer)
+  const city = address?.city?.trim()
+  const state = address?.state?.trim()
+
+  if (city && state) {
+    return `${city}/${state}`
+  }
+
+  if (city) {
+    return city
+  }
+
+  if (state) {
+    return state
+  }
+
+  return '-'
 }
