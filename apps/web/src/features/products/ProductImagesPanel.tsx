@@ -112,14 +112,9 @@ export function ProductImagesPanel({ productId }: ProductImagesPanelProps) {
 
   return (
     <div className="space-y-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <div>
-        <h3 className="text-sm font-semibold text-slate-900">
-          Imagens do produto
-        </h3>
-        <p className="mt-1 text-xs text-slate-500">
-          Envie imagens, ajuste descrições e escolha a imagem principal.
-        </p>
-      </div>
+      <p className="text-sm text-slate-500">
+        Envie imagens, ajuste descrições e escolha a imagem principal.
+      </p>
 
       <ProductImageUpload productId={productId} onSuccess={handleUploadSuccess} />
 
@@ -173,7 +168,7 @@ export function ProductImagesPanel({ productId }: ProductImagesPanelProps) {
                     </div>
 
                     <label className="text-xs font-medium text-slate-600">
-                      Alt/descrição
+                      Descrição da imagem
                     </label>
                     <input
                       value={altValue}

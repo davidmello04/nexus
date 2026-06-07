@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   DollarSign,
@@ -35,11 +35,11 @@ export function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
   const [productToToggle, setProductToToggle] = useState<Product | null>(null)
-  const [uploadProductId, setUploadProductId] = useState<string | null>(null)
-  const [variantsProductId, setVariantsProductId] = useState<string | null>(
+  const [imagesProduct, setImagesProduct] = useState<Product | null>(null)
+  const [variantsProduct, setVariantsProduct] = useState<Product | null>(
     null,
   )
-  const [pricesProductId, setPricesProductId] = useState<string | null>(null)
+  const [pricesProduct, setPricesProduct] = useState<Product | null>(null)
   const queryClient = useQueryClient()
   const {
     data: products = [],
@@ -162,6 +162,30 @@ export function ProductsPage() {
     deleteProductMutation.mutate(productToDelete.id)
   }
 
+  function handleOpenImagesModal(product: Product) {
+    setImagesProduct(product)
+  }
+
+  function handleCloseImagesModal() {
+    setImagesProduct(null)
+  }
+
+  function handleOpenVariantsModal(product: Product) {
+    setVariantsProduct(product)
+  }
+
+  function handleCloseVariantsModal() {
+    setVariantsProduct(null)
+  }
+
+  function handleOpenPricesModal(product: Product) {
+    setPricesProduct(product)
+  }
+
+  function handleClosePricesModal() {
+    setPricesProduct(null)
+  }
+
   return (
     <div>
       <div className="flex items-start justify-between gap-4">
@@ -222,8 +246,10 @@ export function ProductsPage() {
                   const mainImage = getMainImage(product)
 
                   return (
-                    <Fragment key={product.id}>
-                      <tr className="border-b border-slate-100 last:border-0">
+                    <tr
+                      key={product.id}
+                      className="border-b border-slate-100 last:border-0"
+                    >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
@@ -317,13 +343,7 @@ export function ProductsPage() {
 
                             <button
                               type="button"
-                              onClick={() =>
-                                setUploadProductId((currentProductId) =>
-                                  currentProductId === product.id
-                                    ? null
-                                    : product.id,
-                                )
-                              }
+                              onClick={() => handleOpenImagesModal(product)}
                               title="Gerenciar imagens"
                               aria-label={`Gerenciar imagens de ${product.name}`}
                               className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
@@ -336,13 +356,7 @@ export function ProductsPage() {
 
                             <button
                               type="button"
-                              onClick={() =>
-                                setVariantsProductId((currentProductId) =>
-                                  currentProductId === product.id
-                                    ? null
-                                    : product.id,
-                                )
-                              }
+                              onClick={() => handleOpenVariantsModal(product)}
                               title="Gerenciar variações"
                               aria-label={`Gerenciar variações de ${product.name}`}
                               className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
@@ -352,13 +366,7 @@ export function ProductsPage() {
 
                             <button
                               type="button"
-                              onClick={() =>
-                                setPricesProductId((currentProductId) =>
-                                  currentProductId === product.id
-                                    ? null
-                                    : product.id,
-                                )
-                              }
+                              onClick={() => handleOpenPricesModal(product)}
                               title="Gerenciar preços"
                               aria-label={`Gerenciar preços de ${product.name}`}
                               className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
@@ -381,34 +389,7 @@ export function ProductsPage() {
                             </button>
                           </div>
                         </td>
-                      </tr>
-
-                      {uploadProductId === product.id && (
-                        <tr className="border-b border-slate-100">
-                          <td colSpan={7} className="px-4 py-4">
-                            <ProductImagesPanel productId={product.id} />
-                          </td>
-                        </tr>
-                      )}
-
-                      {variantsProductId === product.id && (
-                        <tr className="border-b border-slate-100">
-                          <td colSpan={7} className="px-4 py-4">
-                            <ProductVariantsPanel productId={product.id} />
-                          </td>
-                        </tr>
-                      )}
-
-                      {pricesProductId === product.id && (
-                        <tr className="border-b border-slate-100">
-                          <td colSpan={7} className="px-4 py-4">
-                            <CustomerProductPricesPanel
-                              productId={product.id}
-                            />
-                          </td>
-                        </tr>
-                      )}
-                    </Fragment>
+                    </tr>
                   )
                 })}
               </tbody>
@@ -440,6 +421,37 @@ export function ProductsPage() {
           submitButtonText={isEditing ? 'Atualizar produto' : 'Salvar produto'}
           onCancel={handleCloseProductModal}
         />
+      </Modal>
+
+      <Modal
+        open={Boolean(imagesProduct)}
+        title="Imagens do produto"
+        description={imagesProduct?.name}
+        onClose={handleCloseImagesModal}
+      >
+        {imagesProduct && <ProductImagesPanel productId={imagesProduct.id} />}
+      </Modal>
+
+      <Modal
+        open={Boolean(variantsProduct)}
+        title="Variações do produto"
+        description={variantsProduct?.name}
+        onClose={handleCloseVariantsModal}
+      >
+        {variantsProduct && (
+          <ProductVariantsPanel productId={variantsProduct.id} />
+        )}
+      </Modal>
+
+      <Modal
+        open={Boolean(pricesProduct)}
+        title="Preços específicos"
+        description={pricesProduct?.name}
+        onClose={handleClosePricesModal}
+      >
+        {pricesProduct && (
+          <CustomerProductPricesPanel productId={pricesProduct.id} />
+        )}
       </Modal>
 
       <ConfirmDialog
