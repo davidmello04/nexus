@@ -2,7 +2,7 @@ import { getCustomers } from '@/features/customers/customers-service'
 import { getProducts } from '@/features/products/products-service'
 import type { ProductVariant } from '@/features/products/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries, useQuery } from '@tanstack/react-query'
 import {
   Controller,
   useFieldArray,
@@ -10,11 +10,13 @@ import {
   type SubmitHandler,
 } from 'react-hook-form'
 import { CurrencyInput } from '@/components/CurrencyInput'
+import { formatCurrency } from '@/lib/formatters'
 import {
   orderSchema,
   type OrderFormData,
   type OrderFormInput,
 } from './order-schema'
+import { resolvePrice, type ResolvedPriceSource } from './pricing-service'
 
 type OrderFormProps = {
   onSubmit: SubmitHandler<OrderFormData>
@@ -65,7 +67,55 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
     control,
     name: 'items',
   })
+  const customerId = watch('customerId')
   const watchedItems = watch('items')
+  const discount = watch('discount')
+  const priceQueries = useQueries({
+    queries: fields.map((field, index) => {
+      const item = watchedItems?.[index]
+      const productId = item?.productId || ''
+      const variantId = item?.productVariantId || ''
+
+      return {
+        queryKey: [
+          'pricing',
+          'resolve',
+          customerId,
+          productId,
+          variantId || null,
+          field.id,
+        ],
+        queryFn: () =>
+          resolvePrice({
+            customerId,
+            productId,
+            variantId: variantId || undefined,
+          }),
+        enabled: Boolean(customerId && productId),
+      }
+    }),
+  })
+  const previewItems = fields.map((field, index) => {
+    const query = priceQueries[index]
+    const quantity = Number(watchedItems?.[index]?.quantity) || 0
+    const unitPrice = query?.data ? Number(query.data.price) : undefined
+
+    return {
+      fieldId: field.id,
+      quantity,
+      unitPrice,
+      total:
+        unitPrice !== undefined && Number.isFinite(unitPrice)
+          ? unitPrice * quantity
+          : undefined,
+    }
+  })
+  const estimatedSubtotal = previewItems.reduce(
+    (subtotal, item) => subtotal + (item.total ?? 0),
+    0,
+  )
+  const estimatedDiscount = Number(discount) || 0
+  const estimatedTotal = Math.max(estimatedSubtotal - estimatedDiscount, 0)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -215,6 +265,15 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
                   placeholder="Detalhes do item"
                 />
               </div>
+
+              <ItemPricePreview
+                isReady={Boolean(customerId && watchedItems?.[index]?.productId)}
+                isLoading={priceQueries[index]?.isLoading}
+                isError={priceQueries[index]?.isError}
+                unitPrice={previewItems[index]?.unitPrice}
+                source={priceQueries[index]?.data?.source}
+                total={previewItems[index]?.total}
+              />
             </div>
           )
         })}
@@ -261,6 +320,32 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
         </div>
       </div>
 
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <h3 className="text-sm font-semibold text-slate-900">
+          Resumo estimado
+        </h3>
+        <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+          <div>
+            <dt className="text-slate-500">Subtotal estimado</dt>
+            <dd className="mt-1 font-semibold text-slate-900">
+              {formatCurrency(estimatedSubtotal)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Desconto</dt>
+            <dd className="mt-1 font-semibold text-slate-900">
+              {formatCurrency(estimatedDiscount)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Total estimado</dt>
+            <dd className="mt-1 font-semibold text-slate-900">
+              {formatCurrency(estimatedTotal)}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
       <div className="flex justify-end">
         <button
           type="submit"
@@ -272,6 +357,84 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
       </div>
     </form>
   )
+}
+
+type ItemPricePreviewProps = {
+  isReady: boolean
+  isLoading?: boolean
+  isError?: boolean
+  unitPrice?: number
+  source?: ResolvedPriceSource
+  total?: number
+}
+
+function ItemPricePreview({
+  isReady,
+  isLoading,
+  isError,
+  unitPrice,
+  source,
+  total,
+}: ItemPricePreviewProps) {
+  if (!isReady) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-3 text-sm text-slate-500">
+        Selecione cliente e produto para calcular a prévia de preço.
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-500">
+        Calculando preço...
+      </div>
+    )
+  }
+
+  if (isError || unitPrice === undefined || total === undefined) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        Não foi possível resolver o preço deste item.
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm sm:grid-cols-3">
+      <div>
+        <span className="text-slate-500">Preço unitário</span>
+        <p className="mt-1 font-semibold text-slate-900">
+          {formatCurrency(unitPrice)}
+        </p>
+      </div>
+      <div>
+        <span className="text-slate-500">Origem do preço</span>
+        <p className="mt-1 font-semibold text-slate-900">
+          {source ? formatPriceSource(source) : '-'}
+        </p>
+      </div>
+      <div>
+        <span className="text-slate-500">Total do item</span>
+        <p className="mt-1 font-semibold text-slate-900">
+          {formatCurrency(total)}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function formatPriceSource(source: ResolvedPriceSource) {
+  const labels: Record<ResolvedPriceSource, string> = {
+    CUSTOMER_PRODUCT_VARIANT: 'Preço específico do cliente para variação',
+    CUSTOMER_PRODUCT: 'Preço específico do cliente para produto',
+    VARIANT_OUTSOURCED: 'Preço terceirizado da variação',
+    PRODUCT_OUTSOURCED: 'Preço terceirizado do produto',
+    VARIANT_BASE: 'Preço base da variação',
+    PRODUCT_BASE: 'Preço base do produto',
+  }
+
+  return labels[source]
 }
 
 function formatVariantLabel(variant: ProductVariant) {
