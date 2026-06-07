@@ -3,7 +3,13 @@ import { getProducts } from '@/features/products/products-service'
 import type { ProductVariant } from '@/features/products/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { useFieldArray, useForm, type SubmitHandler } from 'react-hook-form'
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  type SubmitHandler,
+} from 'react-hook-form'
+import { CurrencyInput } from '@/components/CurrencyInput'
 import {
   orderSchema,
   type OrderFormData,
@@ -223,13 +229,18 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="text-sm font-medium text-slate-700">Desconto</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            {...register('discount')}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-            placeholder="0,00"
+          <Controller
+            control={control}
+            name="discount"
+            render={({ field }) => (
+              <CurrencyInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="R$ 0,00"
+                disabled={field.disabled}
+              />
+            )}
           />
           {errors.discount && (
             <p className="mt-1 text-xs text-red-600">

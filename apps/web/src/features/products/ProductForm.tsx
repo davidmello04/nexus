@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { useForm, type SubmitHandler } from 'react-hook-form'
+import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
+import { CurrencyInput } from '@/components/CurrencyInput'
 import { getCategories } from './categories-service'
 import {
   productSchema,
@@ -33,6 +34,7 @@ export function ProductForm({
     queryFn: getCategories,
   })
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -76,13 +78,18 @@ export function ProductForm({
           <label className="text-sm font-medium text-slate-700">
             Preço base
           </label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            {...register('basePrice')}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-            placeholder="0,00"
+          <Controller
+            control={control}
+            name="basePrice"
+            render={({ field }) => (
+              <CurrencyInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="R$ 0,00"
+                disabled={field.disabled}
+              />
+            )}
           />
           {errors.basePrice && (
             <p className="mt-1 text-xs text-red-600">
@@ -95,13 +102,18 @@ export function ProductForm({
           <label className="text-sm font-medium text-slate-700">
             Preço terceirizado
           </label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            {...register('outsourcedPrice')}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-            placeholder="0,00"
+          <Controller
+            control={control}
+            name="outsourcedPrice"
+            render={({ field }) => (
+              <CurrencyInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="R$ 0,00"
+                disabled={field.disabled}
+              />
+            )}
           />
           {errors.outsourcedPrice && (
             <p className="mt-1 text-xs text-red-600">

@@ -1,7 +1,8 @@
 import { getCustomers } from '@/features/customers/customers-service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { useForm, type SubmitHandler } from 'react-hook-form'
+import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
+import { CurrencyInput } from '@/components/CurrencyInput'
 import {
   customerProductPriceSchema,
   type CustomerProductPriceFormData,
@@ -31,6 +32,7 @@ export function CustomerProductPriceForm({
     queryFn: getCustomers,
   })
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -99,13 +101,18 @@ export function CustomerProductPriceForm({
 
         <div>
           <label className="text-sm font-medium text-slate-700">Preço</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            {...register('price')}
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
-            placeholder="0,00"
+          <Controller
+            control={control}
+            name="price"
+            render={({ field }) => (
+              <CurrencyInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="R$ 0,00"
+                disabled={field.disabled}
+              />
+            )}
           />
           {errors.price && (
             <p className="mt-1 text-xs text-red-600">{errors.price.message}</p>
