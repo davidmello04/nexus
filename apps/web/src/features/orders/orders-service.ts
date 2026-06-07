@@ -8,6 +8,12 @@ export async function getOrders() {
   return response.data
 }
 
+export async function getOrder(id: string) {
+  const response = await api.get<Order>(`/orders/${id}`)
+
+  return response.data
+}
+
 export async function createOrder(data: OrderFormData) {
   const payload: CreateOrderPayload = {
     customerId: data.customerId,
