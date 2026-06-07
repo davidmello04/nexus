@@ -24,3 +24,9 @@ export async function createOrder(data: OrderFormData) {
 
   return response.data
 }
+
+export async function updateOrderStatus(id: string, status: string) {
+  const response = await api.patch<Order>(`/orders/${id}`, { status })
+
+  return response.data
+}

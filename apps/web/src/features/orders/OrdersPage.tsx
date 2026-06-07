@@ -1,16 +1,40 @@
 import { useState } from 'react'
-import { Eye } from 'lucide-react'
+import {
+  Ban,
+  CheckCheck,
+  CircleCheck,
+  Eye,
+  Factory,
+  type LucideIcon,
+} from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
 import { formatCurrency } from '@/lib/formatters'
+import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { OrderForm } from './OrderForm'
 import type { OrderFormData } from './order-schema'
-import { createOrder, getOrders } from './orders-service'
+import { createOrder, getOrders, updateOrderStatus } from './orders-service'
 import type { Order, OrderItem } from './types'
+
+type OrderStatus = 'DRAFT' | 'PENDING' | 'IN_PRODUCTION' | 'DONE' | 'CANCELED'
+
+type StatusAction = {
+  order: Order
+  status: OrderStatus
+}
+
+type StatusActionOption = {
+  status: OrderStatus
+  label: string
+  icon: LucideIcon
+  variant?: 'default' | 'danger'
+}
 
 export function OrdersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [statusAction, setStatusAction] = useState<StatusAction | null>(null)
   const queryClient = useQueryClient()
   const {
     data: orders = [],
@@ -27,9 +51,38 @@ export function OrdersPage() {
       setIsFormOpen(false)
     },
   })
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
+      updateOrderStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      setStatusAction(null)
+    },
+  })
 
   function handleCreateOrder(data: OrderFormData) {
     createOrderMutation.mutate(data)
+  }
+
+  function handleOpenStatusDialog(order: Order, status: OrderStatus) {
+    updateStatusMutation.reset()
+    setStatusAction({ order, status })
+  }
+
+  function handleCloseStatusDialog() {
+    updateStatusMutation.reset()
+    setStatusAction(null)
+  }
+
+  function handleConfirmStatusChange() {
+    if (!statusAction) {
+      return
+    }
+
+    updateStatusMutation.mutate({
+      id: statusAction.order.id,
+      status: statusAction.status,
+    })
   }
 
   return (
@@ -122,8 +175,13 @@ export function OrdersPage() {
                       {order.customer?.name || '-'}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-                        {order.status}
+                      <span
+                        className={[
+                          'inline-flex rounded-full px-2.5 py-1 text-xs font-medium',
+                          getStatusBadgeClassName(order.status),
+                        ].join(' ')}
+                      >
+                        {getStatusLabel(order.status)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-slate-600">
@@ -139,6 +197,31 @@ export function OrdersPage() {
                       {new Date(order.createdAt).toLocaleDateString('pt-BR')}
                     </td>
                     <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {getStatusActions(order.status).map((action) => {
+                          const Icon = action.icon
+
+                          return (
+                            <button
+                              key={action.status}
+                              type="button"
+                              onClick={() =>
+                                handleOpenStatusDialog(order, action.status)
+                              }
+                              title={action.label}
+                              aria-label={action.label}
+                              className={[
+                                'inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border transition disabled:cursor-not-allowed disabled:opacity-60',
+                                action.variant === 'danger'
+                                  ? 'border-red-200 text-red-600 hover:bg-red-50'
+                                  : 'border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-950',
+                              ].join(' ')}
+                            >
+                              <Icon className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                          )
+                        })}
+
                       <button
                         type="button"
                         onClick={() => setSelectedOrder(order)}
@@ -148,6 +231,7 @@ export function OrdersPage() {
                       >
                         <Eye className="h-4 w-4" aria-hidden="true" />
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -166,6 +250,40 @@ export function OrdersPage() {
       >
         {selectedOrder && <OrderDetails order={selectedOrder} />}
       </Modal>
+
+      <ConfirmDialog
+        open={Boolean(statusAction)}
+        title={
+          statusAction
+            ? getStatusConfirmCopy(statusAction.status).title
+            : 'Alterar status'
+        }
+        description={
+          statusAction
+            ? getStatusConfirmCopy(statusAction.status).description(
+                statusAction.order,
+              )
+            : ''
+        }
+        confirmLabel={
+          statusAction
+            ? getStatusConfirmCopy(statusAction.status).confirmLabel
+            : 'Confirmar'
+        }
+        cancelLabel="Cancelar"
+        variant={statusAction?.status === 'CANCELED' ? 'danger' : 'default'}
+        isLoading={updateStatusMutation.isPending}
+        errorMessage={
+          updateStatusMutation.isError
+            ? getApiErrorMessage(
+                updateStatusMutation.error,
+                'Não foi possível alterar o status do pedido.',
+              )
+            : undefined
+        }
+        onConfirm={handleConfirmStatusChange}
+        onCancel={handleCloseStatusDialog}
+      />
     </div>
   )
 }
@@ -176,7 +294,7 @@ function OrderDetails({ order }: { order: Order }) {
       <dl className="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-4">
         <DetailItem label="Código" value={`#${order.code}`} />
         <DetailItem label="Cliente" value={order.customer?.name || '-'} />
-        <DetailItem label="Status" value={order.status} />
+        <DetailItem label="Status" value={getStatusLabel(order.status)} />
         <DetailItem
           label="Data"
           value={new Date(order.createdAt).toLocaleDateString('pt-BR')}
@@ -270,5 +388,111 @@ function formatVariant(item: OrderItem) {
     .join(' / ')
 
   return parts || '-'
+}
+
+function getStatusLabel(status: string) {
+  const labels: Record<string, string> = {
+    DRAFT: 'Rascunho',
+    PENDING: 'Pendente',
+    IN_PRODUCTION: 'Em produção',
+    DONE: 'Concluído',
+    CANCELED: 'Cancelado',
+  }
+
+  return labels[status] ?? status
+}
+
+function getStatusBadgeClassName(status: string) {
+  const classNames: Record<string, string> = {
+    DRAFT: 'bg-slate-100 text-slate-700',
+    PENDING: 'bg-amber-100 text-amber-800',
+    IN_PRODUCTION: 'bg-blue-100 text-blue-800',
+    DONE: 'bg-emerald-100 text-emerald-800',
+    CANCELED: 'bg-red-100 text-red-700',
+  }
+
+  return classNames[status] ?? 'bg-slate-100 text-slate-700'
+}
+
+function getStatusActions(status: string): StatusActionOption[] {
+  const actions: StatusActionOption[] = []
+
+  if (status === 'DRAFT') {
+    actions.push({
+      status: 'PENDING',
+      label: 'Confirmar pedido',
+      icon: CircleCheck,
+    })
+  }
+
+  if (status === 'PENDING') {
+    actions.push({
+      status: 'IN_PRODUCTION',
+      label: 'Enviar para produção',
+      icon: Factory,
+    })
+  }
+
+  if (status === 'IN_PRODUCTION') {
+    actions.push({
+      status: 'DONE',
+      label: 'Concluir pedido',
+      icon: CheckCheck,
+    })
+  }
+
+  if (['DRAFT', 'PENDING', 'IN_PRODUCTION'].includes(status)) {
+    actions.push({
+      status: 'CANCELED',
+      label: 'Cancelar pedido',
+      icon: Ban,
+      variant: 'danger',
+    })
+  }
+
+  return actions
+}
+
+function getStatusConfirmCopy(status: OrderStatus) {
+  const copies: Record<
+    OrderStatus,
+    {
+      title: string
+      confirmLabel: string
+      description: (order: Order) => string
+    }
+  > = {
+    DRAFT: {
+      title: 'Voltar para rascunho',
+      confirmLabel: 'Voltar para rascunho',
+      description: (order) =>
+        `Deseja voltar o pedido #${order.code} para rascunho?`,
+    },
+    PENDING: {
+      title: 'Confirmar pedido',
+      confirmLabel: 'Confirmar pedido',
+      description: (order) =>
+        `Deseja confirmar o pedido #${order.code} e movê-lo para pendente?`,
+    },
+    IN_PRODUCTION: {
+      title: 'Enviar para produção',
+      confirmLabel: 'Enviar para produção',
+      description: (order) =>
+        `Deseja enviar o pedido #${order.code} para produção?`,
+    },
+    DONE: {
+      title: 'Concluir pedido',
+      confirmLabel: 'Concluir pedido',
+      description: (order) => `Deseja concluir o pedido #${order.code}?`,
+    },
+    CANCELED: {
+      title: 'Cancelar pedido',
+      confirmLabel: 'Cancelar pedido',
+      description: (order) =>
+        `Deseja cancelar o pedido #${order.code}? Essa ação altera o status do pedido para cancelado.`,
+    },
+  }
+
+  return copies[status]
 }
 
