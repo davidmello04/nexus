@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { ProductForm } from './ProductForm'
 import { ProductImageUpload } from './ProductImageUpload'
@@ -483,13 +484,6 @@ function getImageUrl(url: ProductImage['url']) {
   }
 
   return `${apiAssetBaseUrl}${url}`
-}
-
-function formatCurrency(value: string | number) {
-  return Number(value).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
 }
 
 function hasPrice(value: string | number | null | undefined) {

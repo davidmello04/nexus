@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Power, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import type { ProductVariantFormData } from './product-variant-schema'
 import { ProductVariantForm } from './ProductVariantForm'
@@ -322,13 +323,6 @@ function parseOptionalPrice(value: string | number | null | undefined) {
   }
 
   return Number(value)
-}
-
-function formatCurrency(value: ProductVariant['basePrice']) {
-  return Number(value).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
 }
 
 function hasPrice(value: string | number | null | undefined) {

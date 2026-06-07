@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { formatCurrency } from '@/lib/formatters'
 import type { CustomerProductPriceFormData } from './customer-product-price-schema'
 import { CustomerProductPriceForm } from './CustomerProductPriceForm'
 import {
@@ -6,7 +7,7 @@ import {
   getCustomerProductPrices,
 } from './customer-product-prices-service'
 import { getProductVariants } from './product-variants-service'
-import type { CustomerProductPrice, ProductVariant } from './types'
+import type { ProductVariant } from './types'
 
 type CustomerProductPricesPanelProps = {
   productId: string
@@ -157,9 +158,3 @@ function formatVariantLabel(variant: ProductVariant) {
   return parts || `Variação ${variant.id.slice(0, 8)}`
 }
 
-function formatCurrency(value: CustomerProductPrice['price']) {
-  return Number(value).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
-}

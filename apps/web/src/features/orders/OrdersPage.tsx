@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { formatCurrency } from '@/lib/formatters'
 import { OrderForm } from './OrderForm'
 import type { OrderFormData } from './order-schema'
 import { createOrder, getOrders } from './orders-service'
@@ -143,9 +144,3 @@ export function OrdersPage() {
   )
 }
 
-function formatCurrency(value: string | number) {
-  return Number(value).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
-}
