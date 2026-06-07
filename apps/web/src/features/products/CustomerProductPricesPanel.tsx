@@ -51,14 +51,9 @@ export function CustomerProductPricesPanel({
 
   return (
     <div className="space-y-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <div>
-        <h3 className="text-sm font-semibold text-slate-900">
-          Preços específicos
-        </h3>
-        <p className="mt-1 text-xs text-slate-500">
-          Configure preços por cliente para o produto ou para uma variação.
-        </p>
-      </div>
+      <p className="text-sm text-slate-500">
+        Configure preços por cliente para o produto ou para uma variação.
+      </p>
 
       {createPriceMutation.isError && (
         <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">

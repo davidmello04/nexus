@@ -145,14 +145,9 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
 
   return (
     <div className="space-y-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <div>
-        <h3 className="text-sm font-semibold text-slate-900">
-          Variações do produto
-        </h3>
-        <p className="mt-1 text-xs text-slate-500">
-          Cadastre combinações de tamanho, cor, tipo, material e preços.
-        </p>
-      </div>
+      <p className="text-sm text-slate-500">
+        Cadastre combinações de tamanho, cor, tipo, material e preços.
+      </p>
 
       {(createVariantMutation.isError || updateVariantMutation.isError) && (
         <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">

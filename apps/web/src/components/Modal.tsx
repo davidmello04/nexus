@@ -5,6 +5,7 @@ type ModalProps = {
   open: boolean
   title: string
   description?: string
+  maxWidthClassName?: string
   children: ReactNode
   onClose: () => void
 }
@@ -13,6 +14,7 @@ export function Modal({
   open,
   title,
   description,
+  maxWidthClassName = 'max-w-2xl',
   children,
   onClose,
 }: ModalProps) {
@@ -28,7 +30,12 @@ export function Modal({
       aria-labelledby="modal-title"
       aria-describedby={description ? 'modal-description' : undefined}
     >
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+      <div
+        className={[
+          'relative max-h-[90vh] w-full overflow-y-auto rounded-2xl bg-white p-6 shadow-xl',
+          maxWidthClassName,
+        ].join(' ')}
+      >
         <button
           type="button"
           onClick={onClose}

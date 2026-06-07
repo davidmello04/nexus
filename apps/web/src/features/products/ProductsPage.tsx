@@ -427,6 +427,7 @@ export function ProductsPage() {
         open={Boolean(imagesProduct)}
         title="Imagens do produto"
         description={imagesProduct?.name}
+        maxWidthClassName="max-w-4xl"
         onClose={handleCloseImagesModal}
       >
         {imagesProduct && <ProductImagesPanel productId={imagesProduct.id} />}
@@ -436,6 +437,7 @@ export function ProductsPage() {
         open={Boolean(variantsProduct)}
         title="Variações do produto"
         description={variantsProduct?.name}
+        maxWidthClassName="max-w-4xl"
         onClose={handleCloseVariantsModal}
       >
         {variantsProduct && (
@@ -447,6 +449,7 @@ export function ProductsPage() {
         open={Boolean(pricesProduct)}
         title="Preços específicos"
         description={pricesProduct?.name}
+        maxWidthClassName="max-w-4xl"
         onClose={handleClosePricesModal}
       >
         {pricesProduct && (
