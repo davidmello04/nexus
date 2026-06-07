@@ -114,6 +114,16 @@ export function OrdersPage() {
     createOrderMutation.mutate(data)
   }
 
+  function handleOpenCreateOrderModal() {
+    createOrderMutation.reset()
+    setIsFormOpen(true)
+  }
+
+  function handleCloseCreateOrderModal() {
+    createOrderMutation.reset()
+    setIsFormOpen(false)
+  }
+
   function handleFilterChange(field: keyof OrderFilters, value: string) {
     setFilters((currentFilters) => ({
       ...currentFilters,
@@ -154,35 +164,12 @@ export function OrdersPage() {
 
         <button
           type="button"
-          onClick={() => setIsFormOpen((state) => !state)}
+          onClick={handleOpenCreateOrderModal}
           className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
-          {isFormOpen ? 'Fechar' : 'Novo pedido'}
+          Novo pedido
         </button>
       </div>
-
-      {isFormOpen && (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="mb-5">
-            <h2 className="text-lg font-semibold">Novo pedido</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Selecione cliente e itens. Os preços serão calculados pelo
-              backend.
-            </p>
-          </div>
-
-          {createOrderMutation.isError && (
-            <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              Não foi possível salvar o pedido.
-            </div>
-          )}
-
-          <OrderForm
-            onSubmit={handleCreateOrder}
-            isSubmitting={createOrderMutation.isPending}
-          />
-        </div>
-      )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
         {isLoading && (
@@ -402,6 +389,25 @@ export function OrdersPage() {
           </div>
         )}
       </div>
+
+      <Modal
+        open={isFormOpen}
+        title="Novo pedido"
+        description="Selecione cliente e itens. Os preços serão calculados pelo backend."
+        maxWidthClassName="max-w-5xl"
+        onClose={handleCloseCreateOrderModal}
+      >
+        {createOrderMutation.isError && (
+          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            Não foi possível salvar o pedido.
+          </div>
+        )}
+
+        <OrderForm
+          onSubmit={handleCreateOrder}
+          isSubmitting={createOrderMutation.isPending}
+        />
+      </Modal>
 
       <Modal
         open={Boolean(selectedOrder)}
