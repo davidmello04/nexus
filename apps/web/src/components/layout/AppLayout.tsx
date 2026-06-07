@@ -4,6 +4,7 @@ import {
   ClipboardList,
   Home,
   Package,
+  Tags,
   Users,
 } from 'lucide-react'
 
@@ -22,6 +23,11 @@ const navItems = [
     title: 'Produtos',
     href: '/products',
     icon: Package,
+  },
+  {
+    title: 'Categorias',
+    href: '/categories',
+    icon: Tags,
   },
   {
     title: 'Pedidos',

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
 import { CurrencyInput } from '@/components/CurrencyInput'
-import { getCategories } from './categories-service'
+import { getCategories } from '@/features/categories/categories-service'
 import {
   productSchema,
   type ProductFormData,
