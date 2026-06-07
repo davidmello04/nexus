@@ -150,22 +150,11 @@ export function OrderForm({
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
+        <div>
           <h3 className="text-sm font-semibold text-slate-900">Itens</h3>
-          <button
-            type="button"
-            onClick={() =>
-              append({
-                productId: '',
-                productVariantId: '',
-                quantity: 1,
-                notes: '',
-              })
-            }
-            className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            Adicionar item
-          </button>
+          <p className="mt-1 text-sm text-slate-500">
+            Cadastre os produtos, variações e quantidades do pedido.
+          </p>
         </div>
 
         {errors.items?.root?.message && (
@@ -181,9 +170,25 @@ export function OrderForm({
           return (
             <div
               key={field.id}
-              className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4"
+              className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-4"
             >
-              <div className="grid gap-4 lg:grid-cols-[1fr_1fr_120px_auto]">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Item {index + 1}
+                </h4>
+
+                {fields.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="cursor-pointer rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50"
+                  >
+                    Remover item
+                  </button>
+                )}
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_120px]">
                 <div>
                   <label className="text-sm font-medium text-slate-700">
                     Produto
@@ -246,17 +251,6 @@ export function OrderForm({
                     </p>
                   )}
                 </div>
-
-                <div className="flex items-end">
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    disabled={fields.length === 1}
-                    className="w-full cursor-pointer rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Remover
-                  </button>
-                </div>
               </div>
 
               <div>
@@ -281,6 +275,21 @@ export function OrderForm({
             </div>
           )
         })}
+
+        <button
+          type="button"
+          onClick={() =>
+            append({
+              productId: '',
+              productVariantId: '',
+              quantity: 1,
+              notes: '',
+            })
+          }
+          className="w-full cursor-pointer rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        >
+          Adicionar item
+        </button>
 
         {isProductsError && (
           <p className="text-xs text-red-600">
@@ -324,26 +333,26 @@ export function OrderForm({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5">
         <h3 className="text-sm font-semibold text-slate-900">
           Resumo estimado
         </h3>
-        <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
-          <div>
+        <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+          <div className="rounded-xl bg-slate-50 p-4">
             <dt className="text-slate-500">Subtotal estimado</dt>
             <dd className="mt-1 font-semibold text-slate-900">
               {formatCurrency(estimatedSubtotal)}
             </dd>
           </div>
-          <div>
+          <div className="rounded-xl bg-slate-50 p-4">
             <dt className="text-slate-500">Desconto</dt>
             <dd className="mt-1 font-semibold text-slate-900">
               {formatCurrency(estimatedDiscount)}
             </dd>
           </div>
-          <div>
-            <dt className="text-slate-500">Total estimado</dt>
-            <dd className="mt-1 font-semibold text-slate-900">
+          <div className="rounded-xl bg-slate-950 p-4">
+            <dt className="text-slate-300">Total estimado</dt>
+            <dd className="mt-1 font-semibold text-white">
               {formatCurrency(estimatedTotal)}
             </dd>
           </div>
@@ -426,7 +435,7 @@ function ItemPricePreview({
 }: ItemPricePreviewProps) {
   if (!isReady) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-3 text-sm text-slate-500">
+      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
         Selecione cliente e produto para calcular a prévia de preço.
       </div>
     )
@@ -434,7 +443,7 @@ function ItemPricePreview({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-500">
+      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
         Calculando preço...
       </div>
     )
@@ -442,14 +451,14 @@ function ItemPricePreview({
 
   if (isError || unitPrice === undefined || total === undefined) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
         Não foi possível resolver o preço deste item.
       </div>
     )
   }
 
   return (
-    <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm sm:grid-cols-3">
+    <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm md:grid-cols-3">
       <div>
         <span className="text-slate-500">Preço unitário</span>
         <p className="mt-1 font-semibold text-slate-900">
