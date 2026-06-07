@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DollarSign, Image as ImageIcon, Layers } from 'lucide-react'
+import { Modal } from '@/components/Modal'
 import { ProductForm } from './ProductForm'
 import { ProductImageUpload } from './ProductImageUpload'
 import { ProductVariantsPanel } from './ProductVariantsPanel'
@@ -14,7 +15,7 @@ const apiAssetBaseUrl = (
 ).replace(/\/api\/?$/, '')
 
 export function ProductsPage() {
-  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [uploadProductId, setUploadProductId] = useState<string | null>(null)
   const [variantsProductId, setVariantsProductId] = useState<string | null>(
     null,
@@ -33,12 +34,22 @@ export function ProductsPage() {
     mutationFn: createProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
-      setIsFormOpen(false)
+      setIsProductModalOpen(false)
     },
   })
 
   function handleCreateProduct(data: ProductFormData) {
     createProductMutation.mutate(data)
+  }
+
+  function handleNewProductClick() {
+    createProductMutation.reset()
+    setIsProductModalOpen(true)
+  }
+
+  function handleCloseProductModal() {
+    createProductMutation.reset()
+    setIsProductModalOpen(false)
   }
 
   function handleUploadSuccess() {
@@ -58,34 +69,12 @@ export function ProductsPage() {
 
         <button
           type="button"
-          onClick={() => setIsFormOpen((state) => !state)}
+          onClick={handleNewProductClick}
           className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
         >
-          {isFormOpen ? 'Fechar' : 'Novo produto'}
+          Novo produto
         </button>
       </div>
-
-      {isFormOpen && (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="mb-5">
-            <h2 className="text-lg font-semibold">Novo produto</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Preencha os dados para cadastrar um novo produto.
-            </p>
-          </div>
-
-          {createProductMutation.isError && (
-            <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              Não foi possível salvar o produto.
-            </div>
-          )}
-
-          <ProductForm
-            onSubmit={handleCreateProduct}
-            isSubmitting={createProductMutation.isPending}
-          />
-        </div>
-      )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
         {isLoading && (
@@ -285,6 +274,24 @@ export function ProductsPage() {
           </div>
         )}
       </div>
+
+      <Modal
+        open={isProductModalOpen}
+        title="Novo produto"
+        description="Preencha os dados para cadastrar um novo produto."
+        onClose={handleCloseProductModal}
+      >
+        {createProductMutation.isError && (
+          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            Não foi possível salvar o produto.
+          </div>
+        )}
+
+        <ProductForm
+          onSubmit={handleCreateProduct}
+          isSubmitting={createProductMutation.isPending}
+        />
+      </Modal>
     </div>
   )
 }
