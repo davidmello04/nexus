@@ -5,12 +5,14 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { UpdateProductImageDto } from './dto/update-product-image.dto';
 import { UploadProductImageDto } from './dto/upload-product-image.dto';
 import { ProductImagesService } from './product-images.service';
 
@@ -68,6 +70,14 @@ export class ProductImagesController {
   @Get('product/:productId')
   findByProduct(@Param('productId') productId: string) {
     return this.productImagesService.findByProduct(productId);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateProductImageDto: UpdateProductImageDto,
+  ) {
+    return this.productImagesService.update(id, updateProductImageDto);
   }
 
   @Delete(':id')

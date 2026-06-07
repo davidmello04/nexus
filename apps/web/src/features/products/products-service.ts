@@ -8,6 +8,11 @@ type UploadProductImageData = {
   isMain?: boolean
 }
 
+type UpdateProductImageData = {
+  alt?: string
+  isMain?: boolean
+}
+
 export async function getProducts() {
   const response = await api.get<Product[]>('/products')
 
@@ -66,6 +71,27 @@ export async function uploadProductImage(
   )
 
   return response.data
+}
+
+export async function getProductImages(productId: string) {
+  const response = await api.get<ProductImage[]>(
+    `/product-images/product/${productId}`,
+  )
+
+  return response.data
+}
+
+export async function updateProductImage(
+  id: string,
+  data: UpdateProductImageData,
+) {
+  const response = await api.patch<ProductImage>(`/product-images/${id}`, data)
+
+  return response.data
+}
+
+export async function deleteProductImage(id: string) {
+  await api.delete(`/product-images/${id}`)
 }
 
 function normalizeProduct(data: ProductFormData) {

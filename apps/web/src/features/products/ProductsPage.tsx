@@ -13,7 +13,7 @@ import { Modal } from '@/components/Modal'
 import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { ProductForm } from './ProductForm'
-import { ProductImageUpload } from './ProductImageUpload'
+import { ProductImagesPanel } from './ProductImagesPanel'
 import { ProductVariantsPanel } from './ProductVariantsPanel'
 import { CustomerProductPricesPanel } from './CustomerProductPricesPanel'
 import type { ProductFormData } from './product-schema'
@@ -144,11 +144,6 @@ export function ProductsPage() {
     }
 
     deleteProductMutation.mutate(productToDelete.id)
-  }
-
-  function handleUploadSuccess() {
-    queryClient.invalidateQueries({ queryKey: ['products'] })
-    setUploadProductId(null)
   }
 
   return (
@@ -313,8 +308,8 @@ export function ProductsPage() {
                                     : product.id,
                                 )
                               }
-                              title="Gerenciar imagem"
-                              aria-label={`Gerenciar imagem de ${product.name}`}
+                              title="Gerenciar imagens"
+                              aria-label={`Gerenciar imagens de ${product.name}`}
                               className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
                             >
                               <ImageIcon
@@ -375,10 +370,7 @@ export function ProductsPage() {
                       {uploadProductId === product.id && (
                         <tr className="border-b border-slate-100">
                           <td colSpan={7} className="px-4 py-4">
-                            <ProductImageUpload
-                              productId={product.id}
-                              onSuccess={handleUploadSuccess}
-                            />
+                            <ProductImagesPanel productId={product.id} />
                           </td>
                         </tr>
                       )}

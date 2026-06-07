@@ -7,6 +7,7 @@ import { randomUUID } from 'crypto';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateProductImageDto } from './dto/update-product-image.dto';
 import { UploadProductImageDto } from './dto/upload-product-image.dto';
 
 @Injectable()
@@ -66,6 +67,37 @@ export class ProductImagesService {
       orderBy: {
         createdAt: 'desc',
       },
+    });
+  }
+
+  async update(id: string, updateProductImageDto: UpdateProductImageDto) {
+    const image = await this.prisma.productImage.findUnique({
+      where: { id },
+    });
+
+    if (!image) {
+      throw new NotFoundException('Imagem não encontrada.');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      if (updateProductImageDto.isMain === true) {
+        await tx.productImage.updateMany({
+          where: {
+            productId: image.productId,
+            id: {
+              not: id,
+            },
+          },
+          data: {
+            isMain: false,
+          },
+        });
+      }
+
+      return tx.productImage.update({
+        where: { id },
+        data: updateProductImageDto,
+      });
     });
   }
 
