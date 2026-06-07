@@ -23,6 +23,9 @@ export function CategoriesPage() {
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null,
   )
+  const [categoryToToggle, setCategoryToToggle] = useState<Category | null>(
+    null,
+  )
   const queryClient = useQueryClient()
 
   const {
@@ -56,6 +59,7 @@ export function CategoriesPage() {
       updateCategoryActive(id, active),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      setCategoryToToggle(null)
     },
   })
   const deleteCategoryMutation = useMutation({
@@ -108,9 +112,23 @@ export function CategoriesPage() {
   }
 
   function handleToggleCategory(category: Category) {
+    toggleCategoryMutation.reset()
+    setCategoryToToggle(category)
+  }
+
+  function handleCancelToggleCategory() {
+    toggleCategoryMutation.reset()
+    setCategoryToToggle(null)
+  }
+
+  function handleConfirmToggleCategory() {
+    if (!categoryToToggle) {
+      return
+    }
+
     toggleCategoryMutation.mutate({
-      id: category.id,
-      active: !category.active,
+      id: categoryToToggle.id,
+      active: !categoryToToggle.active,
     })
   }
 
@@ -309,6 +327,37 @@ export function CategoriesPage() {
         }
         onConfirm={handleConfirmDeleteCategory}
         onCancel={handleCancelDeleteCategory}
+      />
+
+      <ConfirmDialog
+        open={Boolean(categoryToToggle)}
+        title={
+          categoryToToggle?.active
+            ? 'Inativar categoria'
+            : 'Ativar categoria'
+        }
+        description={
+          categoryToToggle
+            ? categoryToToggle.active
+              ? `Tem certeza que deseja inativar a categoria "${categoryToToggle.name}"? Ela deixará de aparecer como ativa.`
+              : `Tem certeza que deseja ativar a categoria "${categoryToToggle.name}"? Ela voltará a aparecer como ativa.`
+            : ''
+        }
+        confirmLabel={categoryToToggle?.active ? 'Inativar' : 'Ativar'}
+        cancelLabel="Cancelar"
+        isLoading={toggleCategoryMutation.isPending}
+        errorMessage={
+          toggleCategoryMutation.isError
+            ? getApiErrorMessage(
+                toggleCategoryMutation.error,
+                categoryToToggle?.active
+                  ? 'Não foi possível inativar esta categoria.'
+                  : 'Não foi possível ativar esta categoria.',
+              )
+            : undefined
+        }
+        onConfirm={handleConfirmToggleCategory}
+        onCancel={handleCancelToggleCategory}
       />
     </div>
   )

@@ -34,6 +34,7 @@ export function ProductsPage() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
+  const [productToToggle, setProductToToggle] = useState<Product | null>(null)
   const [uploadProductId, setUploadProductId] = useState<string | null>(null)
   const [variantsProductId, setVariantsProductId] = useState<string | null>(
     null,
@@ -70,6 +71,7 @@ export function ProductsPage() {
       updateProductActive(id, active),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
+      setProductToToggle(null)
     },
   })
   const deleteProductMutation = useMutation({
@@ -122,9 +124,23 @@ export function ProductsPage() {
   }
 
   function handleToggleProduct(product: Product) {
+    toggleProductMutation.reset()
+    setProductToToggle(product)
+  }
+
+  function handleCancelToggleProduct() {
+    toggleProductMutation.reset()
+    setProductToToggle(null)
+  }
+
+  function handleConfirmToggleProduct() {
+    if (!productToToggle) {
+      return
+    }
+
     toggleProductMutation.mutate({
-      id: product.id,
-      active: !product.active,
+      id: productToToggle.id,
+      active: !productToToggle.active,
     })
   }
 
@@ -448,6 +464,35 @@ export function ProductsPage() {
         }
         onConfirm={handleConfirmDeleteProduct}
         onCancel={handleCancelDeleteProduct}
+      />
+
+      <ConfirmDialog
+        open={Boolean(productToToggle)}
+        title={
+          productToToggle?.active ? 'Inativar produto' : 'Ativar produto'
+        }
+        description={
+          productToToggle
+            ? productToToggle.active
+              ? `Tem certeza que deseja inativar o produto "${productToToggle.name}"? Ele deixará de aparecer como ativo nas operações.`
+              : `Tem certeza que deseja ativar o produto "${productToToggle.name}"? Ele voltará a aparecer como ativo nas operações.`
+            : ''
+        }
+        confirmLabel={productToToggle?.active ? 'Inativar' : 'Ativar'}
+        cancelLabel="Cancelar"
+        isLoading={toggleProductMutation.isPending}
+        errorMessage={
+          toggleProductMutation.isError
+            ? getApiErrorMessage(
+                toggleProductMutation.error,
+                productToToggle?.active
+                  ? 'Não foi possível inativar este produto.'
+                  : 'Não foi possível ativar este produto.',
+              )
+            : undefined
+        }
+        onConfirm={handleConfirmToggleProduct}
+        onCancel={handleCancelToggleProduct}
       />
     </div>
   )

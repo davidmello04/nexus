@@ -26,6 +26,8 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
   const [variantToDelete, setVariantToDelete] = useState<ProductVariant | null>(
     null,
   )
+  const [variantToToggle, setVariantToToggle] =
+    useState<ProductVariant | null>(null)
   const [formResetKey, setFormResetKey] = useState(0)
   const queryClient = useQueryClient()
   const {
@@ -62,6 +64,7 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
       updateProductVariantActive(id, active),
     onSuccess: () => {
       invalidateVariantQueries()
+      setVariantToToggle(null)
     },
   })
   const deleteVariantMutation = useMutation({
@@ -102,9 +105,23 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
   }
 
   function handleToggleVariant(variant: ProductVariant) {
+    toggleVariantMutation.reset()
+    setVariantToToggle(variant)
+  }
+
+  function handleCancelToggleVariant() {
+    toggleVariantMutation.reset()
+    setVariantToToggle(null)
+  }
+
+  function handleConfirmToggleVariant() {
+    if (!variantToToggle) {
+      return
+    }
+
     toggleVariantMutation.mutate({
-      id: variant.id,
-      active: !variant.active,
+      id: variantToToggle.id,
+      active: !variantToToggle.active,
     })
   }
 
@@ -299,6 +316,37 @@ export function ProductVariantsPanel({ productId }: ProductVariantsPanelProps) {
         }
         onConfirm={handleConfirmDeleteVariant}
         onCancel={handleCancelDeleteVariant}
+      />
+
+      <ConfirmDialog
+        open={Boolean(variantToToggle)}
+        title={
+          variantToToggle?.active
+            ? 'Inativar variação'
+            : 'Ativar variação'
+        }
+        description={
+          variantToToggle
+            ? variantToToggle.active
+              ? 'Tem certeza que deseja inativar esta variação? Ela deixará de aparecer como ativa.'
+              : 'Tem certeza que deseja ativar esta variação? Ela voltará a aparecer como ativa.'
+            : ''
+        }
+        confirmLabel={variantToToggle?.active ? 'Inativar' : 'Ativar'}
+        cancelLabel="Cancelar"
+        isLoading={toggleVariantMutation.isPending}
+        errorMessage={
+          toggleVariantMutation.isError
+            ? getApiErrorMessage(
+                toggleVariantMutation.error,
+                variantToToggle?.active
+                  ? 'Não foi possível inativar esta variação.'
+                  : 'Não foi possível ativar esta variação.',
+              )
+            : undefined
+        }
+        onConfirm={handleConfirmToggleVariant}
+        onCancel={handleCancelToggleVariant}
       />
     </div>
   )
