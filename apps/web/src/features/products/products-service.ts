@@ -15,14 +15,28 @@ export async function getProducts() {
 }
 
 export async function createProduct(data: ProductFormData) {
-  const response = await api.post<Product>('/products', {
-    ...data,
-    description: data.description || undefined,
-    outsourcedPrice: data.outsourcedPrice ?? undefined,
-    categoryId: data.categoryId || undefined,
-  })
+  const response = await api.post<Product>('/products', normalizeProduct(data))
 
   return response.data
+}
+
+export async function updateProduct(id: string, data: ProductFormData) {
+  const response = await api.patch<Product>(
+    `/products/${id}`,
+    normalizeProduct(data),
+  )
+
+  return response.data
+}
+
+export async function updateProductActive(id: string, active: boolean) {
+  const response = await api.patch<Product>(`/products/${id}`, { active })
+
+  return response.data
+}
+
+export async function deleteProduct(id: string) {
+  await api.delete(`/products/${id}`)
 }
 
 export async function uploadProductImage(
@@ -52,4 +66,13 @@ export async function uploadProductImage(
   )
 
   return response.data
+}
+
+function normalizeProduct(data: ProductFormData) {
+  return {
+    ...data,
+    description: data.description || undefined,
+    outsourcedPrice: data.outsourcedPrice ?? undefined,
+    categoryId: data.categoryId || undefined,
+  }
 }

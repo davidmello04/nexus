@@ -1,13 +1,28 @@
 import { Fragment, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { DollarSign, Image as ImageIcon, Layers } from 'lucide-react'
+import {
+  DollarSign,
+  Image as ImageIcon,
+  Layers,
+  Pencil,
+  Power,
+  Trash2,
+} from 'lucide-react'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { ProductForm } from './ProductForm'
 import { ProductImageUpload } from './ProductImageUpload'
 import { ProductVariantsPanel } from './ProductVariantsPanel'
 import { CustomerProductPricesPanel } from './CustomerProductPricesPanel'
 import type { ProductFormData } from './product-schema'
-import { createProduct, getProducts } from './products-service'
+import {
+  createProduct,
+  deleteProduct,
+  getProducts,
+  updateProduct,
+  updateProductActive,
+} from './products-service'
 import type { Product, ProductImage } from './types'
 
 const apiAssetBaseUrl = (
@@ -16,6 +31,8 @@ const apiAssetBaseUrl = (
 
 export function ProductsPage() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
   const [uploadProductId, setUploadProductId] = useState<string | null>(null)
   const [variantsProductId, setVariantsProductId] = useState<string | null>(
     null,
@@ -35,21 +52,97 @@ export function ProductsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
       setIsProductModalOpen(false)
+      setSelectedProduct(null)
+    },
+  })
+  const updateProductMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ProductFormData }) =>
+      updateProduct(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      setIsProductModalOpen(false)
+      setSelectedProduct(null)
+    },
+  })
+  const toggleProductMutation = useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
+      updateProductActive(id, active),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+    },
+  })
+  const deleteProductMutation = useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      setProductToDelete(null)
+      setSelectedProduct(null)
     },
   })
 
-  function handleCreateProduct(data: ProductFormData) {
+  const isEditing = Boolean(selectedProduct)
+  const selectedProductInitialData = selectedProduct
+    ? mapProductToFormData(selectedProduct)
+    : undefined
+  const isSubmitting =
+    createProductMutation.isPending || updateProductMutation.isPending
+
+  function handleSubmitProduct(data: ProductFormData) {
+    if (selectedProduct) {
+      updateProductMutation.mutate({
+        id: selectedProduct.id,
+        data,
+      })
+      return
+    }
+
     createProductMutation.mutate(data)
   }
 
   function handleNewProductClick() {
     createProductMutation.reset()
+    updateProductMutation.reset()
+    setSelectedProduct(null)
+    setIsProductModalOpen(true)
+  }
+
+  function handleEditProduct(product: Product) {
+    createProductMutation.reset()
+    updateProductMutation.reset()
+    setSelectedProduct(product)
     setIsProductModalOpen(true)
   }
 
   function handleCloseProductModal() {
     createProductMutation.reset()
+    updateProductMutation.reset()
+    setSelectedProduct(null)
     setIsProductModalOpen(false)
+  }
+
+  function handleToggleProduct(product: Product) {
+    toggleProductMutation.mutate({
+      id: product.id,
+      active: !product.active,
+    })
+  }
+
+  function handleDeleteProduct(product: Product) {
+    deleteProductMutation.reset()
+    setProductToDelete(product)
+  }
+
+  function handleCancelDeleteProduct() {
+    deleteProductMutation.reset()
+    setProductToDelete(null)
+  }
+
+  function handleConfirmDeleteProduct() {
+    if (!productToDelete) {
+      return
+    }
+
+    deleteProductMutation.mutate(productToDelete.id)
   }
 
   function handleUploadSuccess() {
@@ -183,6 +276,35 @@ export function ProductsPage() {
                           <div className="flex justify-end gap-2">
                             <button
                               type="button"
+                              onClick={() => handleEditProduct(product)}
+                              title="Editar produto"
+                              aria-label={`Editar produto ${product.name}`}
+                              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50"
+                            >
+                              <Pencil className="h-4 w-4" aria-hidden="true" />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleToggleProduct(product)}
+                              disabled={toggleProductMutation.isPending}
+                              title={
+                                product.active
+                                  ? 'Inativar produto'
+                                  : 'Ativar produto'
+                              }
+                              aria-label={
+                                product.active
+                                  ? `Inativar produto ${product.name}`
+                                  : `Ativar produto ${product.name}`
+                              }
+                              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              <Power className="h-4 w-4" aria-hidden="true" />
+                            </button>
+
+                            <button
+                              type="button"
                               onClick={() =>
                                 setUploadProductId((currentProductId) =>
                                   currentProductId === product.id
@@ -234,6 +356,17 @@ export function ProductsPage() {
                                 aria-hidden="true"
                               />
                             </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteProduct(product)}
+                              disabled={deleteProductMutation.isPending}
+                              title="Excluir produto"
+                              aria-label={`Excluir produto ${product.name}`}
+                              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-red-200 text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              <Trash2 className="h-4 w-4" aria-hidden="true" />
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -277,27 +410,71 @@ export function ProductsPage() {
 
       <Modal
         open={isProductModalOpen}
-        title="Novo produto"
-        description="Preencha os dados para cadastrar um novo produto."
+        title={isEditing ? 'Editar produto' : 'Novo produto'}
+        description={
+          isEditing
+            ? 'Atualize os dados do produto selecionado.'
+            : 'Preencha os dados para cadastrar um novo produto.'
+        }
         onClose={handleCloseProductModal}
       >
-        {createProductMutation.isError && (
+        {(createProductMutation.isError || updateProductMutation.isError) && (
           <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
             Não foi possível salvar o produto.
           </div>
         )}
 
         <ProductForm
-          onSubmit={handleCreateProduct}
-          isSubmitting={createProductMutation.isPending}
+          onSubmit={handleSubmitProduct}
+          isSubmitting={isSubmitting}
+          initialData={selectedProductInitialData}
+          submitButtonText={isEditing ? 'Atualizar produto' : 'Salvar produto'}
+          onCancel={handleCloseProductModal}
         />
       </Modal>
+
+      <ConfirmDialog
+        open={Boolean(productToDelete)}
+        title="Excluir produto"
+        description={
+          productToDelete
+            ? `Tem certeza que deseja excluir o produto "${productToDelete.name}"?\nEssa ação não pode ser desfeita.`
+            : ''
+        }
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        variant="danger"
+        isLoading={deleteProductMutation.isPending}
+        errorMessage={
+          deleteProductMutation.isError
+            ? getApiErrorMessage(
+                deleteProductMutation.error,
+                'Não foi possível excluir este produto.',
+              )
+            : undefined
+        }
+        onConfirm={handleConfirmDeleteProduct}
+        onCancel={handleCancelDeleteProduct}
+      />
     </div>
   )
 }
 
 function getMainImage(product: Product) {
   return product.images?.find((image) => image.isMain) ?? product.images?.[0]
+}
+
+function mapProductToFormData(product: Product): ProductFormData {
+  return {
+    name: product.name,
+    description: product.description ?? '',
+    basePrice: Number(product.basePrice),
+    outsourcedPrice: hasPrice(product.outsourcedPrice)
+      ? Number(product.outsourcedPrice)
+      : undefined,
+    active: product.active,
+    categoryId: product.categoryId ?? '',
+  }
 }
 
 function getImageUrl(url: ProductImage['url']) {

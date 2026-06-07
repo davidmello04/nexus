@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { useForm, type SubmitHandler } from 'react-hook-form'
@@ -11,9 +12,18 @@ import {
 type ProductFormProps = {
   onSubmit: SubmitHandler<ProductFormData>
   isSubmitting?: boolean
+  initialData?: ProductFormData
+  submitButtonText?: string
+  onCancel?: () => void
 }
 
-export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
+export function ProductForm({
+  onSubmit,
+  isSubmitting,
+  initialData,
+  submitButtonText = 'Salvar produto',
+  onCancel,
+}: ProductFormProps) {
   const {
     data: categories = [],
     isLoading: isLoadingCategories,
@@ -25,18 +35,16 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ProductFormInput, unknown, ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-      basePrice: '',
-      outsourcedPrice: '',
-      active: true,
-      categoryId: '',
-    },
+    defaultValues: getDefaultValues(initialData),
   })
+
+  useEffect(() => {
+    reset(getDefaultValues(initialData))
+  }, [initialData, reset])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -130,14 +138,36 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
       </label>
 
       <div className="flex justify-end gap-2">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancelar
+          </button>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
           className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'Salvando...' : 'Salvar produto'}
+          {isSubmitting ? 'Salvando...' : submitButtonText}
         </button>
       </div>
     </form>
   )
+}
+
+function getDefaultValues(initialData?: ProductFormData): ProductFormInput {
+  return {
+    name: initialData?.name ?? '',
+    description: initialData?.description ?? '',
+    basePrice: initialData?.basePrice ?? '',
+    outsourcedPrice: initialData?.outsourcedPrice ?? '',
+    active: initialData?.active ?? true,
+    categoryId: initialData?.categoryId ?? '',
+  }
 }
