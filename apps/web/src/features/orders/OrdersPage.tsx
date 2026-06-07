@@ -5,6 +5,7 @@ import {
   CircleCheck,
   Eye,
   Factory,
+  Pencil,
   type LucideIcon,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -15,7 +16,12 @@ import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { OrderForm } from './OrderForm'
 import type { OrderFormData } from './order-schema'
-import { createOrder, getOrders, updateOrderStatus } from './orders-service'
+import {
+  createOrder,
+  getOrders,
+  updateOrder,
+  updateOrderStatus,
+} from './orders-service'
 import type { Order } from './types'
 
 type OrderStatus = 'DRAFT' | 'PENDING' | 'IN_PRODUCTION' | 'DONE' | 'CANCELED'
@@ -50,6 +56,7 @@ const initialFilters: OrderFilters = {
 
 export function OrdersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [orderToEdit, setOrderToEdit] = useState<Order | null>(null)
   const [statusAction, setStatusAction] = useState<StatusAction | null>(null)
   const [filters, setFilters] = useState<OrderFilters>(initialFilters)
   const navigate = useNavigate()
@@ -75,6 +82,15 @@ export function OrdersPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       setStatusAction(null)
+    },
+  })
+  const updateOrderMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: OrderFormData }) =>
+      updateOrder(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: ['order', variables.id] })
+      setOrderToEdit(null)
     },
   })
   const customerFilterOptions = getCustomerFilterOptions(orders)
@@ -123,6 +139,27 @@ export function OrdersPage() {
   function handleCloseCreateOrderModal() {
     createOrderMutation.reset()
     setIsFormOpen(false)
+  }
+
+  function handleOpenEditOrderModal(order: Order) {
+    updateOrderMutation.reset()
+    setOrderToEdit(order)
+  }
+
+  function handleCloseEditOrderModal() {
+    updateOrderMutation.reset()
+    setOrderToEdit(null)
+  }
+
+  function handleUpdateOrder(data: OrderFormData) {
+    if (!orderToEdit) {
+      return
+    }
+
+    updateOrderMutation.mutate({
+      id: orderToEdit.id,
+      data,
+    })
   }
 
   function handleFilterChange(field: keyof OrderFilters, value: string) {
@@ -374,6 +411,21 @@ export function OrdersPage() {
                           )
                         })}
 
+                        {canEditOrder(order.status) && (
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              handleOpenEditOrderModal(order)
+                            }}
+                            title="Editar pedido"
+                            aria-label="Editar pedido"
+                            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <Pencil className="h-4 w-4" aria-hidden="true" />
+                          </button>
+                        )}
+
                         <button
                           type="button"
                           onClick={(event) => {
@@ -412,6 +464,32 @@ export function OrdersPage() {
         <OrderForm
           onSubmit={handleCreateOrder}
           isSubmitting={createOrderMutation.isPending}
+        />
+      </Modal>
+
+      <Modal
+        open={Boolean(orderToEdit)}
+        title="Editar pedido"
+        description={
+          orderToEdit
+            ? `Pedido #${orderToEdit.code}. Recalcule itens e valores pelo backend ao salvar.`
+            : undefined
+        }
+        maxWidthClassName="max-w-5xl"
+        onClose={handleCloseEditOrderModal}
+      >
+        {updateOrderMutation.isError && (
+          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            Não foi possível salvar as alterações do pedido.
+          </div>
+        )}
+
+        <OrderForm
+          initialData={orderToEdit}
+          onSubmit={handleUpdateOrder}
+          isSubmitting={updateOrderMutation.isPending}
+          submitButtonText="Salvar alterações"
+          onCancel={handleCloseEditOrderModal}
         />
       </Modal>
 
@@ -466,6 +544,10 @@ function getStatusLabel(status: string) {
 
 function getStatusOptions(): OrderStatus[] {
   return ['DRAFT', 'PENDING', 'IN_PRODUCTION', 'DONE', 'CANCELED']
+}
+
+function canEditOrder(status: string) {
+  return status === 'DRAFT' || status === 'PENDING'
 }
 
 function getCustomerFilterOptions(orders: Order[]) {

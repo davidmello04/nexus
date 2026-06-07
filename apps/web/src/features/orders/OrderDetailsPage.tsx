@@ -5,14 +5,18 @@ import {
   CheckCheck,
   CircleCheck,
   Factory,
+  Pencil,
   type LucideIcon,
 } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { Modal } from '@/components/Modal'
 import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
-import { getOrder, updateOrderStatus } from './orders-service'
+import { OrderForm } from './OrderForm'
+import type { OrderFormData } from './order-schema'
+import { getOrder, updateOrder, updateOrderStatus } from './orders-service'
 import type { Order, OrderItem } from './types'
 
 type OrderStatus = 'DRAFT' | 'PENDING' | 'IN_PRODUCTION' | 'DONE' | 'CANCELED'
@@ -31,6 +35,7 @@ type StatusActionOption = {
 
 export function OrderDetailsPage() {
   const { id } = useParams()
+  const [isEditOpen, setIsEditOpen] = useState(false)
   const [statusAction, setStatusAction] = useState<StatusAction | null>(null)
   const queryClient = useQueryClient()
   const {
@@ -49,6 +54,15 @@ export function OrderDetailsPage() {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: ['order', id] })
       setStatusAction(null)
+    },
+  })
+  const updateOrderMutation = useMutation({
+    mutationFn: ({ orderId, data }: { orderId: string; data: OrderFormData }) =>
+      updateOrder(orderId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: ['order', id] })
+      setIsEditOpen(false)
     },
   })
 
@@ -70,6 +84,27 @@ export function OrderDetailsPage() {
     updateStatusMutation.mutate({
       orderId: statusAction.order.id,
       status: statusAction.status,
+    })
+  }
+
+  function handleOpenEditModal() {
+    updateOrderMutation.reset()
+    setIsEditOpen(true)
+  }
+
+  function handleCloseEditModal() {
+    updateOrderMutation.reset()
+    setIsEditOpen(false)
+  }
+
+  function handleUpdateOrder(data: OrderFormData) {
+    if (!order) {
+      return
+    }
+
+    updateOrderMutation.mutate({
+      orderId: order.id,
+      data,
     })
   }
 
@@ -135,6 +170,18 @@ export function OrderDetailsPage() {
               </button>
             )
           })}
+
+          {canEditOrder(order.status) && (
+            <button
+              type="button"
+              onClick={handleOpenEditModal}
+              title="Editar pedido"
+              aria-label="Editar pedido"
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -231,6 +278,28 @@ export function OrderDetailsPage() {
           </div>
         </div>
       </section>
+
+      <Modal
+        open={isEditOpen}
+        title="Editar pedido"
+        description={`Pedido #${order.code}. Recalcule itens e valores pelo backend ao salvar.`}
+        maxWidthClassName="max-w-5xl"
+        onClose={handleCloseEditModal}
+      >
+        {updateOrderMutation.isError && (
+          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            Não foi possível salvar as alterações do pedido.
+          </div>
+        )}
+
+        <OrderForm
+          initialData={order}
+          onSubmit={handleUpdateOrder}
+          isSubmitting={updateOrderMutation.isPending}
+          submitButtonText="Salvar alterações"
+          onCancel={handleCloseEditModal}
+        />
+      </Modal>
 
       <ConfirmDialog
         open={Boolean(statusAction)}
@@ -337,6 +406,10 @@ function getStatusBadgeClassName(status: string) {
   }
 
   return classNames[status] ?? 'bg-slate-100 text-slate-700'
+}
+
+function canEditOrder(status: string) {
+  return status === 'DRAFT' || status === 'PENDING'
 }
 
 function getStatusActions(status: string): StatusActionOption[] {

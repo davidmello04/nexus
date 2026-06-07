@@ -15,7 +15,27 @@ export async function getOrder(id: string) {
 }
 
 export async function createOrder(data: OrderFormData) {
-  const payload: CreateOrderPayload = {
+  const payload = buildOrderPayload(data)
+  const response = await api.post<Order>('/orders', payload)
+
+  return response.data
+}
+
+export async function updateOrder(id: string, data: OrderFormData) {
+  const payload = buildOrderPayload(data)
+  const response = await api.patch<Order>(`/orders/${id}`, payload)
+
+  return response.data
+}
+
+export async function updateOrderStatus(id: string, status: string) {
+  const response = await api.patch<Order>(`/orders/${id}`, { status })
+
+  return response.data
+}
+
+function buildOrderPayload(data: OrderFormData): CreateOrderPayload {
+  return {
     customerId: data.customerId,
     discount: data.discount ?? undefined,
     notes: data.notes || undefined,
@@ -26,13 +46,4 @@ export async function createOrder(data: OrderFormData) {
       notes: item.notes || undefined,
     })),
   }
-  const response = await api.post<Order>('/orders', payload)
-
-  return response.data
-}
-
-export async function updateOrderStatus(id: string, status: string) {
-  const response = await api.patch<Order>(`/orders/${id}`, { status })
-
-  return response.data
 }

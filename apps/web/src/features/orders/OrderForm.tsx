@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { getCustomers } from '@/features/customers/customers-service'
 import { getProducts } from '@/features/products/products-service'
 import type { ProductVariant } from '@/features/products/types'
@@ -17,13 +18,23 @@ import {
   type OrderFormInput,
 } from './order-schema'
 import { resolvePrice, type ResolvedPriceSource } from './pricing-service'
+import type { Order } from './types'
 
 type OrderFormProps = {
   onSubmit: SubmitHandler<OrderFormData>
   isSubmitting?: boolean
+  initialData?: Order | null
+  submitButtonText?: string
+  onCancel?: () => void
 }
 
-export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
+export function OrderForm({
+  onSubmit,
+  isSubmitting,
+  initialData,
+  submitButtonText = 'Salvar pedido',
+  onCancel,
+}: OrderFormProps) {
   const {
     data: customers = [],
     isLoading: isLoadingCustomers,
@@ -46,22 +57,11 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<OrderFormInput, unknown, OrderFormData>({
     resolver: zodResolver(orderSchema),
-    defaultValues: {
-      customerId: '',
-      discount: undefined,
-      notes: '',
-      items: [
-        {
-          productId: '',
-          productVariantId: '',
-          quantity: 1,
-          notes: '',
-        },
-      ],
-    },
+    defaultValues: getOrderFormDefaultValues(initialData),
   })
   const { fields, append, remove } = useFieldArray({
     control,
@@ -116,6 +116,10 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
   )
   const estimatedDiscount = Number(discount) || 0
   const estimatedTotal = Math.max(estimatedSubtotal - estimatedDiscount, 0)
+
+  useEffect(() => {
+    reset(getOrderFormDefaultValues(initialData))
+  }, [initialData, reset])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -346,17 +350,61 @@ export function OrderForm({ onSubmit, isSubmitting }: OrderFormProps) {
         </dl>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancelar
+          </button>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
           className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'Salvando...' : 'Salvar pedido'}
+          {isSubmitting ? 'Salvando...' : submitButtonText}
         </button>
       </div>
     </form>
   )
+}
+
+function getOrderFormDefaultValues(order?: Order | null): OrderFormInput {
+  if (!order) {
+    return {
+      customerId: '',
+      discount: undefined,
+      notes: '',
+      items: [
+        {
+          productId: '',
+          productVariantId: '',
+          quantity: 1,
+          notes: '',
+        },
+      ],
+    }
+  }
+
+  return {
+    customerId: order.customerId,
+    discount:
+      order.discount === null || order.discount === undefined
+        ? undefined
+        : Number(order.discount),
+    notes: order.notes || '',
+    items: order.items.map((item) => ({
+      productId: item.productId,
+      productVariantId: item.productVariantId || '',
+      quantity: item.quantity,
+      notes: item.notes || '',
+    })),
+  }
 }
 
 type ItemPricePreviewProps = {
