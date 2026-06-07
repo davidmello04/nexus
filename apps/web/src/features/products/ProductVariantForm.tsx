@@ -163,8 +163,8 @@ function getDefaultValues(
     color: initialData?.color ?? '',
     type: initialData?.type ?? '',
     material: initialData?.material ?? '',
-    basePrice: initialData?.basePrice ?? undefined,
-    outsourcedPrice: initialData?.outsourcedPrice ?? undefined,
+    basePrice: initialData?.basePrice ?? '',
+    outsourcedPrice: initialData?.outsourcedPrice ?? '',
     active: initialData?.active ?? true,
   }
 }

@@ -31,8 +31,8 @@ export function ProductForm({ onSubmit, isSubmitting }: ProductFormProps) {
     defaultValues: {
       name: '',
       description: '',
-      basePrice: 0,
-      outsourcedPrice: undefined,
+      basePrice: '',
+      outsourcedPrice: '',
       active: true,
       categoryId: '',
     },

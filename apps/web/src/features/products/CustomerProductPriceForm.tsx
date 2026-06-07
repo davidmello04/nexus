@@ -44,7 +44,7 @@ export function CustomerProductPriceForm({
       customerId: '',
       productId,
       variantId: '',
-      price: 0,
+      price: '',
       active: true,
     },
   })
