@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -68,6 +72,54 @@ export class ProductsService {
 
   async remove(id: string) {
     await this.findOne(id);
+
+    const [orderItemsCount, variantsCount, customPricesCount, imagesCount] =
+      await Promise.all([
+        this.prisma.orderItem.count({
+          where: {
+            productId: id,
+          },
+        }),
+        this.prisma.productVariant.count({
+          where: {
+            productId: id,
+          },
+        }),
+        this.prisma.customerProductPrice.count({
+          where: {
+            productId: id,
+          },
+        }),
+        this.prisma.productImage.count({
+          where: {
+            productId: id,
+          },
+        }),
+      ]);
+
+    if (orderItemsCount > 0) {
+      throw new BadRequestException(
+        'Este produto possui pedidos vinculados e não pode ser excluído. Inative o produto para manter o histórico.',
+      );
+    }
+
+    if (variantsCount > 0) {
+      throw new BadRequestException(
+        'Este produto possui variações vinculadas e não pode ser excluído. Remova ou inative as variações antes de excluir o produto.',
+      );
+    }
+
+    if (customPricesCount > 0) {
+      throw new BadRequestException(
+        'Este produto possui preços específicos vinculados e não pode ser excluído. Remova os preços específicos antes de excluir o produto.',
+      );
+    }
+
+    if (imagesCount > 0) {
+      throw new BadRequestException(
+        'Este produto possui imagens vinculadas e não pode ser excluído. Remova as imagens antes de excluir o produto.',
+      );
+    }
 
     return this.prisma.product.delete({
       where: { id },
