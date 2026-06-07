@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import {
@@ -10,30 +11,32 @@ type ProductVariantFormProps = {
   productId: string
   onSubmit: SubmitHandler<ProductVariantFormData>
   isSubmitting?: boolean
+  initialData?: ProductVariantFormData
+  submitButtonText?: string
+  onCancel?: () => void
 }
 
 export function ProductVariantForm({
   productId,
   onSubmit,
   isSubmitting,
+  initialData,
+  submitButtonText = 'Salvar variação',
+  onCancel,
 }: ProductVariantFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ProductVariantFormInput, unknown, ProductVariantFormData>({
     resolver: zodResolver(productVariantSchema),
-    defaultValues: {
-      productId,
-      size: '',
-      color: '',
-      type: '',
-      material: '',
-      basePrice: undefined,
-      outsourcedPrice: undefined,
-      active: true,
-    },
+    defaultValues: getDefaultValues(productId, initialData),
   })
+
+  useEffect(() => {
+    reset(getDefaultValues(productId, initialData))
+  }, [initialData, productId, reset])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -41,7 +44,9 @@ export function ProductVariantForm({
 
       <div className="grid gap-4 md:grid-cols-4">
         <div>
-          <label className="text-sm font-medium text-slate-700">Tamanho</label>
+          <label className="text-sm font-medium text-slate-700">
+            Tamanho/Medida
+          </label>
           <input
             {...register('size')}
             className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
@@ -123,14 +128,43 @@ export function ProductVariantForm({
           Variação ativa
         </label>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSubmitting ? 'Salvando...' : 'Salvar variação'}
-        </button>
+        <div className="flex justify-end gap-2">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={isSubmitting}
+              className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Cancelar
+            </button>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? 'Salvando...' : submitButtonText}
+          </button>
+        </div>
       </div>
     </form>
   )
+}
+
+function getDefaultValues(
+  productId: string,
+  initialData?: ProductVariantFormData,
+): ProductVariantFormInput {
+  return {
+    productId,
+    size: initialData?.size ?? '',
+    color: initialData?.color ?? '',
+    type: initialData?.type ?? '',
+    material: initialData?.material ?? '',
+    basePrice: initialData?.basePrice ?? undefined,
+    outsourcedPrice: initialData?.outsourcedPrice ?? undefined,
+    active: initialData?.active ?? true,
+  }
 }

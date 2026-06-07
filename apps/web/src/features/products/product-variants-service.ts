@@ -9,7 +9,40 @@ export async function getProductVariants() {
 }
 
 export async function createProductVariant(data: ProductVariantFormData) {
-  const response = await api.post<ProductVariant>('/product-variants', {
+  const response = await api.post<ProductVariant>(
+    '/product-variants',
+    normalizeProductVariantPayload(data),
+  )
+
+  return response.data
+}
+
+export async function updateProductVariant(
+  id: string,
+  data: ProductVariantFormData,
+) {
+  const response = await api.patch<ProductVariant>(
+    `/product-variants/${id}`,
+    normalizeProductVariantPayload(data),
+  )
+
+  return response.data
+}
+
+export async function updateProductVariantActive(id: string, active: boolean) {
+  const response = await api.patch<ProductVariant>(`/product-variants/${id}`, {
+    active,
+  })
+
+  return response.data
+}
+
+export async function deleteProductVariant(id: string) {
+  await api.delete(`/product-variants/${id}`)
+}
+
+function normalizeProductVariantPayload(data: ProductVariantFormData) {
+  return {
     ...data,
     size: data.size || undefined,
     color: data.color || undefined,
@@ -17,7 +50,5 @@ export async function createProductVariant(data: ProductVariantFormData) {
     material: data.material || undefined,
     basePrice: data.basePrice ?? undefined,
     outsourcedPrice: data.outsourcedPrice ?? undefined,
-  })
-
-  return response.data
+  }
 }
