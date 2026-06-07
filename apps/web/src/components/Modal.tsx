@@ -1,3 +1,4 @@
+import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type ModalProps = {
@@ -27,8 +28,18 @@ export function Modal({
       aria-labelledby="modal-title"
       aria-describedby={description ? 'modal-description' : undefined}
     >
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-        <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+        <button
+          type="button"
+          onClick={onClose}
+          title="Fechar modal"
+          aria-label="Fechar modal"
+          className="absolute right-4 top-4 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
+
+        <div className="mb-5 pr-10">
           <div>
             <h2 id="modal-title" className="text-lg font-semibold">
               {title}
@@ -42,14 +53,6 @@ export function Modal({
               </p>
             )}
           </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            Fechar
-          </button>
         </div>
 
         {children}

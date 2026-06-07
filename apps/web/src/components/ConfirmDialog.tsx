@@ -1,3 +1,5 @@
+import { X } from 'lucide-react'
+
 type ConfirmDialogProps = {
   open: boolean
   title: string
@@ -45,10 +47,21 @@ export function ConfirmDialog({
       aria-labelledby="confirm-dialog-title"
       aria-describedby="confirm-dialog-description"
     >
-      <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isLoading}
+          title="Fechar modal"
+          aria-label="Fechar modal"
+          className="absolute right-4 top-4 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
+
         <h2
           id="confirm-dialog-title"
-          className="text-lg font-semibold text-slate-950"
+          className="pr-10 text-lg font-semibold text-slate-950"
         >
           {title}
         </h2>
