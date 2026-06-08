@@ -17,8 +17,18 @@ export type DashboardSummary = {
   inactiveProducts: number
 }
 
-export async function getDashboardSummary() {
-  const response = await api.get<DashboardSummary>('/dashboard/summary')
+export type DashboardSummaryFilters = {
+  startDate?: string
+  endDate?: string
+}
+
+export async function getDashboardSummary(filters?: DashboardSummaryFilters) {
+  const response = await api.get<DashboardSummary>('/dashboard/summary', {
+    params: {
+      startDate: filters?.startDate || undefined,
+      endDate: filters?.endDate || undefined,
+    },
+  })
 
   return response.data
 }
