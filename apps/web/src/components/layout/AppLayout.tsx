@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import {
   Boxes,
   ClipboardList,
+  FileText,
   Home,
   Package,
   Tags,
@@ -33,6 +34,11 @@ const navItems = [
     title: 'Pedidos',
     href: '/orders',
     icon: ClipboardList,
+  },
+  {
+    title: 'Relatório de pedidos',
+    href: '/reports/orders',
+    icon: FileText,
   },
 ]
 
