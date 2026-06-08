@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { OrderStatus, Prisma } from '@prisma/client';
+import ExcelJS from 'exceljs';
 import { PrismaService } from '../prisma/prisma.service';
 
 type OrdersReportFilters = {
@@ -17,15 +18,7 @@ export class ReportsService {
     const where = this.buildOrdersWhere(filters);
 
     const [orders, totals] = await Promise.all([
-      this.prisma.order.findMany({
-        where,
-        include: {
-          customer: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      }),
+      this.findOrders(where),
       this.prisma.order.aggregate({
         where,
         _count: {
@@ -53,6 +46,65 @@ export class ReportsService {
         grandTotal: this.decimalToNumber(totals._sum.total),
       },
     };
+  }
+
+  async exportOrdersReportExcel(filters: OrdersReportFilters = {}) {
+    const where = this.buildOrdersWhere(filters);
+    const orders = await this.findOrders(where);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Pedidos');
+
+    workbook.creator = 'Nexus';
+    workbook.created = new Date();
+
+    worksheet.columns = [
+      { header: 'Código', key: 'code', width: 14 },
+      { header: 'Cliente', key: 'customer', width: 32 },
+      { header: 'Status', key: 'status', width: 18 },
+      { header: 'Subtotal', key: 'subtotal', width: 16 },
+      { header: 'Desconto', key: 'discount', width: 16 },
+      { header: 'Total', key: 'total', width: 16 },
+      { header: 'Data', key: 'createdAt', width: 18 },
+      { header: 'Observações', key: 'notes', width: 40 },
+    ];
+
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).alignment = { vertical: 'middle' };
+
+    orders.forEach((order) => {
+      worksheet.addRow({
+        code: order.code,
+        customer: order.customer?.name ?? '-',
+        status: this.getStatusLabel(order.status),
+        subtotal: this.decimalToNumber(order.subtotal),
+        discount: this.decimalToNumber(order.discount),
+        total: this.decimalToNumber(order.total),
+        createdAt: order.createdAt,
+        notes: order.notes ?? '',
+      });
+    });
+
+    ['subtotal', 'discount', 'total'].forEach((columnKey) => {
+      worksheet.getColumn(columnKey).numFmt = '"R$" #,##0.00';
+    });
+    worksheet.getColumn('createdAt').numFmt = 'dd/mm/yyyy';
+    worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    return Buffer.from(buffer);
+  }
+
+  private findOrders(where: Prisma.OrderWhereInput) {
+    return this.prisma.order.findMany({
+      where,
+      include: {
+        customer: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   private buildOrdersWhere(filters: OrdersReportFilters) {
@@ -121,6 +173,18 @@ export class ReportsService {
     }
 
     return status as OrderStatus;
+  }
+
+  private getStatusLabel(status: OrderStatus) {
+    const labels: Record<OrderStatus, string> = {
+      DRAFT: 'Rascunho',
+      PENDING: 'Pendente',
+      IN_PRODUCTION: 'Em produção',
+      DONE: 'Concluído',
+      CANCELED: 'Cancelado',
+    };
+
+    return labels[status];
   }
 
   private decimalToNumber(value: Prisma.Decimal | null) {

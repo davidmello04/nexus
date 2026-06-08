@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getCustomers } from '@/features/customers/customers-service'
 import { formatCurrency } from '@/lib/formatters'
-import { getOrdersReport } from './orders-report-service'
+import {
+  exportOrdersReportExcel,
+  getOrdersReport,
+} from './orders-report-service'
 
 type ReportFilters = {
   startDate: string
@@ -22,6 +25,8 @@ const statusOptions = ['DRAFT', 'PENDING', 'IN_PRODUCTION', 'DONE', 'CANCELED']
 
 export function OrdersReportPage() {
   const [filters, setFilters] = useState<ReportFilters>(initialFilters)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportError, setExportError] = useState('')
   const {
     data: report,
     isLoading,
@@ -45,16 +50,55 @@ export function OrdersReportPage() {
     }))
   }
 
+  async function handleExportExcel() {
+    setIsExporting(true)
+    setExportError('')
+
+    try {
+      const file = await exportOrdersReportExcel(filters)
+      const url = window.URL.createObjectURL(file)
+      const link = document.createElement('a')
+
+      link.href = url
+      link.download = 'relatorio-pedidos.xlsx'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch {
+      setExportError('Não foi possível exportar o relatório.')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <div>
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Relatório de pedidos
-        </h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Analise pedidos por período, status e cliente.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Relatório de pedidos
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Analise pedidos por período, status e cliente.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleExportExcel}
+          disabled={isExporting}
+          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isExporting ? 'Exportando...' : 'Exportar Excel'}
+        </button>
       </div>
+
+      {exportError && (
+        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {exportError}
+        </div>
+      )}
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-end">

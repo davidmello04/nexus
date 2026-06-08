@@ -34,13 +34,28 @@ export type OrdersReport = {
 
 export async function getOrdersReport(filters: OrdersReportFilters = {}) {
   const response = await api.get<OrdersReport>('/reports/orders', {
-    params: {
-      startDate: filters.startDate || undefined,
-      endDate: filters.endDate || undefined,
-      status: filters.status || undefined,
-      customerId: filters.customerId || undefined,
-    },
+    params: buildReportParams(filters),
   })
 
   return response.data
+}
+
+export async function exportOrdersReportExcel(
+  filters: OrdersReportFilters = {},
+) {
+  const response = await api.get<Blob>('/reports/orders/export/excel', {
+    params: buildReportParams(filters),
+    responseType: 'blob',
+  })
+
+  return response.data
+}
+
+function buildReportParams(filters: OrdersReportFilters) {
+  return {
+    startDate: filters.startDate || undefined,
+    endDate: filters.endDate || undefined,
+    status: filters.status || undefined,
+    customerId: filters.customerId || undefined,
+  }
 }
