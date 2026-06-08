@@ -2,7 +2,10 @@ import { api } from '@/lib/api'
 
 export type DashboardSummary = {
   totalOrders: number
+  draftOrders: number
+  pendingOrders: number
   openOrders: number
+  inProductionOrders: number
   productionOrders: number
   doneOrders: number
   canceledOrders: number

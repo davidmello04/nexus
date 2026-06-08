@@ -20,8 +20,10 @@ export class DashboardService {
 
     const [
       totalOrders,
+      draftOrders,
+      pendingOrders,
       openOrders,
-      productionOrders,
+      inProductionOrders,
       doneOrders,
       canceledOrders,
       doneTotals,
@@ -36,6 +38,18 @@ export class DashboardService {
     ] = await Promise.all([
       this.prisma.order.count({
         where: orderPeriodWhere,
+      }),
+      this.prisma.order.count({
+        where: {
+          ...orderPeriodWhere,
+          status: OrderStatus.DRAFT,
+        },
+      }),
+      this.prisma.order.count({
+        where: {
+          ...orderPeriodWhere,
+          status: OrderStatus.PENDING,
+        },
       }),
       this.prisma.order.count({
         where: {
@@ -104,8 +118,11 @@ export class DashboardService {
 
     return {
       totalOrders,
+      draftOrders,
+      pendingOrders,
       openOrders,
-      productionOrders,
+      inProductionOrders,
+      productionOrders: inProductionOrders,
       doneOrders,
       canceledOrders,
       totalSoldDone: this.decimalToNumber(doneTotals._sum.total),

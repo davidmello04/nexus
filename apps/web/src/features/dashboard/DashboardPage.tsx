@@ -1,5 +1,17 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { formatCurrency } from '@/lib/formatters'
 import {
   getDashboardSummary,
@@ -14,6 +26,7 @@ type AppliedPeriod = DashboardSummaryFilters & {
 }
 
 const initialPeriod = getThisMonthPeriod()
+const chartColors = ['#64748b', '#f59e0b', '#2563eb', '#10b981', '#ef4444']
 
 export function DashboardPage() {
   const [periodMode, setPeriodMode] = useState<PeriodMode>(initialPeriod.mode)
@@ -33,6 +46,22 @@ export function DashboardPage() {
     ],
     queryFn: () => getDashboardSummary(appliedPeriod),
   })
+  const orderStatusChartData = summary
+    ? [
+        { name: 'Rascunho', value: summary.draftOrders },
+        { name: 'Pendente', value: summary.pendingOrders },
+        { name: 'Em produção', value: summary.inProductionOrders },
+        { name: 'Concluído', value: summary.doneOrders },
+        { name: 'Cancelado', value: summary.canceledOrders },
+      ]
+    : []
+  const financialChartData = summary
+    ? [
+        { name: 'Em aberto', value: summary.totalPending },
+        { name: 'Em produção', value: summary.totalInProduction },
+        { name: 'Concluído', value: summary.totalSoldDone },
+      ]
+    : []
 
   function handleApplyPreset(mode: Exclude<PeriodMode, 'custom'>) {
     const period = getPeriodByMode(mode)
@@ -166,13 +195,69 @@ export function DashboardPage() {
                 value={formatCurrency(summary.totalSoldDone)}
               />
               <SummaryCard
-                label="Total pendente"
+                label="Total em aberto"
                 value={formatCurrency(summary.totalPending)}
               />
               <SummaryCard
                 label="Total em produção"
                 value={formatCurrency(summary.totalInProduction)}
               />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-sm font-semibold text-slate-900">Gráficos</h2>
+            <div className="mt-3 grid gap-4 xl:grid-cols-2">
+              <ChartCard title="Pedidos por status">
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={orderStatusChartData}
+                    margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 12 }}
+                      interval={0}
+                      height={58}
+                    />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={formatOrdersTooltip} />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                      {orderStatusChartData.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={chartColors[index % chartColors.length]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard title="Resumo financeiro por situação">
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={financialChartData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={64}
+                      outerRadius={104}
+                      paddingAngle={3}
+                      label={({ name }) => name}
+                    >
+                      {financialChartData.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={chartColors[index % chartColors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={formatFinancialTooltip} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartCard>
             </div>
           </section>
 
@@ -209,6 +294,21 @@ export function DashboardPage() {
   )
 }
 
+function ChartCard({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+      <div className="mt-4 min-h-[300px]">{children}</div>
+    </div>
+  )
+}
+
 function SummaryCard({
   label,
   value,
@@ -222,6 +322,14 @@ function SummaryCard({
       <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
     </div>
   )
+}
+
+function formatOrdersTooltip(value: unknown) {
+  return [Number(value), 'Pedidos']
+}
+
+function formatFinancialTooltip(value: unknown) {
+  return [formatCurrency(Number(value)), 'Valor']
 }
 
 function PeriodButton({
