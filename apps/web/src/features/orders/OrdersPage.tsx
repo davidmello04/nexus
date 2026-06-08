@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { TablePagination } from '@/components/TablePagination'
+import { usePagination } from '@/hooks/usePagination'
 import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { OrderForm } from './OrderForm'
@@ -126,6 +128,7 @@ export function OrdersPage() {
 
     return true
   })
+  const ordersPagination = usePagination({ items: filteredOrders })
 
   function handleCreateOrder(data: OrderFormData) {
     createOrderMutation.mutate(data)
@@ -167,6 +170,7 @@ export function OrdersPage() {
       ...currentFilters,
       [field]: value,
     }))
+    ordersPagination.setPage(1)
   }
 
   function handleOpenStatusDialog(order: Order, status: OrderStatus) {
@@ -309,7 +313,10 @@ export function OrdersPage() {
 
               <button
                 type="button"
-                onClick={() => setFilters(initialFilters)}
+                onClick={() => {
+                  setFilters(initialFilters)
+                  ordersPagination.setPage(1)
+                }}
                 className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 Limpar filtros
@@ -350,7 +357,7 @@ export function OrdersPage() {
               </thead>
 
               <tbody>
-                {filteredOrders.map((order) => (
+                {ordersPagination.paginatedItems.map((order) => (
                   <tr
                     key={order.id}
                     onClick={() => navigate(`/orders/${order.id}`)}
@@ -444,6 +451,13 @@ export function OrdersPage() {
                 ))}
               </tbody>
             </table>
+            <TablePagination
+              page={ordersPagination.page}
+              pageSize={ordersPagination.pageSize}
+              totalItems={filteredOrders.length}
+              onPageChange={ordersPagination.setPage}
+              onPageSizeChange={ordersPagination.setPageSize}
+            />
           </div>
         )}
       </div>

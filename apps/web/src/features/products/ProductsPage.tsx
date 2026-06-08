@@ -10,6 +10,8 @@ import {
 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { TablePagination } from '@/components/TablePagination'
+import { usePagination } from '@/hooks/usePagination'
 import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { ProductForm } from './ProductForm'
@@ -49,6 +51,7 @@ export function ProductsPage() {
     queryKey: ['products'],
     queryFn: getProducts,
   })
+  const productsPagination = usePagination({ items: products })
   const createProductMutation = useMutation({
     mutationFn: createProduct,
     onSuccess: () => {
@@ -242,7 +245,7 @@ export function ProductsPage() {
               </thead>
 
               <tbody>
-                {products.map((product) => {
+                {productsPagination.paginatedItems.map((product) => {
                   const mainImage = getMainImage(product)
 
                   return (
@@ -394,6 +397,13 @@ export function ProductsPage() {
                 })}
               </tbody>
             </table>
+            <TablePagination
+              page={productsPagination.page}
+              pageSize={productsPagination.pageSize}
+              totalItems={products.length}
+              onPageChange={productsPagination.setPage}
+              onPageSizeChange={productsPagination.setPageSize}
+            />
           </div>
         )}
       </div>

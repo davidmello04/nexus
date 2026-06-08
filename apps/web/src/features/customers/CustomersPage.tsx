@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { TablePagination } from '@/components/TablePagination'
+import { usePagination } from '@/hooks/usePagination'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { CustomerForm } from './CustomerForm'
 import type { CustomerFormData } from './customer-schema'
@@ -30,6 +32,7 @@ export function CustomersPage() {
     queryKey: ['customers'],
     queryFn: getCustomers,
   })
+  const customersPagination = usePagination({ items: customers })
 
   const createCustomerMutation = useMutation({
     mutationFn: createCustomer,
@@ -173,7 +176,7 @@ export function CustomersPage() {
               </thead>
 
               <tbody>
-                {customers.map((customer) => {
+                {customersPagination.paginatedItems.map((customer) => {
                   const isCustomerActive = customer.active ?? true
 
                   return (
@@ -252,6 +255,13 @@ export function CustomersPage() {
                 })}
               </tbody>
             </table>
+            <TablePagination
+              page={customersPagination.page}
+              pageSize={customersPagination.pageSize}
+              totalItems={customers.length}
+              onPageChange={customersPagination.setPage}
+              onPageSizeChange={customersPagination.setPageSize}
+            />
           </div>
         )}
       </div>

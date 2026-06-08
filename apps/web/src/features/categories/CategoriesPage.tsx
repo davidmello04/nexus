@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Power, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { TablePagination } from '@/components/TablePagination'
+import { usePagination } from '@/hooks/usePagination'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { CategoryForm } from './CategoryForm'
 import type { CategoryFormData } from './category-schema'
@@ -36,6 +38,7 @@ export function CategoriesPage() {
     queryKey: ['categories'],
     queryFn: getCategories,
   })
+  const categoriesPagination = usePagination({ items: categories })
 
   const createCategoryMutation = useMutation({
     mutationFn: createCategory,
@@ -201,7 +204,7 @@ export function CategoriesPage() {
               </thead>
 
               <tbody>
-                {categories.map((category) => (
+                {categoriesPagination.paginatedItems.map((category) => (
                   <tr
                     key={category.id}
                     className="border-b border-slate-100 last:border-0"
@@ -274,6 +277,13 @@ export function CategoriesPage() {
                 ))}
               </tbody>
             </table>
+            <TablePagination
+              page={categoriesPagination.page}
+              pageSize={categoriesPagination.pageSize}
+              totalItems={categories.length}
+              onPageChange={categoriesPagination.setPage}
+              onPageSizeChange={categoriesPagination.setPageSize}
+            />
           </div>
         )}
       </div>
