@@ -11,6 +11,7 @@ import { CustomerProductPricesModule } from './customer-product-prices/customer-
 import { PricingModule } from './pricing/pricing.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductImagesModule } from './product-images/product-images.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProductImagesModule } from './product-images/product-images.module';
     PricingModule,
     OrdersModule,
     ProductImagesModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
