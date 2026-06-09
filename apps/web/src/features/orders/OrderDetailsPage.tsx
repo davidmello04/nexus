@@ -4,6 +4,7 @@ import {
   Ban,
   CheckCheck,
   CircleCheck,
+  FileText,
   Factory,
   Pencil,
   type LucideIcon,
@@ -16,7 +17,12 @@ import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { OrderForm } from './OrderForm'
 import type { OrderFormData } from './order-schema'
-import { getOrder, updateOrder, updateOrderStatus } from './orders-service'
+import {
+  downloadOrderPdf,
+  getOrder,
+  updateOrder,
+  updateOrderStatus,
+} from './orders-service'
 import type { Order, OrderItem } from './types'
 
 type OrderStatus = 'DRAFT' | 'PENDING' | 'IN_PRODUCTION' | 'DONE' | 'CANCELED'
@@ -37,6 +43,8 @@ export function OrderDetailsPage() {
   const { id } = useParams()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [statusAction, setStatusAction] = useState<StatusAction | null>(null)
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
+  const [pdfError, setPdfError] = useState('')
   const queryClient = useQueryClient()
   const {
     data: order,
@@ -108,6 +116,32 @@ export function OrderDetailsPage() {
     })
   }
 
+  async function handleGeneratePdf() {
+    if (!order) {
+      return
+    }
+
+    setIsGeneratingPdf(true)
+    setPdfError('')
+
+    try {
+      const file = await downloadOrderPdf(order.id)
+      const url = window.URL.createObjectURL(file)
+      const link = document.createElement('a')
+
+      link.href = url
+      link.download = `pedido-${order.code}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch {
+      setPdfError('Não foi possível gerar o PDF do pedido.')
+    } finally {
+      setIsGeneratingPdf(false)
+    }
+  }
+
   if (isLoading) {
     return <div className="text-sm text-slate-500">Carregando pedido...</div>
   }
@@ -140,6 +174,16 @@ export function OrderDetailsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleGeneratePdf}
+            disabled={isGeneratingPdf}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <FileText className="h-4 w-4" aria-hidden="true" />
+            {isGeneratingPdf ? 'Gerando...' : 'Gerar PDF'}
+          </button>
+
           <span
             className={[
               'inline-flex rounded-full px-2.5 py-1 text-xs font-medium',
@@ -184,6 +228,12 @@ export function OrderDetailsPage() {
           )}
         </div>
       </div>
+
+      {pdfError && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {pdfError}
+        </div>
+      )}
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-900">Dados gerais</h2>

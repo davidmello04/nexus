@@ -14,6 +14,14 @@ export async function getOrder(id: string) {
   return response.data
 }
 
+export async function downloadOrderPdf(id: string) {
+  const response = await api.get<Blob>(`/orders/${id}/pdf`, {
+    responseType: 'blob',
+  })
+
+  return response.data
+}
+
 export async function createOrder(data: OrderFormData) {
   const payload = buildOrderPayload(data)
   const response = await api.post<Order>('/orders', payload)
