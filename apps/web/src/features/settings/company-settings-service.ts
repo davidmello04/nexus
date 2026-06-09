@@ -19,3 +19,21 @@ export async function saveCompanySettings(data: CompanySettingsFormData) {
 
   return response.data
 }
+
+export async function uploadCompanyLogo(file: File) {
+  const formData = new FormData()
+
+  formData.append('file', file)
+
+  const response = await api.post<CompanySettings>(
+    '/company-settings/logo',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  )
+
+  return response.data
+}

@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, type SubmitHandler } from 'react-hook-form'
@@ -9,6 +9,7 @@ import {
 import {
   getCompanySettings,
   saveCompanySettings,
+  uploadCompanyLogo,
   type CompanySettings,
 } from './company-settings-service'
 
@@ -23,6 +24,7 @@ const emptyCompanySettingsFormValues: CompanySettingsFormData = {
 }
 
 export function CompanySettingsPage() {
+  const [selectedLogo, setSelectedLogo] = useState<File | null>(null)
   const queryClient = useQueryClient()
   const {
     data: companySettings,
@@ -36,6 +38,13 @@ export function CompanySettingsPage() {
     mutationFn: saveCompanySettings,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-settings'] })
+    },
+  })
+  const uploadLogoMutation = useMutation({
+    mutationFn: uploadCompanyLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['company-settings'] })
+      setSelectedLogo(null)
     },
   })
   const {
@@ -55,6 +64,18 @@ export function CompanySettingsPage() {
   const onSubmit: SubmitHandler<CompanySettingsFormData> = (data) => {
     saveCompanySettingsMutation.mutate(data)
   }
+
+  function handleUploadLogo() {
+    if (!selectedLogo) {
+      return
+    }
+
+    uploadLogoMutation.mutate(selectedLogo)
+  }
+
+  const logoPreviewUrl = companySettings?.logoUrl
+    ? buildUploadUrl(companySettings.logoUrl)
+    : ''
 
   return (
     <div>
@@ -79,7 +100,71 @@ export function CompanySettingsPage() {
         )}
 
         {!isLoading && !isError && (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <section className="rounded-2xl border border-slate-200 p-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                    {logoPreviewUrl ? (
+                      <img
+                        src={logoPreviewUrl}
+                        alt="Logo da empresa"
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <span className="px-2 text-center text-xs text-slate-500">
+                        Sem logo
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <h2 className="text-sm font-semibold text-slate-900">
+                      Logo da empresa
+                    </h2>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Use PNG, JPEG ou WebP com até 2MB.
+                    </p>
+                    <p className="mt-2 max-w-xs truncate text-xs text-slate-500">
+                      {selectedLogo?.name || 'Nenhuma imagem selecionada'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <label className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                    Selecionar imagem
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="sr-only"
+                      onChange={(event) =>
+                        setSelectedLogo(event.target.files?.[0] ?? null)
+                      }
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={handleUploadLogo}
+                    disabled={!selectedLogo || uploadLogoMutation.isPending}
+                    className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {uploadLogoMutation.isPending
+                      ? 'Enviando...'
+                      : 'Enviar logo'}
+                  </button>
+                </div>
+              </div>
+
+              {uploadLogoMutation.isError && (
+                <div className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                  Não foi possível enviar a logo. Verifique o arquivo e tente
+                  novamente.
+                </div>
+              )}
+            </section>
+
             {saveCompanySettingsMutation.isError && (
               <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
                 Não foi possível salvar as configurações.
@@ -207,4 +292,15 @@ function mapCompanySettingsToFormData(
     address: companySettings.address,
     defaultOrderMessage: companySettings.defaultOrderMessage,
   }
+}
+
+function buildUploadUrl(url: string) {
+  if (url.startsWith('http')) {
+    return url
+  }
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3333/api'
+  const baseUrl = apiUrl.replace(/\/api\/?$/, '')
+
+  return `${baseUrl}${url}`
 }

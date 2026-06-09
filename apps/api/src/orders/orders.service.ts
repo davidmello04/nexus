@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CompanySettings, Prisma } from '@prisma/client';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import PDFDocument from 'pdfkit';
 import { CompanySettingsService } from '../company-settings/company-settings.service';
 import { PricingService } from '../pricing/pricing.service';
@@ -282,6 +284,7 @@ export class OrdersService {
     title: string,
     companySettings: CompanySettings | null,
   ) {
+    const contentWidth = companySettings?.logoUrl ? 380 : 496;
     const companyName = companySettings?.name || 'Nexus';
     const contactInfo = companySettings
       ? [companySettings.phone, companySettings.whatsapp]
@@ -310,17 +313,54 @@ export class OrdersService {
       .fillColor('#cbd5e1')
       .text(companyName, 48, 62)
       .text(contactInfo, 48, 76, {
-        width: 496,
+        width: contentWidth,
       });
 
     if (secondaryInfo) {
       document.fillColor('#cbd5e1').text(secondaryInfo, 48, 90, {
-        width: 496,
+        width: contentWidth,
         ellipsis: true,
       });
     }
 
+    this.drawCompanyLogo(document, companySettings?.logoUrl);
+
     document.y = 140;
+  }
+
+  private drawCompanyLogo(
+    document: PDFKit.PDFDocument,
+    logoUrl?: string | null,
+  ) {
+    if (!logoUrl) {
+      return;
+    }
+
+    const logoPath = this.getLocalUploadPath(logoUrl);
+
+    if (!logoPath || !existsSync(logoPath)) {
+      return;
+    }
+
+    try {
+      document.image(logoPath, 460, 28, {
+        fit: [84, 58],
+        align: 'right',
+        valign: 'center',
+      });
+    } catch {
+      return;
+    }
+  }
+
+  private getLocalUploadPath(url: string) {
+    const uploadPath = url.replace(/^\/uploads\//, '');
+
+    if (!uploadPath || uploadPath === url) {
+      return '';
+    }
+
+    return join(process.cwd(), 'uploads', uploadPath);
   }
 
   private drawItemsTable(document: PDFKit.PDFDocument, items: PdfOrderItem[]) {
