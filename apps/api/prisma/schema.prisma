@@ -209,3 +209,20 @@ model OrderItem {
 
   @@map("order_items")
 }
+
+model CompanySettings {
+  id                  String   @id @default(cuid())
+  name                String
+  phone               String
+  whatsapp            String
+  instagram           String
+  document            String
+  address             String   @db.Text
+  defaultOrderMessage String   @db.Text
+  logoUrl             String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("company_settings")
+}

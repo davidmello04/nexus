@@ -7,6 +7,7 @@ import { ProductsPage } from '@/features/products/ProductsPage'
 import { OrderDetailsPage } from '@/features/orders/OrderDetailsPage'
 import { OrdersPage } from '@/features/orders/OrdersPage'
 import { OrdersReportPage } from '@/features/reports/OrdersReportPage'
+import { CompanySettingsPage } from '@/features/settings/CompanySettingsPage'
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
       {
         path: 'reports/orders',
         element: <OrdersReportPage />,
+      },
+      {
+        path: 'settings/company',
+        element: <CompanySettingsPage />,
       },
     ],
   },

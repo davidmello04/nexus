@@ -5,6 +5,7 @@ import {
   FileText,
   Home,
   Package,
+  Settings,
   Tags,
   Users,
 } from 'lucide-react'
@@ -40,6 +41,11 @@ const navItems = [
     href: '/reports/orders',
     icon: FileText,
   },
+  {
+    title: 'Configurações',
+    href: '/settings/company',
+    icon: Settings,
+  },
 ]
 
 export function AppLayout() {
@@ -63,20 +69,20 @@ export function AppLayout() {
 
             return (
               <NavLink
-                  key={item.href}
-                  to={item.href}
-                  end={item.href === '/'}
-                  className={({ isActive }: { isActive: boolean }) =>
-                    [
-                      'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
-                      isActive
-                        ? 'bg-slate-950 text-white'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
-                    ].join(' ')
-                  }
-                >
-                  <Icon size={18} />
-                  {item.title}
+                key={item.href}
+                to={item.href}
+                end={item.href === '/'}
+                className={({ isActive }: { isActive: boolean }) =>
+                  [
+                    'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
+                    isActive
+                      ? 'bg-slate-950 text-white'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
+                  ].join(' ')
+                }
+              >
+                <Icon size={18} />
+                {item.title}
               </NavLink>
             )
           })}

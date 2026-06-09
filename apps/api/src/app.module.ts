@@ -13,6 +13,7 @@ import { OrdersModule } from './orders/orders.module';
 import { ProductImagesModule } from './product-images/product-images.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportsModule } from './reports/reports.module';
+import { CompanySettingsModule } from './company-settings/company-settings.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReportsModule } from './reports/reports.module';
     ProductImagesModule,
     DashboardModule,
     ReportsModule,
+    CompanySettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

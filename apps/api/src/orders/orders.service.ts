@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CompanySettings, Prisma } from '@prisma/client';
 import PDFDocument from 'pdfkit';
+import { CompanySettingsService } from '../company-settings/company-settings.service';
 import { PricingService } from '../pricing/pricing.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -25,6 +26,7 @@ export class OrdersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly pricingService: PricingService,
+    private readonly companySettingsService: CompanySettingsService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
@@ -77,6 +79,7 @@ export class OrdersService {
 
   async generatePdf(id: string) {
     const order = await this.findOne(id);
+    const companySettings = await this.companySettingsService.findFirst();
     const document = new PDFDocument({
       margin: 48,
       size: 'A4',
@@ -89,7 +92,7 @@ export class OrdersService {
       document.on('end', () => resolve(Buffer.concat(chunks)));
     });
 
-    this.drawPdfHeader(document, `Pedido #${order.code}`);
+    this.drawPdfHeader(document, `Pedido #${order.code}`, companySettings);
 
     document
       .fontSize(10)
@@ -274,18 +277,50 @@ export class OrdersService {
     return Number(value);
   }
 
-  private drawPdfHeader(document: PDFKit.PDFDocument, title: string) {
+  private drawPdfHeader(
+    document: PDFKit.PDFDocument,
+    title: string,
+    companySettings: CompanySettings | null,
+  ) {
+    const companyName = companySettings?.name || 'Nexus';
+    const contactInfo = companySettings
+      ? [companySettings.phone, companySettings.whatsapp]
+          .filter(Boolean)
+          .join(' / ')
+      : 'Gestão de pedidos';
+    const secondaryInfo = companySettings
+      ? [
+          companySettings.instagram,
+          companySettings.address,
+          companySettings.document
+            ? `Documento: ${companySettings.document}`
+            : undefined,
+        ]
+          .filter(Boolean)
+          .join(' | ')
+      : '';
+
     document
-      .rect(0, 0, document.page.width, 96)
+      .rect(0, 0, document.page.width, 118)
       .fill('#0f172a')
       .fillColor('#ffffff')
       .fontSize(22)
       .text(title, 48, 34)
       .fontSize(10)
       .fillColor('#cbd5e1')
-      .text('Nexus - Gestão de pedidos', 48, 62);
+      .text(companyName, 48, 62)
+      .text(contactInfo, 48, 76, {
+        width: 496,
+      });
 
-    document.y = 120;
+    if (secondaryInfo) {
+      document.fillColor('#cbd5e1').text(secondaryInfo, 48, 90, {
+        width: 496,
+        ellipsis: true,
+      });
+    }
+
+    document.y = 140;
   }
 
   private drawItemsTable(document: PDFKit.PDFDocument, items: PdfOrderItem[]) {
