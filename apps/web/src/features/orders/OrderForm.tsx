@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { getCustomers } from '@/features/customers/customers-service'
 import { getProducts } from '@/features/products/products-service'
-import type { ProductVariant } from '@/features/products/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueries, useQuery } from '@tanstack/react-query'
 import {
@@ -11,6 +10,7 @@ import {
   type SubmitHandler,
 } from 'react-hook-form'
 import { CurrencyInput } from '@/components/CurrencyInput'
+import { LineItemProductSelector } from '@/components/LineItemProductSelector'
 import { formatCurrency } from '@/lib/formatters'
 import {
   orderSchema,
@@ -70,6 +70,7 @@ export function OrderForm({
   const customerId = watch('customerId')
   const watchedItems = watch('items')
   const discount = watch('discount')
+  const selectedCustomer = customers.find((customer) => customer.id === customerId)
   const priceQueries = useQueries({
     queries: fields.map((field, index) => {
       const item = watchedItems?.[index]
@@ -147,6 +148,11 @@ export function OrderForm({
             Não foi possível carregar os clientes.
           </p>
         )}
+        {selectedCustomer?.isOutsourced && (
+          <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
+            Cliente terceirizado. O preço final será calculado automaticamente ao salvar.
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -161,120 +167,88 @@ export function OrderForm({
           <p className="text-xs text-red-600">{errors.items.root.message}</p>
         )}
 
-        {fields.map((field, index) => {
-          const selectedProduct = products.find(
-            (product) => product.id === watchedItems?.[index]?.productId,
-          )
-          const variants = selectedProduct?.variants ?? []
+        {fields.map((field, index) => (
+          <div
+            key={field.id}
+            className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h4 className="text-sm font-semibold text-slate-900">
+                Item {index + 1}
+              </h4>
 
-          return (
-            <div
-              key={field.id}
-              className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-4"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h4 className="text-sm font-semibold text-slate-900">
-                  Item {index + 1}
-                </h4>
+              {fields.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="cursor-pointer rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50"
+                >
+                  Remover item
+                </button>
+              )}
+            </div>
 
-                {fields.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="cursor-pointer rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50"
-                  >
-                    Remover item
-                  </button>
-                )}
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_120px]">
-                <div>
-                  <label className="text-sm font-medium text-slate-700">
-                    Produto
-                  </label>
-                  <select
-                    {...register(`items.${index}.productId`)}
-                    disabled={isLoadingProducts}
-                    onChange={(event) => {
-                      setValue(`items.${index}.productId`, event.target.value)
-                      setValue(`items.${index}.productVariantId`, '')
-                    }}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950 disabled:cursor-not-allowed disabled:bg-slate-100"
-                  >
-                    <option value="">Selecione um produto</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.items?.[index]?.productId && (
-                    <p className="mt-1 text-xs text-red-600">
-                      {errors.items[index]?.productId?.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-slate-700">
-                    Variação
-                  </label>
-                  <select
-                    {...register(`items.${index}.productVariantId`)}
-                    disabled={variants.length === 0}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950 disabled:cursor-not-allowed disabled:bg-slate-100"
-                  >
-                    <option value="">Sem variação</option>
-                    {variants.map((variant) => (
-                      <option key={variant.id} value={variant.id}>
-                        {formatVariantLabel(variant)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-slate-700">
-                    Quantidade
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    {...register(`items.${index}.quantity`)}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
-                  />
-                  {errors.items?.[index]?.quantity && (
-                    <p className="mt-1 text-xs text-red-600">
-                      {errors.items[index]?.quantity?.message}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_120px]">
+              <LineItemProductSelector
+                products={products}
+                productId={watchedItems?.[index]?.productId}
+                productVariantId={watchedItems?.[index]?.productVariantId}
+                productError={errors.items?.[index]?.productId?.message}
+                isLoadingProducts={isLoadingProducts}
+                onProductChange={(productId) =>
+                  setValue(`items.${index}.productId`, productId, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+                onVariantChange={(variantId) =>
+                  setValue(`items.${index}.productVariantId`, variantId, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              />
 
               <div>
                 <label className="text-sm font-medium text-slate-700">
-                  Observações do item
+                  Quantidade
                 </label>
                 <input
-                  {...register(`items.${index}.notes`)}
+                  type="number"
+                  min="1"
+                  step="1"
+                  {...register(`items.${index}.quantity`)}
                   className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
-                  placeholder="Detalhes do item"
                 />
+                {errors.items?.[index]?.quantity && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.items[index]?.quantity?.message}
+                  </p>
+                )}
               </div>
+            </div>
 
-              <ItemPricePreview
-                isReady={Boolean(customerId && watchedItems?.[index]?.productId)}
-                isLoading={priceQueries[index]?.isLoading}
-                isError={priceQueries[index]?.isError}
-                unitPrice={previewItems[index]?.unitPrice}
-                source={priceQueries[index]?.data?.source}
-                total={previewItems[index]?.total}
+            <div>
+              <label className="text-sm font-medium text-slate-700">
+                Observações do item
+              </label>
+              <input
+                {...register(`items.${index}.notes`)}
+                className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
+                placeholder="Detalhes do item"
               />
             </div>
-          )
-        })}
+
+            <ItemPricePreview
+              isReady={Boolean(customerId && watchedItems?.[index]?.productId)}
+              isLoading={priceQueries[index]?.isLoading}
+              isError={priceQueries[index]?.isError}
+              unitPrice={previewItems[index]?.unitPrice}
+              source={priceQueries[index]?.data?.source}
+              total={previewItems[index]?.total}
+            />
+          </div>
+        ))}
 
         <button
           type="button"
@@ -296,6 +270,10 @@ export function OrderForm({
             Não foi possível carregar os produtos.
           </p>
         )}
+
+        <p className="rounded-xl bg-slate-100 px-3 py-2 text-xs text-slate-600">
+          Os valores exibidos em produto e variação são referência. O preço final será calculado automaticamente ao salvar.
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -492,12 +470,4 @@ function formatPriceSource(source: ResolvedPriceSource) {
   }
 
   return labels[source]
-}
-
-function formatVariantLabel(variant: ProductVariant) {
-  const parts = [variant.size, variant.color, variant.type, variant.material]
-    .filter(Boolean)
-    .join(' / ')
-
-  return parts || `Variação ${variant.id.slice(0, 8)}`
 }
