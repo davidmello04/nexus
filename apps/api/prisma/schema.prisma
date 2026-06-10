@@ -21,6 +21,14 @@ enum AddressType {
   BILLING
 }
 
+enum QuoteStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
 model Customer {
   id           String  @id @default(cuid())
   name         String
@@ -34,6 +42,7 @@ model Customer {
   notes        String? @db.Text
 
   orders       Order[]
+  quotes       Quote[]
   customPrices CustomerProductPrice[]
   addresses    Address[]
 
@@ -94,6 +103,7 @@ model Product {
   images          ProductImage[]
   variants        ProductVariant[]
   orderItems      OrderItem[]
+  quoteItems      QuoteItem[]
   customPrices    CustomerProductPrice[]
 
   createdAt       DateTime @default(now())
@@ -133,6 +143,7 @@ model ProductVariant {
   product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   orderItems      OrderItem[]
+  quoteItems      QuoteItem[]
   customPrices    CustomerProductPrice[]
 
   createdAt       DateTime @default(now())
@@ -208,6 +219,54 @@ model OrderItem {
   createdAt        DateTime @default(now())
 
   @@map("order_items")
+}
+
+model Quote {
+  id         String      @id @default(cuid())
+  code       Int         @unique @default(autoincrement())
+  status     QuoteStatus @default(DRAFT)
+
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id])
+
+  subtotal   Decimal     @default(0) @db.Decimal(10, 2)
+  discount   Decimal     @default(0) @db.Decimal(10, 2)
+  total      Decimal     @default(0) @db.Decimal(10, 2)
+
+  notes      String?     @db.Text
+  validUntil DateTime?
+
+  items      QuoteItem[]
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("quotes")
+}
+
+model QuoteItem {
+  id               String   @id @default(cuid())
+
+  quoteId          String
+  quote            Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id])
+
+  productVariantId String?
+  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  quantity         Int      @default(1)
+
+  unitPrice        Decimal  @db.Decimal(10, 2)
+  total            Decimal  @db.Decimal(10, 2)
+
+  notes            String?  @db.Text
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("quote_items")
 }
 
 model CompanySettings {

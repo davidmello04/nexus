@@ -3,6 +3,7 @@ import {
   Boxes,
   ClipboardList,
   FileText,
+  FileSignature,
   Home,
   Package,
   Settings,
@@ -35,6 +36,11 @@ const navItems = [
     title: 'Pedidos',
     href: '/orders',
     icon: ClipboardList,
+  },
+  {
+    title: 'Orçamentos',
+    href: '/quotes',
+    icon: FileSignature,
   },
   {
     title: 'Relatório de pedidos',

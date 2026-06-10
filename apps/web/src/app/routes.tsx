@@ -6,6 +6,8 @@ import { CustomersPage } from '@/features/customers/CustomersPage'
 import { ProductsPage } from '@/features/products/ProductsPage'
 import { OrderDetailsPage } from '@/features/orders/OrderDetailsPage'
 import { OrdersPage } from '@/features/orders/OrdersPage'
+import { QuoteDetailsPage } from '@/features/quotes/QuoteDetailsPage'
+import { QuotesPage } from '@/features/quotes/QuotesPage'
 import { OrdersReportPage } from '@/features/reports/OrdersReportPage'
 import { CompanySettingsPage } from '@/features/settings/CompanySettingsPage'
 
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
       {
         path: 'orders/:id',
         element: <OrderDetailsPage />,
+      },
+      {
+        path: 'quotes',
+        element: <QuotesPage />,
+      },
+      {
+        path: 'quotes/:id',
+        element: <QuoteDetailsPage />,
       },
       {
         path: 'reports/orders',

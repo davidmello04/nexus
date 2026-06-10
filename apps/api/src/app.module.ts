@@ -14,6 +14,7 @@ import { ProductImagesModule } from './product-images/product-images.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportsModule } from './reports/reports.module';
 import { CompanySettingsModule } from './company-settings/company-settings.module';
+import { QuotesModule } from './quotes/quotes.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CompanySettingsModule } from './company-settings/company-settings.modul
     DashboardModule,
     ReportsModule,
     CompanySettingsModule,
+    QuotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
