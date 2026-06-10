@@ -1,4 +1,5 @@
 import { api } from '@/lib/api'
+import type { Order } from '@/features/orders/types'
 import type { QuoteFormData } from './quote-schema'
 import type { Quote, QuoteStatus } from './types'
 
@@ -32,8 +33,8 @@ export async function deleteQuote(id: string) {
 }
 
 export async function convertQuoteToOrder(id: string) {
-  const response = await api.post(`/quotes/${id}/convert-to-order`)
-  return response.data as { id: string; code: number }
+  const response = await api.post<Order>(`/quotes/${id}/convert-to-order`)
+  return response.data
 }
 
 export async function downloadQuotePdf(id: string) {

@@ -19,6 +19,7 @@ export type Order = {
   id: string
   code: number
   status: string
+  quoteId?: string | null
   customerId: string
   customer: Customer
   subtotal: string | number

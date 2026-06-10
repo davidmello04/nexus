@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { useToast } from '@/components/Toast'
 import { formatCurrency } from '@/lib/formatters'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { QuoteForm } from './QuoteForm'
@@ -31,8 +32,10 @@ export function QuoteDetailsPage() {
   const navigate = useNavigate()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [statusToApply, setStatusToApply] = useState<QuoteStatus | null>(null)
+  const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false)
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
   const [pdfError, setPdfError] = useState('')
+  const { showToast } = useToast()
   const queryClient = useQueryClient()
   const { data: quote, isLoading, isError } = useQuery({
     queryKey: ['quote', id],
@@ -61,7 +64,19 @@ export function QuoteDetailsPage() {
     mutationFn: convertQuoteToOrder,
     onSuccess: (order) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: ['order', order.id] })
+      showToast('Orçamento convertido em pedido com sucesso.')
+      setIsConvertDialogOpen(false)
       navigate(`/orders/${order.id}`)
+    },
+    onError: (error) => {
+      showToast(
+        getApiErrorMessage(
+          error,
+          'Não foi possível converter este orçamento em pedido.',
+        ),
+        'error',
+      )
     },
   })
 
@@ -208,7 +223,10 @@ export function QuoteDetailsPage() {
 
             <button
               type="button"
-              onClick={() => convertMutation.mutate(quote.id)}
+              onClick={() => {
+                convertMutation.reset()
+                setIsConvertDialogOpen(true)
+              }}
               disabled={convertMutation.isPending}
               className="cursor-pointer rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -336,6 +354,28 @@ export function QuoteDetailsPage() {
           updateStatusMutation.mutate({ quoteId: quote.id, status: statusToApply })
         }
         onCancel={() => setStatusToApply(null)}
+      />
+
+      <ConfirmDialog
+        open={isConvertDialogOpen}
+        title="Converter em pedido"
+        description={`Deseja converter o orçamento #${quote.code} em pedido? Se ele já tiver sido convertido, você será levado ao pedido existente.`}
+        confirmLabel="Converter"
+        cancelLabel="Cancelar"
+        isLoading={convertMutation.isPending}
+        errorMessage={
+          convertMutation.isError
+            ? getApiErrorMessage(
+                convertMutation.error,
+                'Não foi possível converter este orçamento em pedido.',
+              )
+            : undefined
+        }
+        onConfirm={() => convertMutation.mutate(quote.id)}
+        onCancel={() => {
+          convertMutation.reset()
+          setIsConvertDialogOpen(false)
+        }}
       />
     </div>
   )

@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderItemDto } from './dto/order-item.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { orderInclude } from './order-include';
 
 type PdfOrderItem = {
   product?: { name: string } | null;
@@ -53,13 +54,13 @@ export class OrdersService {
           create: totals.items,
         },
       },
-      include: this.orderInclude,
+      include: orderInclude,
     });
   }
 
   findAll() {
     return this.prisma.order.findMany({
-      include: this.orderInclude,
+      include: orderInclude,
       orderBy: {
         createdAt: 'desc',
       },
@@ -69,7 +70,7 @@ export class OrdersService {
   async findOne(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
-      include: this.orderInclude,
+      include: orderInclude,
     });
 
     if (!order) {
@@ -182,7 +183,7 @@ export class OrdersService {
 
         return tx.order.findUniqueOrThrow({
           where: { id },
-          include: this.orderInclude,
+          include: orderInclude,
         });
       });
     }
@@ -203,7 +204,7 @@ export class OrdersService {
         total: subtotal - discount,
         notes: updateOrderDto.notes,
       },
-      include: this.orderInclude,
+      include: orderInclude,
     });
   }
 
@@ -514,13 +515,4 @@ export class OrdersService {
     return labels[status] ?? status;
   }
 
-  private readonly orderInclude = {
-    customer: true,
-    items: {
-      include: {
-        product: true,
-        productVariant: true,
-      },
-    },
-  } satisfies Prisma.OrderInclude;
 }

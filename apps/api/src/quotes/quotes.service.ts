@@ -8,6 +8,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import PDFDocument from 'pdfkit';
 import { CompanySettingsService } from '../company-settings/company-settings.service';
+import { orderInclude } from '../orders/order-include';
 import { PricingService } from '../pricing/pricing.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
@@ -192,34 +193,45 @@ export class QuotesService {
       );
     }
 
-    return this.prisma.order.create({
-      data: {
-        customerId: quote.customerId,
-        subtotal: quote.subtotal,
-        discount: quote.discount,
-        total: quote.total,
-        notes: quote.notes,
-        items: {
-          create: quote.items.map((item) => ({
-            productId: item.productId,
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            total: item.total,
-            notes: item.notes,
-          })),
-        },
-      },
-      include: {
-        customer: true,
-        items: {
-          include: {
-            product: true,
-            productVariant: true,
+    const existingOrder = await this.findOrderByQuoteId(quote.id);
+
+    if (existingOrder) {
+      return existingOrder;
+    }
+
+    try {
+      return await this.prisma.order.create({
+        data: {
+          quoteId: quote.id,
+          customerId: quote.customerId,
+          subtotal: quote.subtotal,
+          discount: quote.discount,
+          total: quote.total,
+          notes: quote.notes,
+          items: {
+            create: quote.items.map((item) => ({
+              productId: item.productId,
+              productVariantId: item.productVariantId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              total: item.total,
+              notes: item.notes,
+            })),
           },
         },
-      },
-    });
+        include: orderInclude,
+      });
+    } catch (error) {
+      if (this.isUniqueConstraintError(error)) {
+        const order = await this.findOrderByQuoteId(quote.id);
+
+        if (order) {
+          return order;
+        }
+      }
+
+      throw error;
+    }
   }
 
   async generatePdf(id: string) {
@@ -300,6 +312,20 @@ export class QuotesService {
     if (!customer) {
       throw new NotFoundException('Cliente não encontrado.');
     }
+  }
+
+  private findOrderByQuoteId(quoteId: string) {
+    return this.prisma.order.findUnique({
+      where: { quoteId },
+      include: orderInclude,
+    });
+  }
+
+  private isUniqueConstraintError(error: unknown) {
+    return (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    );
   }
 
   private ensureItems(items?: QuoteItemDto[]) {
