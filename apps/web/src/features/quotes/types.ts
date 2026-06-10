@@ -29,6 +29,10 @@ export type Quote = {
   total: string | number
   notes?: string | null
   validUntil?: string | null
+  order?: {
+    id: string
+    code: number
+  } | null
   items: QuoteItem[]
   createdAt: string
   updatedAt: string

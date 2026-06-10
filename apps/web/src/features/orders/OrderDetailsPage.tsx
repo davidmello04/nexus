@@ -235,6 +235,28 @@ export function OrderDetailsPage() {
         </div>
       )}
 
+      {order.quote && (
+        <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="font-semibold text-blue-950">
+                Origem: Orçamento #{order.quote.code}
+              </h2>
+              <p className="mt-1 text-sm text-blue-800">
+                Este pedido foi gerado a partir de um orçamento aprovado.
+              </p>
+            </div>
+
+            <Link
+              to={`/quotes/${order.quote.id}`}
+              className="cursor-pointer rounded-xl bg-blue-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-800"
+            >
+              Ver orçamento
+            </Link>
+          </div>
+        </section>
+      )}
+
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-900">Dados gerais</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -161,6 +161,28 @@ export function QuoteDetailsPage() {
         </div>
       )}
 
+      {quote.order && (
+        <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="font-semibold text-blue-950">
+                Pedido gerado: #{quote.order.code}
+              </h2>
+              <p className="mt-1 text-sm text-blue-800">
+                Este orçamento já foi convertido em pedido.
+              </p>
+            </div>
+
+            <Link
+              to={`/orders/${quote.order.id}`}
+              className="cursor-pointer rounded-xl bg-blue-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-800"
+            >
+              Ver pedido
+            </Link>
+          </div>
+        </section>
+      )}
+
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>

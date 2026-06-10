@@ -26,6 +26,10 @@ export type Order = {
   discount: string | number
   total: string | number
   notes?: string | null
+  quote?: {
+    id: string
+    code: number
+  } | null
   items: OrderItem[]
   createdAt: string
   updatedAt: string

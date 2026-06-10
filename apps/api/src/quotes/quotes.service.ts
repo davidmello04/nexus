@@ -555,6 +555,12 @@ export class QuotesService {
 
   private readonly quoteInclude = {
     customer: true,
+    order: {
+      select: {
+        id: true,
+        code: true,
+      },
+    },
     items: {
       include: {
         product: true,
