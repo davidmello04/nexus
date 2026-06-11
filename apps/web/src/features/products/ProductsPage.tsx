@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { PageHeader } from '@/components/PageHeader'
 import { TablePagination } from '@/components/TablePagination'
 import { usePagination } from '@/hooks/usePagination'
 import { formatCurrency } from '@/lib/formatters'
@@ -190,25 +191,23 @@ export function ProductsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Produtos</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Produtos, imagens, variações e preços.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Produtos"
+        description="Cadastre produtos, preços, imagens, variações e condições por cliente."
+        eyebrow="Catálogo"
+        actions={
+          <button
+            type="button"
+            onClick={handleNewProductClick}
+            className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-slate-900/20 transition hover:bg-slate-800"
+          >
+            Novo produto
+          </button>
+        }
+      />
 
-        <button
-          type="button"
-          onClick={handleNewProductClick}
-          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-        >
-          Novo produto
-        </button>
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         {isLoading && (
           <div className="p-6 text-sm text-slate-500">
             Carregando produtos...

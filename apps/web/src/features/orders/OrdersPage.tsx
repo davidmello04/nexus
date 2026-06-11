@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { PageHeader } from '@/components/PageHeader'
 import { TablePagination } from '@/components/TablePagination'
 import { usePagination } from '@/hooks/usePagination'
 import { formatCurrency } from '@/lib/formatters'
@@ -195,25 +196,23 @@ export function OrdersPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pedidos</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Controle de pedidos e valores calculados.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Pedidos"
+        description="Acompanhe pedidos, status, clientes e valores calculados."
+        eyebrow="Operação"
+        actions={
+          <button
+            type="button"
+            onClick={handleOpenCreateOrderModal}
+            className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-slate-900/20 transition hover:bg-slate-800"
+          >
+            Novo pedido
+          </button>
+        }
+      />
 
-        <button
-          type="button"
-          onClick={handleOpenCreateOrderModal}
-          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-        >
-          Novo pedido
-        </button>
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         {isLoading && (
           <div className="p-6 text-sm text-slate-500">
             Carregando pedidos...
@@ -586,14 +585,14 @@ function getDateInputValue(date: string) {
 
 function getStatusBadgeClassName(status: string) {
   const classNames: Record<string, string> = {
-    DRAFT: 'bg-slate-100 text-slate-700',
-    PENDING: 'bg-amber-100 text-amber-800',
-    IN_PRODUCTION: 'bg-blue-100 text-blue-800',
-    DONE: 'bg-emerald-100 text-emerald-800',
-    CANCELED: 'bg-red-100 text-red-700',
+    DRAFT: 'border border-slate-200 bg-slate-100 text-slate-700',
+    PENDING: 'border border-blue-200 bg-blue-50 text-blue-700',
+    IN_PRODUCTION: 'border border-amber-200 bg-amber-50 text-amber-800',
+    DONE: 'border border-emerald-200 bg-emerald-50 text-emerald-700',
+    CANCELED: 'border border-red-200 bg-red-50 text-red-700',
   }
 
-  return classNames[status] ?? 'bg-slate-100 text-slate-700'
+  return classNames[status] ?? 'border border-slate-200 bg-slate-100 text-slate-700'
 }
 
 function getStatusActions(status: string): StatusActionOption[] {

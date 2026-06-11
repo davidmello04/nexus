@@ -8,4 +8,106 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgb(191 219 254 / 0.78), transparent 36rem),
+    radial-gradient(circle at top right, rgb(199 210 254 / 0.56), transparent 34rem),
+    linear-gradient(135deg, #f8fafc 0%, #eef2ff 44%, #f0fdfa 100%);
+  color: #0f172a;
+  font-synthesis-weight: none;
+}
+
+button,
+a,
+select,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+main table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+  background: white;
+}
+
+main thead tr {
+  border-bottom: 1px solid rgb(191 219 254 / 0.9);
+  background:
+    linear-gradient(90deg, rgb(219 234 254 / 0.82), rgb(248 250 252 / 0.98)),
+    linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
+  color: #334155;
+}
+
+main th {
+  padding: 0.85rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+main tbody tr {
+  border-bottom: 1px solid rgb(241 245 249);
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+main tbody tr:hover {
+  background-color: rgb(239 246 255 / 0.55);
+  box-shadow: inset 3px 0 0 rgb(59 130 246 / 0.68);
+}
+
+main tbody tr:last-child {
+  border-bottom: 0;
+}
+
+main td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+main input,
+main select,
+main textarea {
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+main input:focus,
+main select:focus,
+main textarea:focus {
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.12);
+}
+
+main button.bg-slate-950,
+main a.bg-slate-950 {
+  background-image: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  box-shadow: 0 8px 18px rgb(37 99 235 / 0.18);
+}
+
+main button.bg-slate-950:hover,
+main a.bg-slate-950:hover {
+  background-image: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+}
+
+main td button[class*="h-8"][class*="w-8"],
+main td button[class*="h-9"][class*="w-9"] {
+  background-color: white;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+main td button[class*="h-8"][class*="w-8"]:hover,
+main td button[class*="h-9"][class*="w-9"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgb(37 99 235 / 0.10);
+}
+
+main tbody td:first-child {
+  color: #0f172a;
 }

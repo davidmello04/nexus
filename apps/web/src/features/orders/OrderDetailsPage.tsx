@@ -156,7 +156,7 @@ export function OrderDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-6 shadow-sm shadow-blue-100/70 ring-1 ring-blue-900/5">
         <div>
           <Link
             to="/orders"
@@ -165,7 +165,7 @@ export function OrderDetailsPage() {
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Voltar para pedidos
           </Link>
-          <h1 className="mt-3 text-2xl font-bold tracking-tight">
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">
             Pedido #{order.code}
           </h1>
           <p className="mt-2 text-sm text-slate-500">
@@ -236,7 +236,7 @@ export function OrderDetailsPage() {
       )}
 
       {order.quote && (
-        <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+      <section className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-5 shadow-sm shadow-blue-100/70">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="font-semibold text-blue-950">
@@ -257,7 +257,7 @@ export function OrderDetailsPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6">
+      <section className="rounded-2xl border border-white/80 bg-white p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         <h2 className="text-lg font-semibold text-slate-900">Dados gerais</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <DetailItem label="Código" value={`#${order.code}`} />
@@ -278,7 +278,7 @@ export function OrderDetailsPage() {
       </section>
 
       {order.notes && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+      <section className="rounded-2xl border border-white/80 bg-white p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
           <h2 className="text-lg font-semibold text-slate-900">
             Observações
           </h2>
@@ -288,7 +288,7 @@ export function OrderDetailsPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white">
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         <div className="border-b border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900">
             Itens do pedido
@@ -470,14 +470,14 @@ function getStatusLabel(status: string) {
 
 function getStatusBadgeClassName(status: string) {
   const classNames: Record<string, string> = {
-    DRAFT: 'bg-slate-100 text-slate-700',
-    PENDING: 'bg-amber-100 text-amber-800',
-    IN_PRODUCTION: 'bg-blue-100 text-blue-800',
-    DONE: 'bg-emerald-100 text-emerald-800',
-    CANCELED: 'bg-red-100 text-red-700',
+    DRAFT: 'border border-slate-200 bg-slate-100 text-slate-700',
+    PENDING: 'border border-blue-200 bg-blue-50 text-blue-700',
+    IN_PRODUCTION: 'border border-amber-200 bg-amber-50 text-amber-800',
+    DONE: 'border border-emerald-200 bg-emerald-50 text-emerald-700',
+    CANCELED: 'border border-red-200 bg-red-50 text-red-700',
   }
 
-  return classNames[status] ?? 'bg-slate-100 text-slate-700'
+  return classNames[status] ?? 'border border-slate-200 bg-slate-100 text-slate-700'
 }
 
 function canEditOrder(status: string) {

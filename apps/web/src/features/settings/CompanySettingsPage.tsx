@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, type SubmitHandler } from 'react-hook-form'
+import { PageHeader } from '@/components/PageHeader'
 import {
   companySettingsSchema,
   type CompanySettingsFormData,
@@ -78,15 +79,14 @@ export function CompanySettingsPage() {
     : ''
 
   return (
-    <div>
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Configurações</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Dados da empresa usados em documentos e pedidos.
-        </p>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Configurações"
+        description="Dados da empresa usados em documentos, pedidos e orçamentos."
+        eyebrow="Empresa"
+      />
 
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="rounded-2xl border border-white/80 bg-white p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         {isLoading && (
           <div className="text-sm text-slate-500">
             Carregando configurações...

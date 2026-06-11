@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
+import { PageHeader } from '@/components/PageHeader'
 import { TablePagination } from '@/components/TablePagination'
 import { usePagination } from '@/hooks/usePagination'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
@@ -123,25 +124,23 @@ export function CustomersPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Clientes</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Cadastro e gerenciamento de clientes.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Clientes"
+        description="Gerencie seus clientes, contatos, origem e localização."
+        eyebrow="Relacionamento"
+        actions={
+          <button
+            type="button"
+            onClick={handleNewCustomerClick}
+            className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-slate-900/20 transition hover:bg-slate-800"
+          >
+            Novo cliente
+          </button>
+        }
+      />
 
-        <button
-          type="button"
-          onClick={handleNewCustomerClick}
-          className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-        >
-          Novo cliente
-        </button>
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         {isLoading && (
           <div className="p-6 text-sm text-slate-500">
             Carregando clientes...

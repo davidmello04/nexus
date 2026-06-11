@@ -1,17 +1,29 @@
 import { useState, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+  Ban,
+  CircleDollarSign,
+  ClipboardList,
+  Factory,
+  Package,
+  TrendingUp,
+  UserCheck,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
+import {
+  Bar as RechartsBar,
+  BarChart as RechartsBarChart,
+  CartesianGrid as RechartsCartesianGrid,
+  Cell as RechartsCell,
+  Pie as RechartsPie,
+  PieChart as RechartsPieChart,
+  ResponsiveContainer as RechartsResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  XAxis as RechartsXAxis,
+  YAxis as RechartsYAxis,
 } from 'recharts'
+import { PageHeader } from '@/components/PageHeader'
 import { formatCurrency } from '@/lib/formatters'
 import {
   getDashboardSummary,
@@ -25,8 +37,17 @@ type AppliedPeriod = DashboardSummaryFilters & {
   mode: PeriodMode
 }
 
+type SummaryTone = 'slate' | 'blue' | 'amber' | 'emerald' | 'red'
+
 const initialPeriod = getThisMonthPeriod()
-const chartColors = ['#64748b', '#f59e0b', '#2563eb', '#10b981', '#ef4444']
+const chartColors = ['#64748b', '#2563eb', '#f59e0b', '#10b981', '#ef4444']
+const accents: Record<SummaryTone, string> = {
+  slate: 'from-slate-400 to-slate-500',
+  blue: 'from-blue-500 to-indigo-500',
+  amber: 'from-amber-400 to-orange-500',
+  emerald: 'from-emerald-400 to-teal-500',
+  red: 'from-red-400 to-rose-500',
+}
 
 export function DashboardPage() {
   const [periodMode, setPeriodMode] = useState<PeriodMode>(initialPeriod.mode)
@@ -80,217 +101,280 @@ export function DashboardPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="mt-2 text-sm text-slate-500">Visão geral do Nexus.</p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-4">
-          <div className="flex flex-wrap gap-2">
-            <PeriodButton
-              active={periodMode === 'today'}
-              onClick={() => handleApplyPreset('today')}
-            >
-              Hoje
-            </PeriodButton>
-            <PeriodButton
-              active={periodMode === 'thisMonth'}
-              onClick={() => handleApplyPreset('thisMonth')}
-            >
-              Este mês
-            </PeriodButton>
-            <PeriodButton
-              active={periodMode === 'lastMonth'}
-              onClick={() => handleApplyPreset('lastMonth')}
-            >
-              Mês passado
-            </PeriodButton>
-            <PeriodButton
-              active={periodMode === 'custom'}
-              onClick={() => setPeriodMode('custom')}
-            >
-              Personalizado
-            </PeriodButton>
-          </div>
-
-          {periodMode === 'custom' && (
-            <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-              <div>
-                <label className="text-xs font-medium text-slate-600">
-                  Data inicial
-                </label>
-                <input
-                  type="date"
-                  value={customStartDate}
-                  onChange={(event) => setCustomStartDate(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-slate-600">
-                  Data final
-                </label>
-                <input
-                  type="date"
-                  value={customEndDate}
-                  onChange={(event) => setCustomEndDate(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleApplyCustomPeriod}
-                className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+    <div className="space-y-7">
+      <PageHeader
+        title="Dashboard"
+        description="Visão geral do desempenho do negócio, pedidos e valores por período."
+        eyebrow="Resumo"
+        actions={
+          <div className="rounded-2xl border border-blue-100 bg-white/80 p-3 shadow-sm shadow-blue-100/60">
+            <div className="flex flex-wrap gap-2">
+              <PeriodButton
+                active={periodMode === 'today'}
+                onClick={() => handleApplyPreset('today')}
               >
-                Aplicar
-              </button>
+                Hoje
+              </PeriodButton>
+              <PeriodButton
+                active={periodMode === 'thisMonth'}
+                onClick={() => handleApplyPreset('thisMonth')}
+              >
+                Este mês
+              </PeriodButton>
+              <PeriodButton
+                active={periodMode === 'lastMonth'}
+                onClick={() => handleApplyPreset('lastMonth')}
+              >
+                Mês passado
+              </PeriodButton>
+              <PeriodButton
+                active={periodMode === 'custom'}
+                onClick={() => setPeriodMode('custom')}
+              >
+                Personalizado
+              </PeriodButton>
             </div>
-          )}
-        </div>
-      </div>
 
-      <p className="mt-4 text-sm text-slate-500">
-        Período ativo: <span className="font-medium">{appliedPeriod.label}</span>
+            {periodMode === 'custom' && (
+              <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+                <div>
+                  <label className="text-xs font-medium text-slate-600">
+                    Data inicial
+                  </label>
+                  <input
+                    type="date"
+                    value={customStartDate}
+                    onChange={(event) => setCustomStartDate(event.target.value)}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-600">
+                    Data final
+                  </label>
+                  <input
+                    type="date"
+                    value={customEndDate}
+                    onChange={(event) => setCustomEndDate(event.target.value)}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleApplyCustomPeriod}
+                  className="cursor-pointer rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition"
+                >
+                  Aplicar
+                </button>
+              </div>
+            )}
+          </div>
+        }
+      />
+
+      <p className="rounded-full border border-blue-100 bg-white/70 px-4 py-2 text-sm text-slate-600 shadow-sm shadow-blue-100/50">
+        Período ativo: <span className="font-semibold">{appliedPeriod.label}</span>
       </p>
 
       {isLoading && (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-2xl border border-white/80 bg-white p-6 text-sm text-slate-500 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
           Carregando resumo...
         </div>
       )}
 
       {isError && (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700 shadow-sm">
           Não foi possível carregar o resumo do dashboard.
         </div>
       )}
 
       {summary && (
-        <div className="mt-6 space-y-6">
-          <section>
-            <h2 className="text-sm font-semibold text-slate-900">
-              Pedidos no período
-            </h2>
-            <div className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-              <SummaryCard label="Total de pedidos" value={summary.totalOrders} />
-              <SummaryCard label="Em aberto" value={summary.openOrders} />
+        <div className="space-y-7">
+          <DashboardSection title="Pedidos no período">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              <SummaryCard
+                label="Total de pedidos"
+                value={summary.totalOrders}
+                description="Todos os status no período"
+                icon={ClipboardList}
+              />
+              <SummaryCard
+                label="Em aberto"
+                value={summary.openOrders}
+                description="Rascunhos e pendentes"
+                tone="blue"
+                icon={TrendingUp}
+              />
               <SummaryCard
                 label="Em produção"
                 value={summary.productionOrders}
+                description="Pedidos em andamento"
+                tone="amber"
+                icon={Factory}
               />
-              <SummaryCard label="Concluídos" value={summary.doneOrders} />
-              <SummaryCard label="Cancelados" value={summary.canceledOrders} />
+              <SummaryCard
+                label="Concluídos"
+                value={summary.doneOrders}
+                description="Pedidos finalizados"
+                tone="emerald"
+                icon={UserCheck}
+              />
+              <SummaryCard
+                label="Cancelados"
+                value={summary.canceledOrders}
+                description="Pedidos cancelados"
+                tone="red"
+                icon={Ban}
+              />
             </div>
-          </section>
+          </DashboardSection>
 
-          <section>
-            <h2 className="text-sm font-semibold text-slate-900">
-              Valores no período
-            </h2>
-            <div className="mt-3 grid gap-4 md:grid-cols-3">
+          <DashboardSection title="Valores no período">
+            <div className="grid gap-4 md:grid-cols-3">
               <SummaryCard
                 label="Total vendido/concluído"
                 value={formatCurrency(summary.totalSoldDone)}
+                description="Pedidos concluídos"
+                tone="emerald"
+                icon={CircleDollarSign}
               />
               <SummaryCard
                 label="Total em aberto"
                 value={formatCurrency(summary.totalPending)}
+                description="Rascunhos e pendentes"
+                tone="blue"
+                icon={TrendingUp}
               />
               <SummaryCard
                 label="Total em produção"
                 value={formatCurrency(summary.totalInProduction)}
+                description="Pedidos em produção"
+                tone="amber"
+                icon={Factory}
               />
             </div>
-          </section>
+          </DashboardSection>
 
-          <section>
-            <h2 className="text-sm font-semibold text-slate-900">Gráficos</h2>
-            <div className="mt-3 grid gap-4 xl:grid-cols-2">
+          <DashboardSection title="Gráficos">
+            <div className="grid gap-4 xl:grid-cols-2">
               <ChartCard title="Pedidos por status">
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart
+                <RechartsResponsiveContainer width="100%" height={340}>
+                  <RechartsBarChart
                     data={orderStatusChartData}
                     margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
+                    <RechartsCartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <RechartsXAxis
                       dataKey="name"
                       tick={{ fontSize: 12 }}
                       interval={0}
                       height={58}
                     />
-                    <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={formatOrdersTooltip} />
-                    <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                    <RechartsYAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                    <RechartsTooltip formatter={formatOrdersTooltip} />
+                    <RechartsBar dataKey="value" radius={[8, 8, 0, 0]}>
                       {orderStatusChartData.map((entry, index) => (
-                        <Cell
+                        <RechartsCell
                           key={entry.name}
                           fill={chartColors[index % chartColors.length]}
                         />
                       ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                    </RechartsBar>
+                  </RechartsBarChart>
+                </RechartsResponsiveContainer>
               </ChartCard>
 
               <ChartCard title="Resumo financeiro por situação">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
+                <RechartsResponsiveContainer width="100%" height={340}>
+                  <RechartsPieChart>
+                    <RechartsPie
                       data={financialChartData}
                       dataKey="value"
                       nameKey="name"
-                      innerRadius={64}
-                      outerRadius={104}
+                      innerRadius={72}
+                      outerRadius={118}
                       paddingAngle={3}
                       label={({ name }) => name}
                     >
                       {financialChartData.map((entry, index) => (
-                        <Cell
+                        <RechartsCell
                           key={entry.name}
                           fill={chartColors[index % chartColors.length]}
                         />
                       ))}
-                    </Pie>
-                    <Tooltip formatter={formatFinancialTooltip} />
-                  </PieChart>
-                </ResponsiveContainer>
+                    </RechartsPie>
+                    <RechartsTooltip formatter={formatFinancialTooltip} />
+                  </RechartsPieChart>
+                </RechartsResponsiveContainer>
               </ChartCard>
             </div>
-          </section>
+          </DashboardSection>
 
-          <section>
-            <h2 className="text-sm font-semibold text-slate-900">
-              Clientes gerais
-            </h2>
-            <div className="mt-3 grid gap-4 md:grid-cols-3">
-              <SummaryCard label="Total de clientes" value={summary.totalCustomers} />
-              <SummaryCard label="Clientes ativos" value={summary.activeCustomers} />
+          <DashboardSection title="Clientes gerais">
+            <div className="grid gap-4 md:grid-cols-3">
+              <SummaryCard
+                label="Total de clientes"
+                value={summary.totalCustomers}
+                description="Base cadastrada"
+                icon={Users}
+              />
+              <SummaryCard
+                label="Clientes ativos"
+                value={summary.activeCustomers}
+                description="Disponíveis para venda"
+                tone="emerald"
+                icon={UserCheck}
+              />
               <SummaryCard
                 label="Clientes inativos"
                 value={summary.inactiveCustomers}
+                description="Cadastros pausados"
               />
             </div>
-          </section>
+          </DashboardSection>
 
-          <section>
-            <h2 className="text-sm font-semibold text-slate-900">
-              Produtos gerais
-            </h2>
-            <div className="mt-3 grid gap-4 md:grid-cols-3">
-              <SummaryCard label="Total de produtos" value={summary.totalProducts} />
-              <SummaryCard label="Produtos ativos" value={summary.activeProducts} />
+          <DashboardSection title="Produtos gerais">
+            <div className="grid gap-4 md:grid-cols-3">
+              <SummaryCard
+                label="Total de produtos"
+                value={summary.totalProducts}
+                description="Catálogo completo"
+                icon={Package}
+              />
+              <SummaryCard
+                label="Produtos ativos"
+                value={summary.activeProducts}
+                description="Disponíveis para pedido"
+                tone="emerald"
+                icon={Package}
+              />
               <SummaryCard
                 label="Produtos inativos"
                 value={summary.inactiveProducts}
+                description="Itens pausados"
               />
             </div>
-          </section>
+          </DashboardSection>
         </div>
       )}
     </div>
+  )
+}
+
+function DashboardSection({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <section>
+      <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">
+        {title}
+      </h2>
+      <div className="mt-3">{children}</div>
+    </section>
   )
 }
 
@@ -302,9 +386,15 @@ function ChartCard({
   children: ReactNode
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-      <div className="mt-4 min-h-[300px]">{children}</div>
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+        <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+          Analytics
+        </span>
+      </div>
+      <div className="mt-4 min-h-[340px]">{children}</div>
     </div>
   )
 }
@@ -312,14 +402,38 @@ function ChartCard({
 function SummaryCard({
   label,
   value,
+  description,
+  icon: Icon,
+  tone = 'slate',
 }: {
   label: string
   value: string | number
+  description?: string
+  icon?: LucideIcon
+  tone?: SummaryTone
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-100/70">
+      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accents[tone]}`} />
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-slate-500">{label}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+            {value}
+          </p>
+          {description && (
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              {description}
+            </p>
+          )}
+        </div>
+
+        {Icon && (
+          <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${accents[tone]} text-white shadow-sm`}>
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </span>
+        )}
+      </div>
     </div>
   )
 }
@@ -348,8 +462,8 @@ function PeriodButton({
       className={[
         'cursor-pointer rounded-xl border px-3 py-2 text-sm font-medium transition',
         active
-          ? 'border-slate-950 bg-slate-950 text-white'
-          : 'border-slate-300 text-slate-700 hover:bg-slate-50',
+          ? 'border-blue-700 bg-blue-700 text-white shadow-sm shadow-blue-900/20'
+          : 'border-blue-100 bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-900',
       ].join(' ')}
     >
       {children}
