@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
   Boxes,
   ClipboardList,
@@ -10,6 +11,7 @@ import {
   Tags,
   Users,
 } from 'lucide-react'
+import { getCompanySettings } from '@/features/settings/company-settings-service'
 
 const navItems = [
   {
@@ -55,6 +57,12 @@ const navItems = [
 ]
 
 export function AppLayout() {
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: getCompanySettings,
+  })
+  const companyName = companySettings?.name?.trim() || 'Sistema Nexus'
+
   return (
     <div className="min-h-screen text-slate-950">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-64 border-r border-blue-100/70 bg-white/88 shadow-xl shadow-blue-100/50 backdrop-blur lg:block">
@@ -99,7 +107,7 @@ export function AppLayout() {
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-white/70 bg-white/75 px-6 shadow-sm shadow-slate-200/50 backdrop-blur">
           <div>
             <span className="text-sm font-medium text-slate-500">
-              Sistema Nexus
+              {companyName}
             </span>
           </div>
 

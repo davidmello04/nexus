@@ -274,7 +274,12 @@ export function OrdersReportPage() {
                         <td className="px-4 py-3 text-slate-600">
                           {formatCurrency(order.discount)}
                         </td>
-                        <td className="px-4 py-3 text-base font-bold text-slate-950">
+                        <td
+                          className={[
+                            'px-4 py-3 text-base font-bold',
+                            getOrderTotalClassName(order.status),
+                          ].join(' ')}
+                        >
                           {formatCurrency(order.total)}
                         </td>
                         <td className="px-4 py-3 text-slate-600">
@@ -317,4 +322,13 @@ function getStatusBadgeClassName(status: string) {
   }
 
   return classNames[status] ?? 'border border-slate-200 bg-slate-100 text-slate-700'
+}
+
+function getOrderTotalClassName(status: string) {
+  const classNames: Record<string, string> = {
+    DONE: 'text-emerald-700',
+    CANCELED: 'text-red-700',
+  }
+
+  return classNames[status] ?? 'text-slate-950'
 }
