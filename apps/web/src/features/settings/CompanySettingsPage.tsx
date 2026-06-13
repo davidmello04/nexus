@@ -1,9 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Building2 } from 'lucide-react'
+import { Building2, Check, Palette } from 'lucide-react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { PageHeader } from '@/components/PageHeader'
+import { cn } from '@/lib/utils'
+import { useTheme } from '@/theme/ThemeProvider'
+import type { ColorPalette } from '@/theme/palettes'
 import {
   companySettingsSchema,
   type CompanySettingsFormData,
@@ -27,6 +30,7 @@ const emptyCompanySettingsFormValues: CompanySettingsFormData = {
 
 export function CompanySettingsPage() {
   const [selectedLogo, setSelectedLogo] = useState<File | null>(null)
+  const { palette, palettes, setPalette } = useTheme()
   const queryClient = useQueryClient()
   const {
     data: companySettings,
@@ -104,12 +108,67 @@ export function CompanySettingsPage() {
         {!isLoading && !isError && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <SettingsSection
+              title="Aparência"
+              description="Escolha uma paleta para personalizar a identidade visual do Nexus."
+            >
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {palettes.map((option) => {
+                  const isSelected = option.id === palette.id
+
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setPalette(option.id)}
+                      className={cn(
+                        'group cursor-pointer rounded-2xl border bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md',
+                        isSelected
+                          ? 'border-brand-soft shadow-brand ring-2 ring-brand-soft'
+                          : 'border-slate-200 hover:border-brand-soft',
+                      )}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+                            <Palette className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                          <div>
+                            <h3 className="text-sm font-semibold text-slate-950">
+                              {option.name}
+                            </h3>
+                            <p className="mt-1 text-xs leading-5 text-slate-500">
+                              {option.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {isSelected && (
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-white shadow-sm shadow-brand">
+                            <Check className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                        )}
+                      </div>
+
+                      <PaletteSwatches palette={option} />
+
+                      {isSelected && (
+                        <p className="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-xs font-medium text-brand-strong">
+                          Paleta ativa
+                        </p>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </SettingsSection>
+
+            <SettingsSection
               title="Logo"
               description="Imagem exibida nos documentos e no cabeçalho dos PDFs."
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-blue-100 bg-blue-50/60">
+                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-brand-soft bg-brand-soft">
                     {logoPreviewUrl ? (
                       <img
                         src={logoPreviewUrl}
@@ -264,7 +323,7 @@ export function CompanySettingsPage() {
               </FormField>
             </SettingsSection>
 
-            <div className="flex justify-end border-t border-blue-100 pt-5">
+            <div className="flex justify-end border-t border-brand-soft pt-5">
               <button
                 type="submit"
                 disabled={saveCompanySettingsMutation.isPending}
@@ -292,12 +351,12 @@ function SettingsSection({
   children: ReactNode
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/35 shadow-sm shadow-blue-100/40">
-      <div className="border-b border-blue-100/70 bg-blue-50/45 px-5 py-4">
+    <section className="overflow-hidden rounded-2xl border border-brand-soft bg-brand-section shadow-sm shadow-brand">
+      <div className="border-b border-brand-soft bg-brand-softer px-5 py-4">
         <div className="flex items-start gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-blue-600 shadow-sm shadow-blue-600/30" />
+          <span className="mt-1 h-2 w-2 rounded-full bg-brand-gradient shadow-sm shadow-brand" />
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-blue-900">
+            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
               {title}
             </h2>
             {description && (
@@ -310,6 +369,20 @@ function SettingsSection({
       </div>
       <div className="p-5">{children}</div>
     </section>
+  )
+}
+
+function PaletteSwatches({ palette }: { palette: ColorPalette }) {
+  return (
+    <div className="mt-4 flex items-center gap-2">
+      {[palette.primary, palette.secondary, palette.accent].map((color) => (
+        <span
+          key={color}
+          className="h-7 flex-1 rounded-xl border border-white shadow-sm ring-1 ring-slate-200"
+          style={{ backgroundColor: color }}
+        />
+      ))}
+    </div>
   )
 }
 

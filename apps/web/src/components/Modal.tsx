@@ -41,12 +41,12 @@ export function Modal({
           onClick={onClose}
           title="Fechar modal"
           aria-label="Fechar modal"
-          className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-blue-50 hover:text-blue-900"
+          className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-brand-soft hover:text-brand-strong"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
 
-        <div className="sticky top-0 z-[1] border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 px-6 py-4 pr-14 shadow-sm shadow-blue-100/40">
+        <div className="sticky top-0 z-[1] border-b border-brand-soft bg-brand-gradient-soft px-6 py-4 pr-14 shadow-sm shadow-brand">
           <div>
             <h2 id="modal-title" className="text-lg font-bold text-slate-950 sm:text-xl">
               {title}

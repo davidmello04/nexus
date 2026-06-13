@@ -65,9 +65,9 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen text-slate-950">
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-64 border-r border-blue-100/70 bg-white/88 shadow-xl shadow-blue-100/50 backdrop-blur lg:block">
+      <aside className="brand-sidebar fixed inset-y-0 left-0 z-10 hidden w-64 border-r bg-white/88 shadow-xl backdrop-blur lg:block">
         <div className="flex h-16 items-center gap-3 border-b border-slate-200/80 px-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-700 to-indigo-700 text-white shadow-lg shadow-blue-900/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-lg shadow-brand">
             <Boxes size={20} />
           </div>
 
@@ -90,8 +90,8 @@ export function AppLayout() {
                   [
                     'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
                     isActive
-                      ? 'bg-gradient-to-r from-blue-700 to-indigo-700 text-white shadow-sm shadow-blue-900/20'
-                      : 'text-slate-600 hover:bg-blue-50 hover:text-blue-900',
+                      ? 'brand-nav-active'
+                      : 'brand-nav-idle text-slate-600',
                   ].join(' ')
                 }
               >

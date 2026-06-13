@@ -11,7 +11,7 @@ type MetricCardProps = {
 
 const toneClassNames = {
   slate: 'bg-slate-50 text-slate-700 ring-slate-200',
-  blue: 'bg-blue-50 text-blue-700 ring-blue-200',
+  blue: 'bg-brand-soft text-brand ring-brand-soft',
   amber: 'bg-amber-50 text-amber-700 ring-amber-200',
   emerald: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
   red: 'bg-red-50 text-red-700 ring-red-200',
@@ -20,7 +20,7 @@ const toneClassNames = {
 
 const accentClassNames = {
   slate: 'from-slate-400 to-slate-500',
-  blue: 'from-blue-500 to-indigo-500',
+  blue: 'brand-top-line',
   amber: 'from-amber-400 to-orange-500',
   emerald: 'from-emerald-400 to-teal-500',
   red: 'from-red-400 to-rose-500',

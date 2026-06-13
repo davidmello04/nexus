@@ -22,22 +22,22 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-[1.35rem] border border-blue-100/80 bg-gradient-to-r from-blue-50/95 via-indigo-50/60 to-white px-5 py-4 shadow-sm shadow-blue-100/50 sm:flex sm:items-center sm:justify-between sm:gap-6',
+        'bg-brand-gradient-soft relative overflow-hidden rounded-[1.35rem] border border-brand-soft px-5 py-4 shadow-sm shadow-brand sm:flex sm:items-center sm:justify-between sm:gap-6',
         className,
       )}
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+      <div className="brand-top-line absolute inset-x-0 top-0 h-1" />
 
       <div className="flex max-w-4xl items-start gap-4">
         {Icon && (
-          <div className="mt-1 hidden h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-900/20 sm:flex">
+          <div className="mt-1 hidden h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-sm shadow-brand sm:flex">
             <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
         )}
 
         <div>
           {eyebrow && (
-            <span className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-700">
+            <span className="text-xs font-bold uppercase tracking-[0.16em] text-brand">
               {eyebrow}
             </span>
           )}
