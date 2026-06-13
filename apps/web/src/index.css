@@ -103,6 +103,19 @@ body {
   background-image: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary), var(--brand-accent));
 }
 
+.section-heading-solid {
+  background-image: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  color: #fff;
+}
+
+.section-heading-solid .section-heading-title {
+  color: #fff;
+}
+
+.section-heading-solid .section-heading-description {
+  color: rgb(255 255 255 / 0.78);
+}
+
 .brand-sidebar {
   border-color: rgb(var(--brand-primary-rgb) / 0.16);
   box-shadow: 0 16px 34px rgb(15 23 42 / 0.08);

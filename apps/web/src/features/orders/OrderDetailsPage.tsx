@@ -272,9 +272,9 @@ export function OrderDetailsPage() {
         </div>
 
         <section className="mt-4 rounded-2xl border border-white/80 bg-white/72 p-4 shadow-sm shadow-slate-200/70">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-brand-gradient" />
-            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
+          <div className="section-heading-solid flex items-center gap-2 rounded-xl px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-white/85" />
+            <h2 className="section-heading-title text-sm font-bold uppercase tracking-[0.14em]">
               Dados gerais
             </h2>
           </div>
@@ -329,22 +329,22 @@ export function OrderDetailsPage() {
       )}
 
       <section className="overflow-hidden rounded-3xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
-        <div className="border-b border-brand-soft bg-brand-gradient-soft p-5">
+        <div className="section-heading-solid border-b border-brand-soft p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand shadow-sm shadow-slate-200/70">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white shadow-sm shadow-slate-900/20">
                 <Receipt className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <h2 className="text-lg font-semibold text-brand-strong">
+                <h2 className="section-heading-title text-lg font-semibold">
                   Itens do pedido
                 </h2>
-                <p className="text-sm text-slate-500">
+                <p className="section-heading-description text-sm">
                   Produtos, variações e valores calculados.
                 </p>
               </div>
             </div>
-            <span className="rounded-full border border-brand-soft bg-white/90 px-3 py-1 text-xs font-semibold text-brand shadow-sm shadow-slate-200/70">
+            <span className="rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-semibold text-white shadow-sm shadow-slate-900/20">
               {order.items.length} {order.items.length === 1 ? 'item' : 'itens'}
             </span>
           </div>

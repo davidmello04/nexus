@@ -295,7 +295,7 @@ export class OrdersService {
     const secondaryInfo = companySettings
       ? [
           companySettings.instagram,
-          companySettings.address,
+          this.formatCompanyAddress(companySettings),
           companySettings.document
             ? `Documento: ${companySettings.document}`
             : undefined,
@@ -327,6 +327,32 @@ export class OrdersService {
     this.drawCompanyLogo(document, companySettings?.logoUrl);
 
     document.y = 140;
+  }
+
+  private formatCompanyAddress(companySettings: CompanySettings) {
+    const streetLine = [
+      companySettings.addressStreet,
+      companySettings.addressNumber,
+    ]
+      .filter(Boolean)
+      .join(', ');
+    const cityLine =
+      companySettings.addressCity && companySettings.addressState
+        ? `${companySettings.addressCity}/${companySettings.addressState}`
+        : companySettings.addressCity || companySettings.addressState;
+    const addressLines = [
+      streetLine,
+      companySettings.addressComplement,
+      companySettings.addressNeighborhood,
+      cityLine,
+      companySettings.addressZipCode
+        ? `CEP: ${companySettings.addressZipCode}`
+        : undefined,
+    ].filter(Boolean);
+
+    return addressLines.length > 0
+      ? addressLines.join(' | ')
+      : companySettings.address;
   }
 
   private drawCompanyLogo(

@@ -25,6 +25,13 @@ const emptyCompanySettingsFormValues: CompanySettingsFormData = {
   instagram: '',
   document: '',
   address: '',
+  addressZipCode: '',
+  addressStreet: '',
+  addressNumber: '',
+  addressComplement: '',
+  addressNeighborhood: '',
+  addressCity: '',
+  addressState: '',
   defaultOrderMessage: '',
 }
 
@@ -334,15 +341,74 @@ export function CompanySettingsPage() {
               </div>
             </SettingsSection>
 
-            <SettingsSection title="Endereço">
-              <FormField label="Endereço">
-                <textarea
-                  {...register('address')}
-                  rows={3}
-                  className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
-                  placeholder="Endereço completo"
-                />
-              </FormField>
+            <SettingsSection
+              title="Endereço"
+              description="Preencha os dados separados para melhorar documentos e PDFs."
+            >
+              {companySettings?.address && !hasStructuredAddress(companySettings) && (
+                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                  Endereço antigo salvo: {companySettings.address}
+                </div>
+              )}
+
+              <div className="grid gap-4 md:grid-cols-6">
+                <FormField label="CEP" className="md:col-span-2">
+                  <input
+                    {...register('addressZipCode')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
+                    placeholder="00000-000"
+                  />
+                </FormField>
+
+                <FormField label="Rua/Logradouro" className="md:col-span-4">
+                  <input
+                    {...register('addressStreet')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
+                    placeholder="Rua, avenida, travessa..."
+                  />
+                </FormField>
+
+                <FormField label="Número" className="md:col-span-2">
+                  <input
+                    {...register('addressNumber')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
+                    placeholder="Número"
+                  />
+                </FormField>
+
+                <FormField label="Complemento" className="md:col-span-4">
+                  <input
+                    {...register('addressComplement')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
+                    placeholder="Sala, bloco, ponto de referência..."
+                  />
+                </FormField>
+
+                <FormField label="Bairro" className="md:col-span-2">
+                  <input
+                    {...register('addressNeighborhood')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
+                    placeholder="Bairro"
+                  />
+                </FormField>
+
+                <FormField label="Cidade" className="md:col-span-3">
+                  <input
+                    {...register('addressCity')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-950"
+                    placeholder="Cidade"
+                  />
+                </FormField>
+
+                <FormField label="UF" className="md:col-span-1">
+                  <input
+                    {...register('addressState')}
+                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm uppercase outline-none focus:border-slate-950"
+                    placeholder="UF"
+                    maxLength={2}
+                  />
+                </FormField>
+              </div>
             </SettingsSection>
 
             <SettingsSection
@@ -388,15 +454,15 @@ function SettingsSection({
 }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-brand-soft bg-brand-section shadow-sm shadow-slate-200/70">
-      <div className="border-b border-brand-soft bg-brand-softer px-5 py-4">
+      <div className="section-heading-solid border-b border-brand-soft px-5 py-4">
         <div className="flex items-start gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-brand-gradient shadow-sm shadow-slate-300/70" />
+          <span className="mt-1 h-2 w-2 rounded-full bg-white/85 shadow-sm shadow-slate-900/20" />
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
+            <h2 className="section-heading-title text-sm font-bold uppercase tracking-[0.14em]">
               {title}
             </h2>
             {description && (
-              <p className="mt-1 text-sm leading-6 text-slate-500">
+              <p className="section-heading-description mt-1 text-sm leading-6">
                 {description}
               </p>
             )}
@@ -471,15 +537,17 @@ function PaletteSwatches({ palette }: { palette: ColorPalette }) {
 
 function FormField({
   label,
+  className,
   error,
   children,
 }: {
   label: string
+  className?: string
   error?: string
   children: ReactNode
 }) {
   return (
-    <label className="block">
+    <label className={cn('block', className)}>
       <span className="text-sm font-medium text-slate-700">{label}</span>
       {children}
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
@@ -501,8 +569,27 @@ function mapCompanySettingsToFormData(
     instagram: companySettings.instagram,
     document: companySettings.document,
     address: companySettings.address,
+    addressZipCode: companySettings.addressZipCode || '',
+    addressStreet: companySettings.addressStreet || '',
+    addressNumber: companySettings.addressNumber || '',
+    addressComplement: companySettings.addressComplement || '',
+    addressNeighborhood: companySettings.addressNeighborhood || '',
+    addressCity: companySettings.addressCity || '',
+    addressState: companySettings.addressState || '',
     defaultOrderMessage: companySettings.defaultOrderMessage,
   }
+}
+
+function hasStructuredAddress(companySettings: CompanySettings) {
+  return Boolean(
+    companySettings.addressZipCode ||
+      companySettings.addressStreet ||
+      companySettings.addressNumber ||
+      companySettings.addressComplement ||
+      companySettings.addressNeighborhood ||
+      companySettings.addressCity ||
+      companySettings.addressState,
+  )
 }
 
 function buildUploadUrl(url: string) {

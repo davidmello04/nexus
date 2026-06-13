@@ -7,6 +7,13 @@ export const companySettingsSchema = z.object({
   instagram: z.string(),
   document: z.string(),
   address: z.string(),
+  addressZipCode: z.string(),
+  addressStreet: z.string(),
+  addressNumber: z.string(),
+  addressComplement: z.string(),
+  addressNeighborhood: z.string(),
+  addressCity: z.string(),
+  addressState: z.string(),
   defaultOrderMessage: z.string(),
 })
 

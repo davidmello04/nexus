@@ -439,9 +439,9 @@ function DashboardSection({
 }) {
   return (
     <section>
-      <div className="flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-brand-gradient" />
-        <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
+      <div className="section-heading-solid flex items-center gap-2 rounded-2xl px-4 py-3 shadow-sm shadow-slate-200/70">
+        <span className="h-2 w-2 rounded-full bg-white/85" />
+        <h2 className="section-heading-title text-sm font-bold uppercase tracking-[0.14em]">
           {title}
         </h2>
       </div>

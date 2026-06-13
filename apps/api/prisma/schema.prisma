@@ -281,6 +281,13 @@ model CompanySettings {
   instagram           String
   document            String
   address             String   @db.Text
+  addressZipCode      String?
+  addressStreet       String?
+  addressNumber       String?
+  addressComplement   String?
+  addressNeighborhood String?
+  addressCity         String?
+  addressState        String?
   defaultOrderMessage String   @db.Text
   logoUrl             String?
 

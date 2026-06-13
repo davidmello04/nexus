@@ -24,6 +24,41 @@ export class UpsertCompanySettingsDto {
   @IsString()
   address!: string;
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  addressZipCode?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(150)
+  addressStreet?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(30)
+  addressNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(150)
+  addressComplement?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  addressNeighborhood?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  addressCity?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2)
+  addressState?: string;
+
   @IsString()
   defaultOrderMessage!: string;
 
