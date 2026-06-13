@@ -3,6 +3,7 @@ import {
   Ban,
   CheckCheck,
   CircleCheck,
+  ClipboardList,
   Eye,
   Factory,
   Pencil,
@@ -201,6 +202,7 @@ export function OrdersPage() {
         title="Pedidos"
         description="Acompanhe pedidos, status, clientes e valores calculados."
         eyebrow="Operação"
+        icon={ClipboardList}
         actions={
           <button
             type="button"
@@ -362,11 +364,15 @@ export function OrdersPage() {
                     onClick={() => navigate(`/orders/${order.id}`)}
                     className="cursor-pointer border-b border-slate-100 transition hover:bg-slate-50 last:border-0"
                   >
-                    <td className="px-4 py-3 font-medium text-slate-900">
-                      #{order.code}
+                    <td className="px-4 py-3">
+                      <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-sm font-bold text-blue-800">
+                        #{order.code}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {order.customer?.name || '-'}
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-slate-800">
+                        {order.customer?.name || '-'}
+                      </p>
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -384,7 +390,7 @@ export function OrdersPage() {
                     <td className="px-4 py-3 text-slate-600">
                       {formatCurrency(order.discount)}
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                    <td className="px-4 py-3 text-base font-bold text-slate-950">
                       {formatCurrency(order.total)}
                     </td>
                     <td className="px-4 py-3 text-slate-600">

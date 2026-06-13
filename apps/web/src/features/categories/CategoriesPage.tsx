@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Power, Trash2 } from 'lucide-react'
+import { Pencil, Power, Tags, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
 import { PageHeader } from '@/components/PageHeader'
@@ -160,6 +160,7 @@ export function CategoriesPage() {
         title="Categorias"
         description="Organize produtos em grupos claros para facilitar cadastro e venda."
         eyebrow="Catálogo"
+        icon={Tags}
         actions={
           <button
             type="button"

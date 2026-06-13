@@ -35,7 +35,7 @@ export function MetricCard({
   tone = 'slate',
 }: MetricCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-100/70">
       <div
         className={cn(
           'absolute inset-x-0 top-0 h-1 bg-gradient-to-r',
@@ -44,8 +44,8 @@ export function MetricCard({
       />
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <strong className="mt-2 block text-2xl font-bold tracking-tight text-slate-950">
+          <p className="text-sm font-semibold text-slate-500">{label}</p>
+          <strong className="mt-2 block text-3xl font-bold tracking-tight text-slate-950">
             {value}
           </strong>
         </div>
@@ -53,7 +53,7 @@ export function MetricCard({
         {Icon && (
           <span
             className={cn(
-              'inline-flex h-10 w-10 items-center justify-center rounded-xl ring-1',
+              'inline-flex h-11 w-11 items-center justify-center rounded-2xl ring-1',
               toneClassNames[tone],
             )}
           >

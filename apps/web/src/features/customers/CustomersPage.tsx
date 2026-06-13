@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, Users } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Modal } from '@/components/Modal'
 import { PageHeader } from '@/components/PageHeader'
@@ -129,6 +129,7 @@ export function CustomersPage() {
         title="Clientes"
         description="Gerencie seus clientes, contatos, origem e localização."
         eyebrow="Relacionamento"
+        icon={Users}
         actions={
           <button
             type="button"
@@ -183,8 +184,17 @@ export function CustomersPage() {
                       key={customer.id}
                       className="border-b border-slate-100 last:border-0"
                     >
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        {customer.name}
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-slate-950">
+                          {customer.name}
+                        </p>
+                        {(customer.document || customer.source) && (
+                          <p className="mt-1 text-xs text-slate-500">
+                            {[customer.document, customer.source]
+                              .filter(Boolean)
+                              .join(' • ')}
+                          </p>
+                        )}
                       </td>
 
                     <td className="px-4 py-3 text-slate-600">

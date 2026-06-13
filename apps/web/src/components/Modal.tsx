@@ -24,7 +24,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -32,7 +32,7 @@ export function Modal({
     >
       <div
         className={[
-          'relative max-h-[90vh] w-full overflow-y-auto rounded-2xl bg-white p-6 shadow-xl',
+          'relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-3xl border border-white/80 bg-white shadow-2xl shadow-slate-950/20',
           maxWidthClassName,
         ].join(' ')}
       >
@@ -41,14 +41,14 @@ export function Modal({
           onClick={onClose}
           title="Fechar modal"
           aria-label="Fechar modal"
-          className="absolute right-4 top-4 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+          className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-blue-50 hover:text-blue-900"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
 
-        <div className="mb-5 pr-10">
+        <div className="sticky top-0 border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 px-6 py-5 pr-14">
           <div>
-            <h2 id="modal-title" className="text-lg font-semibold">
+            <h2 id="modal-title" className="text-xl font-bold text-slate-950">
               {title}
             </h2>
             {description && (
@@ -62,7 +62,7 @@ export function Modal({
           </div>
         </div>
 
-        {children}
+        <div className="overflow-y-auto p-6">{children}</div>
       </div>
     </div>
   )

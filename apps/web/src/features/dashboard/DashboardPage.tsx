@@ -5,6 +5,7 @@ import {
   CircleDollarSign,
   ClipboardList,
   Factory,
+  LayoutDashboard,
   Package,
   TrendingUp,
   UserCheck,
@@ -106,6 +107,7 @@ export function DashboardPage() {
         title="Dashboard"
         description="Visão geral do desempenho do negócio, pedidos e valores por período."
         eyebrow="Resumo"
+        icon={LayoutDashboard}
         actions={
           <div className="rounded-2xl border border-blue-100 bg-white/80 p-3 shadow-sm shadow-blue-100/60">
             <div className="flex flex-wrap gap-2">
@@ -391,7 +393,7 @@ function ChartCard({
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-base font-semibold text-slate-900">{title}</h3>
         <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-          Analytics
+          Indicadores
         </span>
       </div>
       <div className="mt-4 min-h-[340px]">{children}</div>

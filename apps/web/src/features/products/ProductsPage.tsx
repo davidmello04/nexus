@@ -4,6 +4,7 @@ import {
   DollarSign,
   Image as ImageIcon,
   Layers,
+  Package,
   Pencil,
   Power,
   Trash2,
@@ -196,6 +197,7 @@ export function ProductsPage() {
         title="Produtos"
         description="Cadastre produtos, preços, imagens, variações e condições por cliente."
         eyebrow="Catálogo"
+        icon={Package}
         actions={
           <button
             type="button"

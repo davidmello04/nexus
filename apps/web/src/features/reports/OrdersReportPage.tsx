@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { FileSpreadsheet } from 'lucide-react'
+import { ClipboardList, FileSpreadsheet } from 'lucide-react'
 import { MetricCard } from '@/components/MetricCard'
 import { PageHeader } from '@/components/PageHeader'
 import { getCustomers } from '@/features/customers/customers-service'
@@ -81,6 +81,7 @@ export function OrdersReportPage() {
         title="Relatório de pedidos"
         description="Analise pedidos por período, status e cliente, com resumo financeiro."
         eyebrow="Relatórios"
+        icon={ClipboardList}
         actions={
           <button
             type="button"
@@ -199,18 +200,26 @@ export function OrdersReportPage() {
             <MetricCard
               label="Pedidos"
               value={String(report.summary.ordersCount)}
+              description="Pedidos encontrados"
+              icon={ClipboardList}
+              tone="blue"
             />
             <MetricCard
               label="Subtotal"
               value={formatCurrency(report.summary.subtotalTotal)}
+              description="Soma antes de descontos"
             />
             <MetricCard
               label="Descontos"
               value={formatCurrency(report.summary.discountTotal)}
+              description="Total abatido"
+              tone="amber"
             />
             <MetricCard
               label="Total geral"
               value={formatCurrency(report.summary.grandTotal)}
+              description="Resultado final"
+              tone="emerald"
             />
           </div>
 
@@ -240,8 +249,10 @@ export function OrdersReportPage() {
                         key={order.id}
                         className="border-b border-slate-100 last:border-0"
                       >
-                        <td className="px-4 py-3 font-medium text-slate-900">
-                          #{order.code}
+                        <td className="px-4 py-3">
+                          <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-sm font-bold text-blue-800">
+                            #{order.code}
+                          </span>
                         </td>
                         <td className="px-4 py-3 text-slate-600">
                           {order.customer?.name || '-'}
@@ -262,7 +273,7 @@ export function OrdersReportPage() {
                         <td className="px-4 py-3 text-slate-600">
                           {formatCurrency(order.discount)}
                         </td>
-                        <td className="px-4 py-3 font-medium text-slate-900">
+                        <td className="px-4 py-3 text-base font-bold text-slate-950">
                           {formatCurrency(order.total)}
                         </td>
                         <td className="px-4 py-3 text-slate-600">

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, Trash2 } from 'lucide-react'
+import { Eye, FileSignature, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
@@ -49,6 +49,7 @@ export function QuotesPage() {
         title="Orçamentos"
         description="Crie propostas, acompanhe aprovações e converta em pedidos."
         eyebrow="Pré-venda"
+        icon={FileSignature}
         actions={
           <button
             type="button"
@@ -103,8 +104,10 @@ export function QuotesPage() {
                     onClick={() => navigate(`/quotes/${quote.id}`)}
                     className="cursor-pointer border-b border-slate-100 transition hover:bg-slate-50 last:border-0"
                   >
-                    <td className="px-4 py-3 font-medium text-slate-900">
-                      #{quote.code}
+                    <td className="px-4 py-3">
+                      <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-sm font-bold text-blue-800">
+                        #{quote.code}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-slate-600">
                       {quote.customer?.name || '-'}
@@ -112,7 +115,7 @@ export function QuotesPage() {
                     <td className="px-4 py-3">
                       <StatusBadge status={quote.status} />
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                    <td className="px-4 py-3 text-base font-bold text-slate-950">
                       {formatCurrency(quote.total)}
                     </td>
                     <td className="px-4 py-3 text-slate-600">
