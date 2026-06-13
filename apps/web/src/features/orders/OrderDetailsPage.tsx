@@ -11,6 +11,7 @@ import {
   Factory,
   Hash,
   Link2,
+  Package,
   Pencil,
   Receipt,
   User,
@@ -232,7 +233,7 @@ export function OrderDetailsPage() {
           </div>
 
           {order.quote && (
-            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-3 py-1.5 text-xs font-medium text-blue-900 shadow-sm shadow-blue-100/70">
+            <div className="inline-flex max-w-full cursor-pointer items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-3 py-1.5 text-xs font-medium text-blue-900 shadow-sm shadow-blue-100/70 transition hover:border-blue-300 hover:bg-blue-100/80 hover:shadow-blue-200/70">
               <Link2 className="h-3.5 w-3.5 shrink-0 text-blue-700" aria-hidden="true" />
               <span className="truncate">Origem: Orçamento #{order.quote.code}</span>
               <Link
@@ -365,8 +366,18 @@ export function OrderDetailsPage() {
                   key={item.id}
                   className="border-b border-slate-100 last:border-0"
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">
-                    {item.product?.name || '-'}
+                  <td className="px-4 py-3">
+                    <div className="flex min-w-56 items-center gap-3">
+                      <ProductThumbnail item={item} />
+                      <div>
+                        <p className="font-semibold text-slate-900">
+                          {item.product?.name || '-'}
+                        </p>
+                        <p className="mt-0.5 max-w-xs truncate text-xs text-slate-500">
+                          {item.product?.description || 'Produto do pedido'}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">
                     {formatVariant(item)}
@@ -397,10 +408,10 @@ export function OrderDetailsPage() {
               </span>
               <div>
                 <h3 className="font-semibold text-slate-900">
-                  Resumo financeiro
+                  Fechamento dos itens
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Totais calculados do pedido
+                  Conferência dos valores da seção
                 </p>
               </div>
             </div>
@@ -573,7 +584,7 @@ function getStatusStatClassName(status: string) {
     IN_PRODUCTION:
       'border-amber-500 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-amber-300/70',
     DONE:
-      'border-emerald-600 bg-gradient-to-br from-green-500 to-teal-700 text-white shadow-green-300/70',
+      'border-emerald-500 bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-emerald-300/70',
     CANCELED:
       'border-red-600 bg-gradient-to-br from-red-600 to-rose-700 text-white shadow-red-300/70',
   }
@@ -691,6 +702,45 @@ function SummaryRow({
   )
 }
 
+function ProductThumbnail({ item }: { item: OrderItem }) {
+  const image = getMainImage(item)
+
+  if (!image) {
+    return (
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400">
+        <Package className="h-5 w-5" aria-hidden="true" />
+      </span>
+    )
+  }
+
+  return (
+    <img
+      src={getImageUrl(image.url)}
+      alt={image.alt || item.product?.name || 'Produto'}
+      className="h-12 w-12 shrink-0 rounded-xl border border-slate-200 object-cover shadow-sm shadow-slate-200/70"
+    />
+  )
+}
+
+function getMainImage(item: OrderItem) {
+  return (
+    item.product?.images?.find((image) => image.isMain) ??
+    item.product?.images?.[0] ??
+    null
+  )
+}
+
+function getImageUrl(url: string) {
+  if (url.startsWith('http')) {
+    return url
+  }
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3333/api'
+  const baseUrl = apiUrl.replace(/\/api\/?$/, '')
+
+  return `${baseUrl}${url}`
+}
+
 function formatVariant(item: OrderItem) {
   const variant = item.productVariant
 
@@ -722,7 +772,7 @@ function getStatusBadgeClassName(status: string) {
     DRAFT: 'border border-slate-200 bg-slate-100 text-slate-700',
     PENDING: 'border border-blue-200 bg-blue-50 text-blue-700',
     IN_PRODUCTION: 'border border-amber-200 bg-amber-50 text-amber-800',
-    DONE: 'border border-emerald-200 bg-emerald-50 text-emerald-700',
+    DONE: 'border border-emerald-200 bg-emerald-100 text-emerald-700',
     CANCELED: 'border border-red-200 bg-red-50 text-red-700',
   }
 

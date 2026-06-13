@@ -10,6 +10,7 @@ import {
   FileText,
   Hash,
   Link2,
+  Package,
   Pencil,
   Receipt,
   Send,
@@ -194,12 +195,12 @@ export function QuoteDetailsPage() {
           </div>
 
           {quote.order && (
-            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1.5 text-xs font-medium text-emerald-900 shadow-sm shadow-emerald-100/70">
-              <Link2 className="h-3.5 w-3.5 shrink-0 text-emerald-700" aria-hidden="true" />
+            <div className="inline-flex max-w-full cursor-pointer items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/80 px-3 py-1.5 text-xs font-medium text-emerald-900 shadow-sm shadow-emerald-100/70 transition hover:border-emerald-300 hover:bg-emerald-100 hover:shadow-emerald-200/70">
+              <Link2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden="true" />
               <span className="truncate">Pedido gerado: #{quote.order.code}</span>
               <Link
                 to={`/orders/${quote.order.id}`}
-                className="shrink-0 font-semibold text-emerald-700 underline-offset-2 hover:underline"
+                className="shrink-0 font-semibold text-emerald-600 underline-offset-2 hover:underline"
               >
                 Ver pedido
               </Link>
@@ -302,8 +303,8 @@ export function QuoteDetailsPage() {
         </div>
       )}
 
-      {quote.status === 'APPROVED' && (
-      <section className="rounded-2xl border border-emerald-200 bg-emerald-50/90 p-5 shadow-sm shadow-emerald-100/70">
+      {quote.status === 'APPROVED' && !quote.order && (
+      <section className="rounded-2xl border border-emerald-200 bg-emerald-100/80 p-5 shadow-sm shadow-emerald-100/70">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="font-semibold text-emerald-950">
@@ -321,7 +322,7 @@ export function QuoteDetailsPage() {
                 setIsConvertDialogOpen(true)
               }}
               disabled={convertMutation.isPending}
-              className="cursor-pointer rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {convertMutation.isPending
                 ? 'Convertendo...'
@@ -386,8 +387,18 @@ export function QuoteDetailsPage() {
             <tbody>
               {quote.items.map((item) => (
                 <tr key={item.id} className="border-b border-slate-100 last:border-0">
-                  <td className="px-4 py-3 font-medium text-slate-900">
-                    {item.product?.name || '-'}
+                  <td className="px-4 py-3">
+                    <div className="flex min-w-56 items-center gap-3">
+                      <ProductThumbnail item={item} />
+                      <div>
+                        <p className="font-semibold text-slate-900">
+                          {item.product?.name || '-'}
+                        </p>
+                        <p className="mt-0.5 max-w-xs truncate text-xs text-slate-500">
+                          {item.product?.description || 'Produto do orçamento'}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">
                     {formatVariant(item)}
@@ -416,10 +427,10 @@ export function QuoteDetailsPage() {
               </span>
               <div>
                 <h3 className="font-semibold text-slate-900">
-                  Resumo financeiro
+                  Fechamento dos itens
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Totais da proposta
+                  Conferência dos valores da seção
                 </p>
               </div>
             </div>
@@ -599,7 +610,7 @@ function getQuoteStatusStatClassName(status: string) {
     SENT:
       'border-blue-600 bg-gradient-to-br from-blue-700 to-indigo-700 text-white shadow-blue-300/70',
     APPROVED:
-      'border-emerald-600 bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-300/70',
+      'border-emerald-500 bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-emerald-300/70',
     REJECTED:
       'border-red-600 bg-gradient-to-br from-red-600 to-rose-700 text-white shadow-red-300/70',
     EXPIRED:
@@ -725,6 +736,45 @@ function SummaryRow({
       </span>
     </div>
   )
+}
+
+function ProductThumbnail({ item }: { item: QuoteItem }) {
+  const image = getMainImage(item)
+
+  if (!image) {
+    return (
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400">
+        <Package className="h-5 w-5" aria-hidden="true" />
+      </span>
+    )
+  }
+
+  return (
+    <img
+      src={getImageUrl(image.url)}
+      alt={image.alt || item.product?.name || 'Produto'}
+      className="h-12 w-12 shrink-0 rounded-xl border border-slate-200 object-cover shadow-sm shadow-slate-200/70"
+    />
+  )
+}
+
+function getMainImage(item: QuoteItem) {
+  return (
+    item.product?.images?.find((image) => image.isMain) ??
+    item.product?.images?.[0] ??
+    null
+  )
+}
+
+function getImageUrl(url: string) {
+  if (url.startsWith('http')) {
+    return url
+  }
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3333/api'
+  const baseUrl = apiUrl.replace(/\/api\/?$/, '')
+
+  return `${baseUrl}${url}`
 }
 
 function formatVariant(item: QuoteItem) {

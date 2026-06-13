@@ -563,7 +563,11 @@ export class QuotesService {
     },
     items: {
       include: {
-        product: true,
+        product: {
+          include: {
+            images: true,
+          },
+        },
         productVariant: true,
       },
     },

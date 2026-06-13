@@ -317,7 +317,7 @@ function getStatusBadgeClassName(status: string) {
     DRAFT: 'border border-slate-200 bg-slate-100 text-slate-700',
     PENDING: 'border border-blue-200 bg-blue-50 text-blue-700',
     IN_PRODUCTION: 'border border-amber-200 bg-amber-50 text-amber-800',
-    DONE: 'border border-emerald-200 bg-emerald-50 text-emerald-700',
+    DONE: 'border border-emerald-200 bg-emerald-100 text-emerald-700',
     CANCELED: 'border border-red-200 bg-red-50 text-red-700',
   }
 

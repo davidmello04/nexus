@@ -234,7 +234,7 @@ export function StatusBadge({ status }: { status: string }) {
   const classNames: Record<string, string> = {
     DRAFT: 'border border-slate-200 bg-slate-100 text-slate-700',
     SENT: 'border border-blue-200 bg-blue-50 text-blue-700',
-    APPROVED: 'border border-emerald-200 bg-emerald-50 text-emerald-700',
+    APPROVED: 'border border-emerald-200 bg-emerald-100 text-emerald-700',
     REJECTED: 'border border-red-200 bg-red-50 text-red-700',
     EXPIRED: 'border border-purple-200 bg-purple-50 text-purple-700',
   }

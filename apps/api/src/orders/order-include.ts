@@ -10,7 +10,11 @@ export const orderInclude = {
   },
   items: {
     include: {
-      product: true,
+      product: {
+        include: {
+          images: true,
+        },
+      },
       productVariant: true,
     },
   },
