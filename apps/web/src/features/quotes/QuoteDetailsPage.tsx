@@ -13,7 +13,6 @@ import {
   Pencil,
   Receipt,
   Send,
-  Tag,
   User,
   type LucideIcon,
 } from 'lucide-react'
@@ -154,43 +153,58 @@ export function QuoteDetailsPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleGeneratePdf}
-            disabled={isGeneratingPdf}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <FileText className="h-4 w-4" aria-hidden="true" />
-            {isGeneratingPdf ? 'Gerando...' : 'Gerar PDF'}
-          </button>
+        <div className="flex flex-col items-start gap-2 sm:items-end">
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <button
+              type="button"
+              onClick={handleGeneratePdf}
+              disabled={isGeneratingPdf}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <FileText className="h-4 w-4" aria-hidden="true" />
+              {isGeneratingPdf ? 'Gerando...' : 'Gerar PDF'}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setIsEditOpen(true)}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            <Pencil className="h-4 w-4" aria-hidden="true" />
-            Editar
-          </button>
+            <button
+              type="button"
+              onClick={() => setIsEditOpen(true)}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              Editar
+            </button>
 
-          {statusOptions
-            .filter((status) => status !== quote.status)
-            .map((status) => (
-              <button
-                key={status}
-                type="button"
-                onClick={() => {
-                  updateStatusMutation.reset()
-                  setStatusToApply(status)
-                }}
-                title={`Alterar para ${getQuoteStatusLabel(status)}`}
-                aria-label={`Alterar para ${getQuoteStatusLabel(status)}`}
-                className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            {statusOptions
+              .filter((status) => status !== quote.status)
+              .map((status) => (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => {
+                    updateStatusMutation.reset()
+                    setStatusToApply(status)
+                  }}
+                  title={`Alterar para ${getQuoteStatusLabel(status)}`}
+                  aria-label={`Alterar para ${getQuoteStatusLabel(status)}`}
+                  className="cursor-pointer rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  {getQuoteStatusLabel(status)}
+                </button>
+              ))}
+          </div>
+
+          {quote.order && (
+            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1.5 text-xs font-medium text-emerald-900 shadow-sm shadow-emerald-100/70">
+              <Link2 className="h-3.5 w-3.5 shrink-0 text-emerald-700" aria-hidden="true" />
+              <span className="truncate">Pedido gerado: #{quote.order.code}</span>
+              <Link
+                to={`/orders/${quote.order.id}`}
+                className="shrink-0 font-semibold text-emerald-700 underline-offset-2 hover:underline"
               >
-                {getQuoteStatusLabel(status)}
-              </button>
-            ))}
+                Ver pedido
+              </Link>
+            </div>
+          )}
         </div>
         </div>
 
@@ -209,10 +223,12 @@ export function QuoteDetailsPage() {
             icon={getQuoteStatusIcon(quote.status)}
           />
           <HighlightStat
-            label="Total geral"
+            label="Resumo financeiro"
             value={formatCurrency(quote.total)}
             accent
             icon={CircleDollarSign}
+            subtotal={formatCurrency(quote.subtotal)}
+            discount={formatCurrency(quote.discount)}
           />
         </div>
 
@@ -220,19 +236,7 @@ export function QuoteDetailsPage() {
           <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">
             Dados gerais
           </h2>
-          <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <DetailItem
-              label="Subtotal"
-              value={formatCurrency(quote.subtotal)}
-              icon={Receipt}
-              tone="blue"
-            />
-            <DetailItem
-              label="Desconto"
-              value={formatCurrency(quote.discount)}
-              icon={Tag}
-              tone="rose"
-            />
+          <dl className="mt-3 grid gap-3 sm:grid-cols-3">
             <DetailItem label="Código" value={`#${quote.code}`} icon={Hash} tone="indigo" />
             <DetailItem
               label="Criado em"
@@ -253,29 +257,6 @@ export function QuoteDetailsPage() {
           </dl>
         </section>
 
-        {quote.order && (
-          <section className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-emerald-900 shadow-sm shadow-emerald-100/70">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                  <Link2 className="h-4 w-4" aria-hidden="true" />
-                </span>
-                <p className="text-sm">
-                  <span className="font-semibold">
-                    Pedido gerado: #{quote.order.code}
-                  </span>
-                </p>
-              </div>
-
-              <Link
-                to={`/orders/${quote.order.id}`}
-                className="cursor-pointer rounded-xl bg-emerald-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-emerald-800"
-              >
-                Ver pedido
-              </Link>
-            </div>
-          </section>
-        )}
       </div>
 
       {['REJECTED', 'EXPIRED'].includes(quote.status) && (
@@ -529,6 +510,8 @@ function HighlightStat({
   status,
   icon: Icon,
   tone,
+  subtotal,
+  discount,
 }: {
   label: string
   value: string
@@ -537,6 +520,8 @@ function HighlightStat({
   status?: string
   icon?: LucideIcon
   tone?: 'blue'
+  subtotal?: string
+  discount?: string
 }) {
   const statusClassName = status ? getQuoteStatusStatClassName(status) : ''
 
@@ -571,6 +556,22 @@ function HighlightStat({
               {description}
             </p>
           )}
+          {accent && (subtotal || discount) && (
+            <div className="mt-3 grid gap-1.5 text-xs font-medium text-blue-100">
+              {subtotal && (
+                <div className="flex items-center justify-between gap-4">
+                  <span>Subtotal</span>
+                  <span className="text-white/95">{subtotal}</span>
+                </div>
+              )}
+              {discount && (
+                <div className="flex items-center justify-between gap-4">
+                  <span>Desconto</span>
+                  <span className="text-white/95">{discount}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         {Icon && (
           <span
@@ -594,15 +595,15 @@ function HighlightStat({
 function getQuoteStatusStatClassName(status: string) {
   const classNames: Record<string, string> = {
     DRAFT:
-      'border-slate-300 bg-gradient-to-br from-slate-100 to-slate-50 text-slate-800 shadow-slate-200/70',
+      'border-slate-500 bg-gradient-to-br from-slate-600 to-slate-500 text-white shadow-slate-300/70',
     SENT:
-      'border-blue-300 bg-gradient-to-br from-blue-100 to-blue-50 text-blue-900 shadow-blue-100/70',
+      'border-blue-600 bg-gradient-to-br from-blue-700 to-indigo-700 text-white shadow-blue-300/70',
     APPROVED:
-      'border-emerald-300 bg-gradient-to-br from-emerald-100 to-teal-50 text-emerald-900 shadow-emerald-100/70',
+      'border-emerald-600 bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-300/70',
     REJECTED:
-      'border-red-300 bg-gradient-to-br from-red-100 to-rose-50 text-red-900 shadow-red-100/70',
+      'border-red-600 bg-gradient-to-br from-red-600 to-rose-700 text-white shadow-red-300/70',
     EXPIRED:
-      'border-purple-300 bg-gradient-to-br from-purple-100 to-violet-50 text-purple-900 shadow-purple-100/70',
+      'border-purple-600 bg-gradient-to-br from-purple-600 to-violet-700 text-white shadow-purple-300/70',
   }
 
   return classNames[status] ?? classNames.DRAFT
@@ -682,16 +683,16 @@ function getDetailToneClassName(tone: 'blue' | 'rose' | 'indigo' | 'slate' | 'cy
       icon: 'bg-rose-100 text-rose-700',
     },
     indigo: {
-      container: 'border-indigo-100 bg-indigo-50/55 shadow-indigo-100/50',
+      container: 'border-indigo-200 bg-indigo-50/70 shadow-indigo-100/60',
       icon: 'bg-indigo-100 text-indigo-700',
     },
     slate: {
-      container: 'border-slate-100 bg-slate-50/80 shadow-slate-100/60',
-      icon: 'bg-slate-100 text-slate-600',
+      container: 'border-sky-200 bg-sky-50/70 shadow-sky-100/60',
+      icon: 'bg-sky-100 text-sky-700',
     },
     cyan: {
-      container: 'border-cyan-100 bg-cyan-50/55 shadow-cyan-100/50',
-      icon: 'bg-cyan-100 text-cyan-700',
+      container: 'border-teal-200 bg-teal-50/70 shadow-teal-100/60',
+      icon: 'bg-teal-100 text-teal-700',
     },
   }
 
