@@ -27,6 +27,7 @@ import {
 } from 'recharts'
 import { PageHeader } from '@/components/PageHeader'
 import { formatCurrency } from '@/lib/formatters'
+import { useTheme } from '@/theme/ThemeProvider'
 import {
   getDashboardSummary,
   type DashboardSummaryFilters,
@@ -53,6 +54,7 @@ const accents: Record<SummaryTone, string> = {
 }
 
 export function DashboardPage() {
+  const { mode } = useTheme()
   const [periodMode, setPeriodMode] = useState<PeriodMode>(initialPeriod.mode)
   const [customStartDate, setCustomStartDate] = useState('')
   const [customEndDate, setCustomEndDate] = useState('')
@@ -86,6 +88,26 @@ export function DashboardPage() {
         { name: 'Concluído', value: summary.totalSoldDone },
       ]
     : []
+  const chartTheme =
+    mode === 'dark'
+      ? {
+          grid: 'rgba(148, 163, 184, 0.20)',
+          tick: '#cbd5e1',
+          tooltipBackground: '#111827',
+          tooltipBorder: 'rgba(148, 163, 184, 0.28)',
+          tooltipText: '#e5e7eb',
+          cursor: 'rgba(148, 163, 184, 0.12)',
+          pieStroke: '#0f172a',
+        }
+      : {
+          grid: '#e2e8f0',
+          tick: '#64748b',
+          tooltipBackground: '#ffffff',
+          tooltipBorder: '#bfdbfe',
+          tooltipText: '#0f172a',
+          cursor: 'rgba(219, 234, 254, 0.42)',
+          pieStroke: '#ffffff',
+        }
 
   function handleApplyPreset(mode: Exclude<PeriodMode, 'custom'>) {
     const period = getPeriodByMode(mode)
@@ -268,31 +290,33 @@ export function DashboardPage() {
                     margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
                   >
                     <RechartsCartesianGrid
-                      stroke="#e2e8f0"
+                      stroke={chartTheme.grid}
                       strokeDasharray="4 4"
                       vertical={false}
                     />
                     <RechartsXAxis
                       dataKey="name"
-                      tick={{ fontSize: 12 }}
+                      tick={{ fontSize: 12, fill: chartTheme.tick }}
                       interval={0}
                       height={58}
                     />
                     <RechartsYAxis
                       allowDecimals={false}
                       axisLine={false}
-                      tick={{ fontSize: 12, fill: '#64748b' }}
+                      tick={{ fontSize: 12, fill: chartTheme.tick }}
                       tickLine={false}
                     />
                     <RechartsTooltip
                       formatter={formatOrdersTooltip}
-                      cursor={{ fill: 'rgba(219, 234, 254, 0.42)' }}
+                      cursor={{ fill: chartTheme.cursor }}
                       contentStyle={{
+                        backgroundColor: chartTheme.tooltipBackground,
                         borderRadius: '14px',
-                        border: '1px solid #bfdbfe',
+                        border: `1px solid ${chartTheme.tooltipBorder}`,
                         boxShadow: '0 12px 30px rgba(15, 23, 42, 0.12)',
                       }}
-                      labelStyle={{ color: '#0f172a', fontWeight: 700 }}
+                      labelStyle={{ color: chartTheme.tooltipText, fontWeight: 700 }}
+                      itemStyle={{ color: chartTheme.tooltipText }}
                     />
                     <RechartsBar dataKey="value" radius={[10, 10, 4, 4]} barSize={42}>
                       {orderStatusChartData.map((entry, index) => (
@@ -316,7 +340,7 @@ export function DashboardPage() {
                       innerRadius={72}
                       outerRadius={118}
                       paddingAngle={3}
-                      stroke="#ffffff"
+                      stroke={chartTheme.pieStroke}
                       strokeWidth={3}
                     >
                       {financialChartData.map((entry, index) => (
@@ -329,14 +353,21 @@ export function DashboardPage() {
                     <RechartsTooltip
                       formatter={formatFinancialTooltip}
                       contentStyle={{
+                        backgroundColor: chartTheme.tooltipBackground,
                         borderRadius: '14px',
-                        border: '1px solid #bfdbfe',
+                        border: `1px solid ${chartTheme.tooltipBorder}`,
                         boxShadow: '0 12px 30px rgba(15, 23, 42, 0.12)',
                       }}
+                      labelStyle={{ color: chartTheme.tooltipText, fontWeight: 700 }}
+                      itemStyle={{ color: chartTheme.tooltipText }}
                     />
                     <RechartsLegend
                       iconType="circle"
-                      wrapperStyle={{ fontSize: 12, paddingTop: 14 }}
+                      wrapperStyle={{
+                        color: chartTheme.tick,
+                        fontSize: 12,
+                        paddingTop: 14,
+                      }}
                     />
                   </RechartsPieChart>
                 </RechartsResponsiveContainer>

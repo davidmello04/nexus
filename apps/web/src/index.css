@@ -8,6 +8,38 @@
   --brand-secondary-rgb: 79 70 229;
   --brand-accent-rgb: 6 182 212;
   --brand-text: #1e3a8a;
+  --app-background: #f8fafc;
+  --app-background-end: #f1f5f9;
+  --app-foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-soft: rgb(248 250 252);
+  --surface-muted: rgb(241 245 249);
+  --surface-elevated: rgb(255 255 255 / 0.92);
+  --border-soft: rgb(226 232 240);
+  --muted: #64748b;
+  --input-background: #ffffff;
+  --table-row: #ffffff;
+  --table-row-alt: rgb(248 250 252 / 0.58);
+  --table-hover: rgb(var(--brand-primary-rgb) / 0.06);
+  --overlay: rgb(15 23 42 / 0.55);
+}
+
+:root[data-theme="dark"] {
+  --brand-text: color-mix(in srgb, var(--brand-primary) 72%, white);
+  --app-background: #080b12;
+  --app-background-end: #111827;
+  --app-foreground: #e5e7eb;
+  --surface: #111827;
+  --surface-soft: #0f172a;
+  --surface-muted: #1f2937;
+  --surface-elevated: rgb(17 24 39 / 0.94);
+  --border-soft: rgb(71 85 105 / 0.72);
+  --muted: #94a3b8;
+  --input-background: #0f172a;
+  --table-row: #111827;
+  --table-row-alt: rgb(15 23 42 / 0.72);
+  --table-hover: rgb(var(--brand-primary-rgb) / 0.16);
+  --overlay: rgb(2 6 23 / 0.72);
 }
 
 * {
@@ -21,8 +53,8 @@ body {
   background:
     radial-gradient(circle at top left, rgb(var(--brand-primary-rgb) / 0.11), transparent 32rem),
     radial-gradient(circle at top right, rgb(var(--brand-secondary-rgb) / 0.08), transparent 30rem),
-    linear-gradient(135deg, #f8fafc 0%, #f8fafc 52%, #f1f5f9 100%);
-  color: #0f172a;
+    linear-gradient(135deg, var(--app-background) 0%, var(--app-background) 52%, var(--app-background-end) 100%);
+  color: var(--app-foreground);
   font-synthesis-weight: none;
 }
 
@@ -32,7 +64,7 @@ body {
 
 .bg-brand-gradient-soft {
   background-image:
-    linear-gradient(90deg, rgb(var(--brand-primary-rgb) / 0.075), rgb(var(--brand-secondary-rgb) / 0.045), #fff);
+    linear-gradient(90deg, rgb(var(--brand-primary-rgb) / 0.075), rgb(var(--brand-secondary-rgb) / 0.045), var(--surface));
 }
 
 .bg-brand-soft {
@@ -44,7 +76,7 @@ body {
 }
 
 .bg-brand-section {
-  background-image: linear-gradient(135deg, #fff, #fff, rgb(var(--brand-primary-rgb) / 0.035));
+  background-image: linear-gradient(135deg, var(--surface), var(--surface), rgb(var(--brand-primary-rgb) / 0.035));
 }
 
 .text-brand {
@@ -100,13 +132,14 @@ main table {
   border-collapse: collapse;
   text-align: left;
   font-size: 0.875rem;
-  background: white;
+  background: var(--surface);
 }
 
 main thead tr {
   border-bottom: 1px solid rgb(var(--brand-secondary-rgb) / 0.72);
-  background-image: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
-  color: #f8fafc;
+  background-color: var(--brand-primary) !important;
+  background-image: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)) !important;
+  color: #f8fafc !important;
 }
 
 main th {
@@ -115,7 +148,7 @@ main th {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #f8fafc;
+  color: #f8fafc !important;
 }
 
 main tbody tr {
@@ -127,11 +160,11 @@ main tbody tr {
 }
 
 main tbody tr:nth-child(even) {
-  background-color: rgb(248 250 252 / 0.58);
+  background-color: var(--table-row-alt);
 }
 
 main tbody tr:hover {
-  background-color: rgb(var(--brand-primary-rgb) / 0.06);
+  background-color: var(--table-hover);
   box-shadow: inset 3px 0 0 rgb(var(--brand-primary-rgb) / 0.68);
 }
 
@@ -141,7 +174,7 @@ main tbody tr[data-status] {
 }
 
 main tbody tr[data-status]:hover {
-  background-color: rgb(var(--brand-primary-rgb) / 0.05);
+  background-color: var(--table-hover);
   box-shadow: inset 4px 0 0 rgb(var(--status-row-color) / 0.72);
 }
 
@@ -186,6 +219,8 @@ main td {
 main input,
 main select,
 main textarea {
+  background-color: var(--input-background);
+  color: var(--app-foreground);
   transition:
     border-color 150ms ease,
     box-shadow 150ms ease,
@@ -197,6 +232,123 @@ main select:focus,
 main textarea:focus {
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px rgb(var(--brand-primary-rgb) / 0.13);
+}
+
+:root[data-theme="dark"] main,
+:root[data-theme="dark"] aside,
+:root[data-theme="dark"] header {
+  color: var(--app-foreground);
+}
+
+:root[data-theme="dark"] .bg-white,
+:root[data-theme="dark"] .bg-white\/70,
+:root[data-theme="dark"] .bg-white\/72,
+:root[data-theme="dark"] .bg-white\/75,
+:root[data-theme="dark"] .bg-white\/80,
+:root[data-theme="dark"] .bg-white\/85,
+:root[data-theme="dark"] .bg-white\/88,
+:root[data-theme="dark"] .bg-white\/90,
+:root[data-theme="dark"] .bg-white\/95 {
+  background-color: var(--surface-elevated) !important;
+}
+
+:root[data-theme="dark"] .bg-slate-50,
+:root[data-theme="dark"] .bg-slate-100 {
+  background-color: var(--surface-muted) !important;
+}
+
+:root[data-theme="dark"] .text-slate-950,
+:root[data-theme="dark"] .text-slate-900,
+:root[data-theme="dark"] .text-slate-800 {
+  color: var(--app-foreground) !important;
+}
+
+:root[data-theme="dark"] .text-slate-700,
+:root[data-theme="dark"] .text-slate-600,
+:root[data-theme="dark"] .text-slate-500 {
+  color: var(--muted) !important;
+}
+
+:root[data-theme="dark"] .border-white\/70,
+:root[data-theme="dark"] .border-white\/80,
+:root[data-theme="dark"] .border-slate-100,
+:root[data-theme="dark"] .border-slate-200,
+:root[data-theme="dark"] .border-slate-300 {
+  border-color: var(--border-soft) !important;
+}
+
+:root[data-theme="dark"] .ring-slate-900\/5 {
+  --tw-ring-color: rgb(148 163 184 / 0.14) !important;
+}
+
+:root[data-theme="dark"] .shadow-slate-200\/50,
+:root[data-theme="dark"] .shadow-slate-200\/70,
+:root[data-theme="dark"] .shadow-slate-200\/80,
+:root[data-theme="dark"] .shadow-slate-300\/70 {
+  --tw-shadow-color: rgb(2 6 23 / 0.35) !important;
+}
+
+:root[data-theme="dark"] .bg-brand-gradient-soft {
+  background-image:
+    linear-gradient(90deg, rgb(var(--brand-primary-rgb) / 0.18), rgb(var(--brand-secondary-rgb) / 0.12), var(--surface));
+}
+
+:root[data-theme="dark"] .bg-brand-section {
+  background-image: linear-gradient(135deg, var(--surface), var(--surface), rgb(var(--brand-primary-rgb) / 0.10));
+}
+
+:root[data-theme="dark"] .bg-brand-soft {
+  background-color: rgb(var(--brand-primary-rgb) / 0.16);
+}
+
+:root[data-theme="dark"] .bg-brand-softer {
+  background-color: rgb(var(--brand-primary-rgb) / 0.10);
+}
+
+:root[data-theme="dark"] main tbody tr {
+  background-color: var(--table-row);
+  border-bottom-color: var(--border-soft);
+}
+
+:root[data-theme="dark"] main tbody tr:nth-child(even) {
+  background-color: var(--table-row-alt);
+}
+
+:root[data-theme="dark"] main input,
+:root[data-theme="dark"] main select,
+:root[data-theme="dark"] main textarea {
+  border-color: var(--border-soft);
+}
+
+:root[data-theme="dark"] main input::placeholder,
+:root[data-theme="dark"] main textarea::placeholder {
+  color: rgb(148 163 184 / 0.72);
+}
+
+:root[data-theme="dark"] main td button[class*="h-8"][class*="w-8"],
+:root[data-theme="dark"] main td button[class*="h-9"][class*="w-9"] {
+  background-color: var(--surface-elevated);
+}
+
+:root[data-theme="dark"] main [class*="from-white"],
+:root[data-theme="dark"] main [class*="via-white"] {
+  background-image: linear-gradient(135deg, var(--surface), var(--surface), rgb(var(--brand-primary-rgb) / 0.10)) !important;
+}
+
+:root[data-theme="dark"] main thead tr {
+  background-color: var(--brand-primary) !important;
+  background-image: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)) !important;
+}
+
+:root[data-theme="dark"] .bg-slate-950\/50,
+:root[data-theme="dark"] .bg-slate-950\/55 {
+  background-color: var(--overlay) !important;
+}
+
+:root[data-theme="dark"] .recharts-text,
+:root[data-theme="dark"] .recharts-legend-item-text {
+  fill: #cbd5e1;
+  color: #cbd5e1 !important;
 }
 
 main button.bg-slate-950,

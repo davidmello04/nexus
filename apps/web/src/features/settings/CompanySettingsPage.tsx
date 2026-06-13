@@ -1,12 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Building2, Check, Palette } from 'lucide-react'
+import { Building2, Check, Moon, Palette, Sun, type LucideIcon } from 'lucide-react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { PageHeader } from '@/components/PageHeader'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/theme/ThemeProvider'
-import type { ColorPalette } from '@/theme/palettes'
+import type { ColorPalette, ThemeMode } from '@/theme/palettes'
 import {
   companySettingsSchema,
   type CompanySettingsFormData,
@@ -30,7 +30,7 @@ const emptyCompanySettingsFormValues: CompanySettingsFormData = {
 
 export function CompanySettingsPage() {
   const [selectedLogo, setSelectedLogo] = useState<File | null>(null)
-  const { palette, palettes, setPalette } = useTheme()
+  const { mode, palette, palettes, setMode, setPalette } = useTheme()
   const queryClient = useQueryClient()
   const {
     data: companySettings,
@@ -111,7 +111,43 @@ export function CompanySettingsPage() {
               title="Aparência"
               description="Escolha uma paleta para personalizar a identidade visual do Nexus."
             >
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <div>
+                <h3 className="text-sm font-semibold text-brand-strong">
+                  Modo de exibição
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Alterne entre o tema claro e o tema escuro sem mudar a paleta.
+                </p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <ThemeModeOption
+                    mode="light"
+                    active={mode === 'light'}
+                    title="Claro"
+                    description="Interface clara, arejada e próxima do visual padrão."
+                    icon={Sun}
+                    onClick={() => setMode('light')}
+                  />
+                  <ThemeModeOption
+                    mode="dark"
+                    active={mode === 'dark'}
+                    title="Escuro"
+                    description="Superfícies escuras com acentos da paleta ativa."
+                    icon={Moon}
+                    onClick={() => setMode('dark')}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 border-t border-brand-soft pt-5">
+                <h3 className="text-sm font-semibold text-brand-strong">
+                  Paleta de cores
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  A paleta controla acentos, botões, cabeçalhos e detalhes de marca.
+                </p>
+              </div>
+
+              <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {palettes.map((option) => {
                   const isSelected = option.id === palette.id
 
@@ -369,6 +405,53 @@ function SettingsSection({
       </div>
       <div className="p-5">{children}</div>
     </section>
+  )
+}
+
+function ThemeModeOption({
+  active,
+  title,
+  description,
+  icon: Icon,
+  onClick,
+}: {
+  mode: ThemeMode
+  active: boolean
+  title: string
+  description: string
+  icon: LucideIcon
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'cursor-pointer rounded-2xl border bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md',
+        active
+          ? 'border-brand-soft shadow-sm shadow-slate-200/80 ring-2 ring-brand-soft'
+          : 'border-slate-200 hover:border-brand-soft',
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-slate-950">{title}</h4>
+            {active && (
+              <span className="rounded-full bg-brand-gradient px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white">
+                Ativo
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-xs leading-5 text-slate-500">
+            {description}
+          </p>
+        </div>
+      </div>
+    </button>
   )
 }
 

@@ -6,6 +6,8 @@ export type PaletteId =
   | 'energy-orange'
   | 'premium-black'
 
+export type ThemeMode = 'light' | 'dark'
+
 export type ColorPalette = {
   id: PaletteId
   name: string
@@ -20,6 +22,12 @@ export type ColorPalette = {
 }
 
 export const THEME_STORAGE_KEY = 'nexus:color-palette'
+export const THEME_MODE_STORAGE_KEY = 'nexus:theme-mode'
+export const defaultThemeMode: ThemeMode = 'light'
+
+export function getThemeMode(value: string | null | undefined): ThemeMode {
+  return value === 'dark' ? 'dark' : defaultThemeMode
+}
 
 export const palettes: ColorPalette[] = [
   {
