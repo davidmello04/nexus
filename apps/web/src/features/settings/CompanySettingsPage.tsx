@@ -123,7 +123,7 @@ export function CompanySettingsPage() {
                       className={cn(
                         'group cursor-pointer rounded-2xl border bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md',
                         isSelected
-                          ? 'border-brand-soft shadow-brand ring-2 ring-brand-soft'
+                          ? 'border-brand-soft shadow-sm shadow-slate-200/80 ring-2 ring-brand-soft'
                           : 'border-slate-200 hover:border-brand-soft',
                       )}
                     >
@@ -143,7 +143,7 @@ export function CompanySettingsPage() {
                         </div>
 
                         {isSelected && (
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-white shadow-sm shadow-brand">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-white shadow-sm shadow-slate-300/70">
                             <Check className="h-4 w-4" aria-hidden="true" />
                           </span>
                         )}
@@ -351,10 +351,10 @@ function SettingsSection({
   children: ReactNode
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-brand-soft bg-brand-section shadow-sm shadow-brand">
+    <section className="overflow-hidden rounded-2xl border border-brand-soft bg-brand-section shadow-sm shadow-slate-200/70">
       <div className="border-b border-brand-soft bg-brand-softer px-5 py-4">
         <div className="flex items-start gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-brand-gradient shadow-sm shadow-brand" />
+          <span className="mt-1 h-2 w-2 rounded-full bg-brand-gradient shadow-sm shadow-slate-300/70" />
           <div>
             <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
               {title}

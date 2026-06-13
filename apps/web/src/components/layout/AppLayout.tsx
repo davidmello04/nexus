@@ -67,7 +67,7 @@ export function AppLayout() {
     <div className="min-h-screen text-slate-950">
       <aside className="brand-sidebar fixed inset-y-0 left-0 z-10 hidden w-64 border-r bg-white/88 shadow-xl backdrop-blur lg:block">
         <div className="flex h-16 items-center gap-3 border-b border-slate-200/80 px-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-lg shadow-brand">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-md shadow-slate-300/70">
             <Boxes size={20} />
           </div>
 

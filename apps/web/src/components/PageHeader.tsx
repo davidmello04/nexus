@@ -22,7 +22,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'bg-brand-gradient-soft relative overflow-hidden rounded-[1.35rem] border border-brand-soft px-5 py-4 shadow-sm shadow-brand sm:flex sm:items-center sm:justify-between sm:gap-6',
+        'bg-brand-gradient-soft relative overflow-hidden rounded-[1.35rem] border border-brand-soft px-5 py-4 shadow-sm shadow-slate-200/70 sm:flex sm:items-center sm:justify-between sm:gap-6',
         className,
       )}
     >
@@ -30,7 +30,7 @@ export function PageHeader({
 
       <div className="flex max-w-4xl items-start gap-4">
         {Icon && (
-          <div className="mt-1 hidden h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-sm shadow-brand sm:flex">
+          <div className="mt-1 hidden h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-sm shadow-slate-300/70 sm:flex">
             <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
         )}

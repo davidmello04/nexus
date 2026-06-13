@@ -46,7 +46,7 @@ const orderStatusChartColors = ['#64748b', '#2563eb', '#f59e0b', '#10b981', '#ef
 const financialChartColors = ['#2563eb', '#f59e0b', '#10b981']
 const accents: Record<SummaryTone, string> = {
   slate: 'from-slate-400 to-slate-500',
-  blue: 'from-blue-500 to-indigo-500',
+  blue: 'brand-top-line',
   amber: 'from-amber-400 to-orange-500',
   emerald: 'from-emerald-400 to-teal-500',
   red: 'from-red-400 to-rose-500',
@@ -111,7 +111,7 @@ export function DashboardPage() {
         eyebrow="Resumo"
         icon={LayoutDashboard}
         actions={
-          <div className="rounded-2xl border border-blue-100 bg-white/80 p-3 shadow-sm shadow-blue-100/60">
+          <div className="rounded-2xl border border-brand-soft bg-white/85 p-3 shadow-sm shadow-slate-200/70">
             <div className="flex flex-wrap gap-2">
               <PeriodButton
                 active={periodMode === 'today'}
@@ -176,7 +176,7 @@ export function DashboardPage() {
         }
       />
 
-      <p className="rounded-full border border-blue-100 bg-white/70 px-4 py-2 text-sm text-slate-600 shadow-sm shadow-blue-100/50">
+      <p className="rounded-full border border-brand-soft bg-white/80 px-4 py-2 text-sm text-slate-600 shadow-sm shadow-slate-200/70">
         Período ativo: <span className="font-semibold">{appliedPeriod.label}</span>
       </p>
 
@@ -408,9 +408,12 @@ function DashboardSection({
 }) {
   return (
     <section>
-      <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">
-        {title}
-      </h2>
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-brand-gradient" />
+        <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
+          {title}
+        </h2>
+      </div>
       <div className="mt-3">{children}</div>
     </section>
   )
@@ -424,11 +427,11 @@ function ChartCard({
   children: ReactNode
 }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-white via-white to-blue-50/40 p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-brand-section p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+      <div className="brand-top-line absolute inset-x-0 top-0 h-1" />
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-base font-semibold text-slate-900">{title}</h3>
-        <span className="rounded-full border border-blue-100 bg-white/80 px-2.5 py-1 text-xs font-semibold text-blue-700">
+        <span className="rounded-full border border-brand-soft bg-white/90 px-2.5 py-1 text-xs font-semibold text-brand">
           Visão rápida
         </span>
       </div>
@@ -451,7 +454,7 @@ function SummaryCard({
   tone?: SummaryTone
 }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-100/70">
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/80">
       <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accents[tone]}`} />
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -500,8 +503,8 @@ function PeriodButton({
       className={[
         'cursor-pointer rounded-xl border px-3 py-2 text-sm font-medium transition',
         active
-          ? 'border-blue-700 bg-blue-700 text-white shadow-sm shadow-blue-900/20'
-          : 'border-blue-100 bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-900',
+          ? 'border-transparent bg-brand-gradient text-white shadow-sm shadow-slate-300/70'
+          : 'border-brand-soft bg-white text-slate-700 hover:bg-brand-soft hover:text-brand-strong',
       ].join(' ')}
     >
       {children}

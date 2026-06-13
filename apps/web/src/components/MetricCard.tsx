@@ -35,7 +35,7 @@ export function MetricCard({
   tone = 'slate',
 }: MetricCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-100/70">
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/80">
       <div
         className={cn(
           'absolute inset-x-0 top-0 h-1 bg-gradient-to-r',

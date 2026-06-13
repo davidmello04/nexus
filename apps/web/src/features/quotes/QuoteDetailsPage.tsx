@@ -133,8 +133,8 @@ export function QuoteDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-6 shadow-sm shadow-blue-100/70 ring-1 ring-blue-900/5">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+      <div className="relative overflow-hidden rounded-3xl border border-brand-soft bg-brand-gradient-soft p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+        <div className="brand-top-line absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link
@@ -233,10 +233,13 @@ export function QuoteDetailsPage() {
           />
         </div>
 
-        <section className="mt-4 rounded-2xl border border-white/80 bg-white/72 p-4 shadow-sm shadow-blue-100/50">
-          <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">
-            Dados gerais
-          </h2>
+        <section className="mt-4 rounded-2xl border border-white/80 bg-white/72 p-4 shadow-sm shadow-slate-200/70">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-brand-gradient" />
+            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-strong">
+              Dados gerais
+            </h2>
+          </div>
           <dl className="mt-3 grid gap-3 sm:grid-cols-3">
             <DetailItem label="Código" value={`#${quote.code}`} icon={Hash} tone="indigo" />
             <DetailItem
@@ -351,14 +354,14 @@ export function QuoteDetailsPage() {
       )}
 
       <section className="overflow-hidden rounded-3xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
-        <div className="border-b border-blue-100 bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/60 p-5">
+        <div className="border-b border-brand-soft bg-brand-gradient-soft p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-700 shadow-sm shadow-blue-100/70">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand shadow-sm shadow-slate-200/70">
                 <Receipt className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-brand-strong">
                   Itens do orçamento
                 </h2>
                 <p className="text-sm text-slate-500">
@@ -366,7 +369,7 @@ export function QuoteDetailsPage() {
                 </p>
               </div>
             </div>
-            <span className="rounded-full border border-blue-100 bg-white/85 px-3 py-1 text-xs font-semibold text-blue-700 shadow-sm shadow-blue-100/50">
+            <span className="rounded-full border border-brand-soft bg-white/90 px-3 py-1 text-xs font-semibold text-brand shadow-sm shadow-slate-200/70">
               {quote.items.length} {quote.items.length === 1 ? 'item' : 'itens'}
             </span>
           </div>
@@ -419,14 +422,14 @@ export function QuoteDetailsPage() {
           </table>
         </div>
 
-        <div className="flex justify-end border-t border-blue-100 bg-gradient-to-r from-white to-blue-50/50 p-5">
-          <div className="w-full max-w-md rounded-2xl border border-blue-100 bg-white/90 p-5 text-sm shadow-sm shadow-blue-100/60">
+        <div className="flex justify-end border-t border-brand-soft bg-brand-section p-5">
+          <div className="w-full max-w-md rounded-2xl border border-brand-soft bg-white/90 p-5 text-sm shadow-sm shadow-slate-200/70">
             <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-soft text-brand">
                 <CircleDollarSign className="h-4 w-4" aria-hidden="true" />
               </span>
               <div>
-                <h3 className="font-semibold text-slate-900">
+                <h3 className="font-semibold text-brand-strong">
                   Fechamento dos itens
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -541,22 +544,22 @@ function HighlightStat({
       className={[
         'relative overflow-hidden rounded-2xl border p-4 shadow-sm',
         accent
-          ? 'border-blue-200 bg-gradient-to-br from-blue-700 to-indigo-700 text-white shadow-blue-900/20'
+          ? 'border-brand-soft bg-brand-gradient text-white shadow-slate-300/70'
           : statusClassName ||
             (tone === 'blue'
-              ? 'border-blue-100 bg-gradient-to-br from-white to-blue-50/90 text-slate-900 shadow-blue-100/70'
-              : 'border-white/80 bg-white/75 text-slate-900 shadow-blue-100/50'),
+              ? 'border-brand-soft bg-brand-section text-slate-900 shadow-slate-200/70'
+              : 'border-white/80 bg-white/75 text-slate-900 shadow-slate-200/70'),
       ].join(' ')}
     >
       {tone === 'blue' && (
-        <div className="absolute inset-y-0 left-0 w-1 bg-blue-500/60" />
+        <div className="absolute inset-y-0 left-0 w-1 bg-brand-gradient" />
       )}
       <div className="flex items-start justify-between gap-3">
         <div>
           <p
             className={[
               'text-xs font-semibold uppercase tracking-[0.14em]',
-              accent ? 'text-blue-100' : status ? 'text-current opacity-70' : 'text-slate-500',
+              accent ? 'text-white/80' : status ? 'text-current opacity-70' : 'text-slate-500',
             ].join(' ')}
           >
             {label}
@@ -568,7 +571,7 @@ function HighlightStat({
             </p>
           )}
           {accent && (subtotal || discount) && (
-            <div className="mt-3 grid gap-1.5 text-xs font-medium text-blue-100">
+            <div className="mt-3 grid gap-1.5 text-xs font-medium text-white/80">
               {subtotal && (
                 <div className="flex items-center justify-between gap-4">
                   <span>Subtotal</span>
@@ -652,7 +655,7 @@ function DetailItem({
       className={[
         'rounded-2xl border px-4 py-3 shadow-sm',
         accent
-          ? 'border-blue-100 bg-blue-50/70 shadow-blue-100/50'
+          ? 'border-brand-soft bg-brand-soft shadow-slate-200/70'
           : toneClassName.container,
       ].join(' ')}
     >
@@ -672,7 +675,7 @@ function DetailItem({
           <dd
             className={[
               'mt-1 text-sm font-medium',
-              accent ? 'text-base font-bold text-blue-900' : 'text-slate-900',
+              accent ? 'text-base font-bold text-brand-strong' : 'text-slate-900',
             ].join(' ')}
           >
             {value}
@@ -686,8 +689,8 @@ function DetailItem({
 function getDetailToneClassName(tone: 'blue' | 'rose' | 'indigo' | 'slate' | 'cyan') {
   const classNames = {
     blue: {
-      container: 'border-blue-100 bg-blue-50/55 shadow-blue-100/50',
-      icon: 'bg-blue-100 text-blue-700',
+      container: 'border-brand-soft bg-brand-soft shadow-slate-200/70',
+      icon: 'bg-white/80 text-brand',
     },
     rose: {
       container: 'border-rose-100 bg-rose-50/55 shadow-rose-100/50',
@@ -724,11 +727,11 @@ function SummaryRow({
       className={[
         'flex items-center justify-between gap-4',
         strong
-          ? 'mt-3 rounded-2xl bg-gradient-to-br from-blue-700 to-indigo-700 px-4 py-3 text-white shadow-sm shadow-blue-900/20'
+          ? 'mt-3 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-sm shadow-slate-300/70'
           : 'border-b border-slate-100 py-2 last:border-b-0',
       ].join(' ')}
     >
-      <span className={strong ? 'text-blue-100' : 'text-slate-500'}>
+      <span className={strong ? 'text-white/80' : 'text-slate-500'}>
         {label}
       </span>
       <span className={strong ? 'text-lg font-bold text-white' : 'text-slate-700'}>
