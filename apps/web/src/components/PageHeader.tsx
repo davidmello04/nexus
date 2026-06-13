@@ -22,7 +22,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-[1.35rem] border border-blue-100/80 bg-gradient-to-r from-blue-50/95 via-indigo-50/60 to-white px-5 py-5 shadow-sm shadow-blue-100/50 sm:flex sm:items-center sm:justify-between sm:gap-6',
+        'relative overflow-hidden rounded-[1.35rem] border border-blue-100/80 bg-gradient-to-r from-blue-50/95 via-indigo-50/60 to-white px-5 py-4 shadow-sm shadow-blue-100/50 sm:flex sm:items-center sm:justify-between sm:gap-6',
         className,
       )}
     >
@@ -30,7 +30,7 @@ export function PageHeader({
 
       <div className="flex max-w-4xl items-start gap-4">
         {Icon && (
-          <div className="mt-1 hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-900/20 sm:flex">
+          <div className="mt-1 hidden h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-900/20 sm:flex">
             <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
         )}
@@ -41,11 +41,11 @@ export function PageHeader({
               {eyebrow}
             </span>
           )}
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+          <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-slate-950 sm:text-[1.7rem]">
             {title}
           </h1>
           {description && (
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+            <p className="mt-1.5 max-w-3xl text-sm leading-6 text-slate-600">
               {description}
             </p>
           )}

@@ -46,9 +46,9 @@ export function Modal({
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
 
-        <div className="sticky top-0 border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 px-6 py-5 pr-14">
+        <div className="sticky top-0 z-[1] border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 px-6 py-4 pr-14 shadow-sm shadow-blue-100/40">
           <div>
-            <h2 id="modal-title" className="text-xl font-bold text-slate-950">
+            <h2 id="modal-title" className="text-lg font-bold text-slate-950 sm:text-xl">
               {title}
             </h2>
             {description && (

@@ -101,8 +101,9 @@ export function QuotesPage() {
                 {quotesPagination.paginatedItems.map((quote) => (
                   <tr
                     key={quote.id}
+                    data-status={quote.status}
                     onClick={() => navigate(`/quotes/${quote.id}`)}
-                    className="cursor-pointer border-b border-slate-100 transition hover:bg-slate-50 last:border-0"
+                    className="cursor-pointer border-b border-slate-100 transition hover:bg-blue-50/45 last:border-0"
                   >
                     <td className="px-4 py-3">
                       <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-sm font-bold text-blue-800">

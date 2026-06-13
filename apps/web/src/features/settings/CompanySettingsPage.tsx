@@ -88,7 +88,7 @@ export function CompanySettingsPage() {
         icon={Building2}
       />
 
-      <div className="rounded-3xl border border-white/80 bg-white p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+      <div className="rounded-3xl border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5 sm:p-6">
         {isLoading && (
           <div className="text-sm text-slate-500">
             Carregando configurações...
@@ -292,18 +292,23 @@ function SettingsSection({
   children: ReactNode
 }) {
   return (
-    <section className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/35 p-5 shadow-sm shadow-blue-100/40">
-      <div className="mb-4">
-        <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-blue-900">
-          {title}
-        </h2>
-        {description && (
-          <p className="mt-1 text-sm leading-6 text-slate-500">
-            {description}
-          </p>
-        )}
+    <section className="overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/35 shadow-sm shadow-blue-100/40">
+      <div className="border-b border-blue-100/70 bg-blue-50/45 px-5 py-4">
+        <div className="flex items-start gap-3">
+          <span className="mt-1 h-2 w-2 rounded-full bg-blue-600 shadow-sm shadow-blue-600/30" />
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-blue-900">
+              {title}
+            </h2>
+            {description && (
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
-      {children}
+      <div className="p-5">{children}</div>
     </section>
   )
 }

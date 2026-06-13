@@ -17,6 +17,7 @@ import {
   BarChart as RechartsBarChart,
   CartesianGrid as RechartsCartesianGrid,
   Cell as RechartsCell,
+  Legend as RechartsLegend,
   Pie as RechartsPie,
   PieChart as RechartsPieChart,
   ResponsiveContainer as RechartsResponsiveContainer,
@@ -41,7 +42,8 @@ type AppliedPeriod = DashboardSummaryFilters & {
 type SummaryTone = 'slate' | 'blue' | 'amber' | 'emerald' | 'red'
 
 const initialPeriod = getThisMonthPeriod()
-const chartColors = ['#64748b', '#2563eb', '#f59e0b', '#10b981', '#ef4444']
+const orderStatusChartColors = ['#64748b', '#2563eb', '#f59e0b', '#10b981', '#ef4444']
+const financialChartColors = ['#2563eb', '#f59e0b', '#10b981']
 const accents: Record<SummaryTone, string> = {
   slate: 'from-slate-400 to-slate-500',
   blue: 'from-blue-500 to-indigo-500',
@@ -265,20 +267,38 @@ export function DashboardPage() {
                     data={orderStatusChartData}
                     margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
                   >
-                    <RechartsCartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <RechartsCartesianGrid
+                      stroke="#e2e8f0"
+                      strokeDasharray="4 4"
+                      vertical={false}
+                    />
                     <RechartsXAxis
                       dataKey="name"
                       tick={{ fontSize: 12 }}
                       interval={0}
                       height={58}
                     />
-                    <RechartsYAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                    <RechartsTooltip formatter={formatOrdersTooltip} />
-                    <RechartsBar dataKey="value" radius={[8, 8, 0, 0]}>
+                    <RechartsYAxis
+                      allowDecimals={false}
+                      axisLine={false}
+                      tick={{ fontSize: 12, fill: '#64748b' }}
+                      tickLine={false}
+                    />
+                    <RechartsTooltip
+                      formatter={formatOrdersTooltip}
+                      cursor={{ fill: 'rgba(219, 234, 254, 0.42)' }}
+                      contentStyle={{
+                        borderRadius: '14px',
+                        border: '1px solid #bfdbfe',
+                        boxShadow: '0 12px 30px rgba(15, 23, 42, 0.12)',
+                      }}
+                      labelStyle={{ color: '#0f172a', fontWeight: 700 }}
+                    />
+                    <RechartsBar dataKey="value" radius={[10, 10, 4, 4]} barSize={42}>
                       {orderStatusChartData.map((entry, index) => (
                         <RechartsCell
                           key={entry.name}
-                          fill={chartColors[index % chartColors.length]}
+                          fill={orderStatusChartColors[index % orderStatusChartColors.length]}
                         />
                       ))}
                     </RechartsBar>
@@ -296,16 +316,28 @@ export function DashboardPage() {
                       innerRadius={72}
                       outerRadius={118}
                       paddingAngle={3}
-                      label={({ name }) => name}
+                      stroke="#ffffff"
+                      strokeWidth={3}
                     >
                       {financialChartData.map((entry, index) => (
                         <RechartsCell
                           key={entry.name}
-                          fill={chartColors[index % chartColors.length]}
+                          fill={financialChartColors[index % financialChartColors.length]}
                         />
                       ))}
                     </RechartsPie>
-                    <RechartsTooltip formatter={formatFinancialTooltip} />
+                    <RechartsTooltip
+                      formatter={formatFinancialTooltip}
+                      contentStyle={{
+                        borderRadius: '14px',
+                        border: '1px solid #bfdbfe',
+                        boxShadow: '0 12px 30px rgba(15, 23, 42, 0.12)',
+                      }}
+                    />
+                    <RechartsLegend
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: 12, paddingTop: 14 }}
+                    />
                   </RechartsPieChart>
                 </RechartsResponsiveContainer>
               </ChartCard>
@@ -388,12 +420,12 @@ function ChartCard({
   children: ReactNode
 }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+    <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-white via-white to-blue-50/40 p-5 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-base font-semibold text-slate-900">{title}</h3>
-        <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-          Indicadores
+        <span className="rounded-full border border-blue-100 bg-white/80 px-2.5 py-1 text-xs font-semibold text-blue-700">
+          Visão rápida
         </span>
       </div>
       <div className="mt-4 min-h-[340px]">{children}</div>

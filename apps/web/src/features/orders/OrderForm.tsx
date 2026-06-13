@@ -170,18 +170,23 @@ export function OrderForm({
         {fields.map((field, index) => (
           <div
             key={field.id}
-            className="space-y-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/45 p-4 shadow-sm shadow-blue-100/40"
+            className="space-y-3 rounded-2xl border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/45 p-4 shadow-sm shadow-blue-100/40"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <h4 className="inline-flex items-center rounded-full border border-blue-100 bg-white px-3 py-1 text-sm font-semibold text-blue-900">
-                  Item {index + 1}
-                </h4>
+                <div>
+                  <h4 className="inline-flex items-center rounded-full border border-blue-100 bg-white px-3 py-1 text-sm font-semibold text-blue-900 shadow-sm shadow-blue-100/50">
+                    Item {index + 1}
+                  </h4>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Produto, variação, quantidade e observações deste item.
+                  </p>
+                </div>
 
               {fields.length > 1 && (
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="cursor-pointer rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50"
+                  className="cursor-pointer rounded-xl border border-red-100 bg-white px-3 py-2 text-xs font-medium text-red-600 transition hover:border-red-200 hover:bg-red-50"
                 >
                   Remover item
                 </button>
@@ -436,22 +441,28 @@ function ItemPricePreview({
   }
 
   return (
-    <div className="grid gap-3 rounded-xl border border-blue-100 bg-white p-4 text-sm shadow-sm shadow-blue-100/40 md:grid-cols-3">
+    <div className="grid gap-3 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/65 p-4 text-sm shadow-sm shadow-blue-100/50 md:grid-cols-3">
       <div>
-        <span className="text-slate-500">Preço unitário</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          Preço unitário
+        </span>
         <p className="mt-1 font-bold text-slate-950">
           {formatCurrency(unitPrice)}
         </p>
       </div>
       <div>
-        <span className="text-slate-500">Origem do preço</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          Origem do preço
+        </span>
         <p className="mt-1 font-semibold text-slate-900">
           {source ? formatPriceSource(source) : '-'}
         </p>
       </div>
       <div>
-        <span className="text-slate-500">Total do item</span>
-        <p className="mt-1 font-bold text-blue-800">
+        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          Total do item
+        </span>
+        <p className="mt-1 text-lg font-bold text-blue-800">
           {formatCurrency(total)}
         </p>
       </div>

@@ -247,6 +247,7 @@ export function OrdersReportPage() {
                     {report.orders.map((order) => (
                       <tr
                         key={order.id}
+                        data-status={order.status}
                         className="border-b border-slate-100 last:border-0"
                       >
                         <td className="px-4 py-3">

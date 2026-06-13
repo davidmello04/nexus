@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, FileText, Pencil } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, FileText, Pencil } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
@@ -116,7 +116,9 @@ export function QuoteDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-6 shadow-sm shadow-blue-100/70 ring-1 ring-blue-900/5">
+      <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-6 shadow-sm shadow-blue-100/70 ring-1 ring-blue-900/5">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link
             to="/quotes"
@@ -153,7 +155,34 @@ export function QuoteDetailsPage() {
             Editar
           </button>
         </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <HighlightStat label="Cliente" value={quote.customer?.name || '-'} />
+          <HighlightStat label="Status" value={getQuoteStatusLabel(quote.status)} />
+          <HighlightStat
+            label="Total geral"
+            value={formatCurrency(quote.total)}
+            accent
+          />
+        </div>
       </div>
+
+      {['REJECTED', 'EXPIRED'].includes(quote.status) && (
+        <section className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm shadow-red-100/70">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+          <div>
+            <h2 className="font-semibold">
+              {quote.status === 'EXPIRED'
+                ? 'Este orçamento está expirado'
+                : 'Este orçamento foi recusado'}
+            </h2>
+            <p className="mt-1 text-sm text-red-700">
+              O orçamento permanece disponível para consulta, PDF e histórico.
+            </p>
+          </div>
+        </section>
+      )}
 
       {pdfError && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
@@ -183,7 +212,7 @@ export function QuoteDetailsPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-white/80 bg-white p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+      <section className="rounded-3xl border border-white/80 bg-white p-6 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">
@@ -278,7 +307,7 @@ export function QuoteDetailsPage() {
         </section>
       )}
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
+      <section className="overflow-hidden rounded-3xl border border-white/80 bg-white shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         <div className="border-b border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900">
             Itens do orçamento
@@ -322,7 +351,7 @@ export function QuoteDetailsPage() {
           </table>
         </div>
 
-        <div className="flex justify-end border-t border-slate-200 p-6">
+        <div className="flex justify-end border-t border-blue-100 bg-gradient-to-r from-white to-blue-50/50 p-6">
           <div className="w-full max-w-sm space-y-2 text-sm">
             <SummaryRow label="Subtotal" value={formatCurrency(quote.subtotal)} />
             <SummaryRow label="Desconto" value={formatCurrency(quote.discount)} />
@@ -403,6 +432,37 @@ export function QuoteDetailsPage() {
   )
 }
 
+function HighlightStat({
+  label,
+  value,
+  accent,
+}: {
+  label: string
+  value: string
+  accent?: boolean
+}) {
+  return (
+    <div
+      className={[
+        'rounded-2xl border p-4 shadow-sm',
+        accent
+          ? 'border-blue-200 bg-gradient-to-br from-blue-700 to-indigo-700 text-white shadow-blue-900/20'
+          : 'border-white/80 bg-white/75 text-slate-900 shadow-blue-100/50',
+      ].join(' ')}
+    >
+      <p
+        className={[
+          'text-xs font-semibold uppercase tracking-[0.14em]',
+          accent ? 'text-blue-100' : 'text-slate-500',
+        ].join(' ')}
+      >
+        {label}
+      </p>
+      <p className="mt-1 text-lg font-bold">{value}</p>
+    </div>
+  )
+}
+
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
@@ -422,9 +482,16 @@ function SummaryRow({
   strong?: boolean
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-slate-500">{label}</span>
-      <span className={strong ? 'text-base font-semibold text-slate-950' : 'text-slate-700'}>
+    <div
+      className={[
+        'flex items-center justify-between gap-4',
+        strong ? 'rounded-2xl bg-blue-700 px-4 py-3 text-white shadow-sm shadow-blue-900/20' : '',
+      ].join(' ')}
+    >
+      <span className={strong ? 'text-blue-100' : 'text-slate-500'}>
+        {label}
+      </span>
+      <span className={strong ? 'text-lg font-bold text-white' : 'text-slate-700'}>
         {value}
       </span>
     </div>
