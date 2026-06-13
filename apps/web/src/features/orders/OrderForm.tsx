@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Calculator, Info, Plus } from 'lucide-react'
 import { getCustomers } from '@/features/customers/customers-service'
 import { getProducts } from '@/features/products/products-service'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -124,7 +125,20 @@ export function OrderForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
+      <section className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/45 p-4 shadow-sm shadow-blue-100/40">
+        <div className="mb-3 flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+            <Info className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-950">
+              Cliente do pedido
+            </h3>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Selecione o cliente para habilitar a prévia de preço dos itens.
+            </p>
+          </div>
+        </div>
         <label className="text-sm font-medium text-slate-700">Cliente</label>
         <select
           {...register('customerId')}
@@ -153,9 +167,9 @@ export function OrderForm({
             Cliente terceirizado. O preço final será calculado automaticamente ao salvar.
           </p>
         )}
-      </div>
+      </section>
 
-      <div className="space-y-4">
+      <section className="space-y-4 rounded-2xl border border-white/80 bg-white/85 p-4 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         <div>
           <h3 className="text-sm font-semibold text-slate-900">Itens</h3>
           <p className="mt-1 text-sm text-slate-500">
@@ -267,6 +281,7 @@ export function OrderForm({
           }
           className="w-full cursor-pointer rounded-xl border border-dashed border-blue-200 bg-blue-50/50 px-4 py-3 text-sm font-semibold text-blue-800 transition hover:bg-blue-50"
         >
+          <Plus className="mr-2 inline h-4 w-4" aria-hidden="true" />
           Adicionar item
         </button>
 
@@ -279,7 +294,7 @@ export function OrderForm({
         <p className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs text-blue-800">
           Os valores exibidos em produto e variação são referência. O preço final será calculado automaticamente ao salvar.
         </p>
-      </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
@@ -418,24 +433,27 @@ function ItemPricePreview({
 }: ItemPricePreviewProps) {
   if (!isReady) {
     return (
-      <div className="rounded-xl border border-dashed border-blue-200 bg-white/80 p-4 text-sm text-slate-500">
-        Selecione cliente e produto para calcular a prévia de preço.
+      <div className="flex items-start gap-3 rounded-2xl border border-dashed border-blue-200 bg-white/80 p-4 text-sm text-slate-500">
+        <Calculator className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <span>Selecione cliente e produto para calcular a prévia de preço.</span>
       </div>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-blue-100 bg-white p-4 text-sm text-slate-500">
-        Calculando preço...
+      <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-white p-4 text-sm text-slate-500">
+        <Calculator className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <span>Calculando preço...</span>
       </div>
     )
   }
 
   if (isError || unitPrice === undefined || total === undefined) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-        Não foi possível resolver o preço deste item.
+      <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <Calculator className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <span>Não foi possível resolver o preço deste item.</span>
       </div>
     )
   }

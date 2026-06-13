@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Info, Plus } from 'lucide-react'
 import { getCustomers } from '@/features/customers/customers-service'
 import { getProducts } from '@/features/products/products-service'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -67,6 +68,21 @@ export function QuoteForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <section className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/45 p-4 shadow-sm shadow-blue-100/40">
+        <div className="mb-3 flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+            <Info className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-950">
+              Dados do orçamento
+            </h3>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Selecione o cliente e defina a validade da proposta.
+            </p>
+          </div>
+        </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="text-sm font-medium text-slate-700">Cliente</label>
@@ -105,10 +121,11 @@ export function QuoteForm({
           />
         </div>
       </div>
+      </section>
 
-      <div className="space-y-4">
+      <section className="space-y-4 rounded-2xl border border-white/80 bg-white/85 p-4 shadow-sm shadow-slate-200/70 ring-1 ring-slate-900/5">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">Itens</h3>
+          <h3 className="text-sm font-semibold text-slate-900">Itens do orçamento</h3>
           <p className="mt-1 text-sm text-slate-500">
             Cadastre produtos, variações e quantidades do orçamento.
           </p>
@@ -205,13 +222,14 @@ export function QuoteForm({
           }
           className="w-full cursor-pointer rounded-xl border border-dashed border-blue-200 bg-blue-50/50 px-4 py-3 text-sm font-semibold text-blue-800 transition hover:bg-blue-50"
         >
+          <Plus className="mr-2 inline h-4 w-4" aria-hidden="true" />
           Adicionar item
         </button>
 
         <p className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs text-blue-800">
           Os valores exibidos em produto e variação são referência. O preço final será calculado automaticamente ao salvar.
         </p>
-      </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>

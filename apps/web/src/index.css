@@ -66,38 +66,52 @@ main tbody tr:hover {
 }
 
 main tbody tr[data-status] {
-  box-shadow: inset 3px 0 0 rgb(148 163 184 / 0.56);
+  --status-row-color: 148 163 184;
+  box-shadow: inset 3px 0 0 rgb(var(--status-row-color) / 0.58);
 }
 
 main tbody tr[data-status]:hover {
-  box-shadow: inset 4px 0 0 rgb(59 130 246 / 0.74);
+  background-color: rgb(239 246 255 / 0.55);
+  box-shadow: inset 4px 0 0 rgb(var(--status-row-color) / 0.72);
 }
 
 main tbody tr[data-status="DRAFT"] {
-  box-shadow: inset 3px 0 0 rgb(100 116 139 / 0.45);
+  --status-row-color: 100 116 139;
 }
 
 main tbody tr[data-status="PENDING"],
 main tbody tr[data-status="SENT"] {
-  box-shadow: inset 3px 0 0 rgb(37 99 235 / 0.58);
+  --status-row-color: 37 99 235;
 }
 
 main tbody tr[data-status="IN_PRODUCTION"] {
-  box-shadow: inset 3px 0 0 rgb(245 158 11 / 0.68);
+  --status-row-color: 245 158 11;
 }
 
 main tbody tr[data-status="DONE"],
 main tbody tr[data-status="APPROVED"] {
-  box-shadow: inset 3px 0 0 rgb(16 185 129 / 0.62);
+  --status-row-color: 16 185 129;
+  background-image: linear-gradient(
+    90deg,
+    rgb(16 185 129 / 0.08),
+    rgb(16 185 129 / 0.025) 5rem,
+    transparent 10rem
+  );
 }
 
 main tbody tr[data-status="CANCELED"],
 main tbody tr[data-status="REJECTED"] {
-  box-shadow: inset 3px 0 0 rgb(239 68 68 / 0.62);
+  --status-row-color: 239 68 68;
+  background-image: linear-gradient(
+    90deg,
+    rgb(239 68 68 / 0.105),
+    rgb(239 68 68 / 0.035) 5rem,
+    transparent 10rem
+  );
 }
 
 main tbody tr[data-status="EXPIRED"] {
-  box-shadow: inset 3px 0 0 rgb(124 58 237 / 0.58);
+  --status-row-color: 124 58 237;
 }
 
 main tbody tr:last-child {

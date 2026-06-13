@@ -363,6 +363,8 @@ export function DashboardPage() {
                 label="Clientes inativos"
                 value={summary.inactiveCustomers}
                 description="Cadastros pausados"
+                tone="red"
+                icon={Ban}
               />
             </div>
           </DashboardSection>
@@ -386,6 +388,8 @@ export function DashboardPage() {
                 label="Produtos inativos"
                 value={summary.inactiveProducts}
                 description="Itens pausados"
+                tone="red"
+                icon={Ban}
               />
             </div>
           </DashboardSection>
