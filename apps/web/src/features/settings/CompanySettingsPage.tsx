@@ -346,9 +346,9 @@ export function CompanySettingsPage() {
               description="Preencha os dados separados para melhorar documentos e PDFs."
             >
               {companySettings?.address && !hasStructuredAddress(companySettings) && (
-                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                  Endereço antigo salvo: {companySettings.address}
-                </div>
+                <LegacyAddressNotice
+                  parsedAddress={parseLegacyAddress(companySettings.address)}
+                />
               )}
 
               <div className="grid gap-4 md:grid-cols-6">
@@ -454,15 +454,15 @@ function SettingsSection({
 }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-brand-soft bg-brand-section shadow-sm shadow-slate-200/70">
-      <div className="section-heading-solid border-b border-brand-soft px-5 py-4">
-        <div className="flex items-start gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-white/85 shadow-sm shadow-slate-900/20" />
+      <div className="section-heading-solid border-b border-brand-soft px-4 py-3">
+        <div className="flex items-start gap-2.5">
+          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-white/85 shadow-sm shadow-slate-900/20" />
           <div>
-            <h2 className="section-heading-title text-sm font-bold uppercase tracking-[0.14em]">
+            <h2 className="section-heading-title text-xs font-bold uppercase tracking-[0.14em]">
               {title}
             </h2>
             {description && (
-              <p className="section-heading-description mt-1 text-sm leading-6">
+              <p className="section-heading-description mt-0.5 text-xs leading-5">
                 {description}
               </p>
             )}
@@ -471,6 +471,27 @@ function SettingsSection({
       </div>
       <div className="p-5">{children}</div>
     </section>
+  )
+}
+
+function LegacyAddressNotice({
+  parsedAddress,
+}: {
+  parsedAddress: ParsedLegacyAddress
+}) {
+  return (
+    <div className="mb-4 rounded-2xl border border-brand-soft bg-white/80 px-4 py-3 text-sm shadow-sm shadow-slate-200/70">
+      <p className="font-semibold text-brand-strong">
+        {parsedAddress.confident
+          ? 'Preenchemos os campos usando o endereço antigo.'
+          : 'Endereço antigo encontrado.'}
+      </p>
+      <p className="mt-1 text-xs leading-5 text-slate-500">
+        {parsedAddress.confident
+          ? 'Revise os dados abaixo antes de salvar no novo formato.'
+          : 'Revise e complete os campos abaixo para salvar no novo formato.'}
+      </p>
+    </div>
   )
 }
 
@@ -562,6 +583,11 @@ function mapCompanySettingsToFormData(
     return emptyCompanySettingsFormValues
   }
 
+  const parsedLegacyAddress =
+    companySettings.address && !hasStructuredAddress(companySettings)
+      ? parseLegacyAddress(companySettings.address)
+      : null
+
   return {
     name: companySettings.name,
     phone: companySettings.phone,
@@ -569,14 +595,77 @@ function mapCompanySettingsToFormData(
     instagram: companySettings.instagram,
     document: companySettings.document,
     address: companySettings.address,
-    addressZipCode: companySettings.addressZipCode || '',
-    addressStreet: companySettings.addressStreet || '',
-    addressNumber: companySettings.addressNumber || '',
-    addressComplement: companySettings.addressComplement || '',
+    addressZipCode: companySettings.addressZipCode || parsedLegacyAddress?.zipCode || '',
+    addressStreet: companySettings.addressStreet || parsedLegacyAddress?.street || '',
+    addressNumber: companySettings.addressNumber || parsedLegacyAddress?.number || '',
+    addressComplement:
+      companySettings.addressComplement || parsedLegacyAddress?.complement || '',
     addressNeighborhood: companySettings.addressNeighborhood || '',
     addressCity: companySettings.addressCity || '',
     addressState: companySettings.addressState || '',
     defaultOrderMessage: companySettings.defaultOrderMessage,
+  }
+}
+
+type ParsedLegacyAddress = {
+  street: string
+  number: string
+  complement: string
+  zipCode: string
+  confident: boolean
+}
+
+function parseLegacyAddress(address: string): ParsedLegacyAddress {
+  const normalizedAddress = address.trim().replace(/\s+/g, ' ')
+  const defaultResult = {
+    street: normalizedAddress,
+    number: '',
+    complement: '',
+    zipCode: '',
+    confident: false,
+  }
+
+  if (!normalizedAddress) {
+    return defaultResult
+  }
+
+  const zipCodeMatch = normalizedAddress.match(/\b\d{5}-?\d{3}\b/)
+  const zipCode = zipCodeMatch?.[0] ?? ''
+  const addressWithoutZipCode = zipCode
+    ? normalizedAddress.replace(zipCode, '').replace(/[,\s]+$/, '').trim()
+    : normalizedAddress
+
+  const commaNumberMatch = addressWithoutZipCode.match(
+    /^(.+?),\s*(\d+[A-Za-z]?)\s*(.*)$/,
+  )
+
+  if (commaNumberMatch) {
+    return {
+      street: commaNumberMatch[1].trim(),
+      number: commaNumberMatch[2].trim(),
+      complement: commaNumberMatch[3].trim(),
+      zipCode,
+      confident: true,
+    }
+  }
+
+  const looseNumberMatch = addressWithoutZipCode.match(
+    /^(.+?)\s+(\d+[A-Za-z]?)\s+(.+)$/,
+  )
+
+  if (looseNumberMatch) {
+    return {
+      street: looseNumberMatch[1].trim(),
+      number: looseNumberMatch[2].trim(),
+      complement: looseNumberMatch[3].trim(),
+      zipCode,
+      confident: true,
+    }
+  }
+
+  return {
+    ...defaultResult,
+    zipCode,
   }
 }
 
